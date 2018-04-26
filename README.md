@@ -6,6 +6,7 @@ Precise cavity definition. Flexible tracking. Fast performance.
 Accurate volume calculation. Ugly output.
 
 ![](abstract_fig_cut.png)
+![](cpp_logo.png)
 
 ## Installation
 
@@ -15,15 +16,11 @@ See installation info on the manual.
 
 Check the quickstart example.
 
-## Development setup
-
 
 ## Release History
 
 * 1.0.0
     * Initial release. 
-
-## Meta
 
 ### Contact info
 [@gpbarletta](https://twitter.com/gpbarletta) - pbarletta@gmail.com
