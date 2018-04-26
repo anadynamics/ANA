@@ -5,8 +5,8 @@
 Precise cavity definition. Flexible tracking. Fast performance.
 Accurate volume calculation. Ugly output.
 
-![](abstract_fig_cut.png)
-![](cpp_logo.png)
+![](/abstract_fig_cut.png)
+![](./cpp_logo.png)
 
 ## Installation
 
