@@ -1,4 +1,5 @@
-// prototype functions
+#ifndef ANAMD
+#define ANAMD
 namespace ANA {
 // Main function for dynamic version of ANA.
 int MD_ANA(const std::string &in_filename, const std::string &in_md_filename,
@@ -19,3 +20,4 @@ int MD_ANA(const std::string &in_filename, const std::string &in_md_filename,
            const unsigned int precision, const unsigned int &md_start,
            const unsigned int &md_step, unsigned int &md_end);
 }
+#endif

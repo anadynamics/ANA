@@ -1,3 +1,5 @@
+#ifndef ANAWRITE
+#define ANAWRITE
 namespace ANA {
 namespace NDD {
 // Write file with volumes of each input PDB
@@ -168,3 +170,4 @@ void write_wall_file(std::ofstream &pock_out_file,
                      const unsigned int frame_cnt,
                      const std::string &list_wall_separator);
 }
+#endif

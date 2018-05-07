@@ -1,3 +1,5 @@
+#ifndef ANASTATIC
+#define ANASTATIC
 // prototype functions
 namespace ANA {
 // Main function for static version of ANA.
@@ -17,3 +19,4 @@ int static_ANA(
     const unsigned int clusters_min_size, const unsigned int precision,
     const std::string &only_side_ASA);
 } // namespace ANA
+#endif

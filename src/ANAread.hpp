@@ -1,3 +1,5 @@
+#ifndef ANAREAD
+#define ANAREAD
 // prototype functions
 namespace ANA {
 namespace NDD {
@@ -47,3 +49,4 @@ void read_included_area(const std::string &filename,
 // Tool for parsing a double from input file stringstream
 double parse_double(std::stringstream &in_stream);
 }
+#endif

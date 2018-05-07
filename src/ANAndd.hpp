@@ -1,3 +1,5 @@
+#ifndef ANANDD
+#define ANANDD
 // prototype functions
 namespace ANA {
 // Main function for NDD version of ANA.
@@ -18,3 +20,4 @@ int NDD_ANA(
     const unsigned int nbr_of_vertices_to_include,
     const unsigned int precision);
 } // namespace ANA
+#endif

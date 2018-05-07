@@ -1,3 +1,5 @@
+#ifndef ANAPO
+#define ANAPO
 namespace ANA {
 namespace PO = boost::program_options;
 using namespace std;
@@ -23,3 +25,4 @@ int get_parameters(
     std::string &prism_proto, std::string &tool_pdb_norm,
     std::string &tool_aa_to_ca);
 }
+#endif

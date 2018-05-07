@@ -1,5 +1,5 @@
-#ifndef ANA_UTILS_H
-#define ANA_UTILS_H
+#ifndef ANAUTILS
+#define ANAUTILS
 // prototype functions
 namespace ANA {
 namespace NDD {
