@@ -1,0 +1,116 @@
+language: cpp
+sudo: false
+
+linux64_addons:
+    addons: &linux64
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.8
+        - doxygen
+        - valgrind
+        # Used for CHFL_EXTERNAL_NETCDF
+        - libnetcdf-dev
+
+linux32_addons:
+    addons: &linux32
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.8
+        - doxygen
+        - g++-4.8-multilib
+        - linux-libc-dev:i386
+        - libc6-dev-i386
+
+matrix:
+  fast_finish: true
+  include:
+    - os: linux
+      env: SHARED_LIBS=OFF EMSCRIPTEN=ON
+      addons:
+        apt:
+          packages:
+          - doxygen
+    - os: linux
+      compiler: gcc
+      env: STATIC_LIBS=ON DO_COVERAGE=ON
+      addons: *linux64
+    - os: linux
+      compiler: clang
+      env: CMAKE_EXTRA=-DCHFL_SYSTEM_NETCDF=ON
+      addons: *linux64
+    - os: linux
+      compiler: gcc
+      env: DEPLOY_DOCS=ON VALGRIND=ON
+      addons: *linux64
+    - os: linux
+      compiler: gcc
+      env: ARCH=x86 CMAKE_EXTRA=-DHAVE_LIBM=/lib32/libm.so.6
+      addons: *linux32
+    - os: osx
+      compiler: clang
+    - os: osx
+      compiler: gcc
+  allow_failures:
+    - os: linux
+      compiler: gcc
+      env: USE_ICC=ON
+      addons: *linux64
+    - os: linux
+      compiler: gcc
+      env: USE_PGI=ON
+      addons: *linux64
+
+before_install:
+  # Setting environement
+  - cd $TRAVIS_BUILD_DIR
+  - source scripts/ci/setup-travis.sh
+  - $CC --version
+  - $CXX --version
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir build && cd build
+  - $CMAKE_CONFIGURE cmake $CMAKE_ARGS $CMAKE_EXTRA ..
+  - make -j2
+  - ctest -j2 --output-on-failure
+  - cd $TRAVIS_BUILD_DIR
+  # Check C API documentation
+  - ./scripts/ci/check-capi.py
+  # Build docs
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        ./scripts/ci/build-docs.sh
+    fi
+  # Generate and upload coverage
+  - |
+    if [[ "${DO_COVERAGE}" == "ON" ]]; then
+        cd $TRAVIS_BUILD_DIR
+        find . -type f -name '*.gcno' -exec gcov-4.8 -pb {} +
+        rm -f \#usr\#*.gcov
+        rm -f *\#external\#*.gcov
+        codecov -X gcov
+    fi
+
+after_script:
+  # cleanup intel compiler install
+  - '[[ ! -z "${INTEL_INSTALL_PATH}" ]] && uninstall_intel_software'
+
+deploy:
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GH_TOKEN
+    local_dir: build/gh-pages
+    on:
+        branch: master
+        condition: $DEPLOY_DOCS == ON
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GH_TOKEN
+    local_dir: build/gh-pages
+    on:
+        tags: true
+        condition: $DEPLOY_DOCS == ON
