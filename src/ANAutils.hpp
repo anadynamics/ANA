@@ -25,14 +25,12 @@ void ndd_discard_CH_0(const NDD_Vector &in_cells,
                       std::vector<unsigned int> &intersecting_total);
 // Discard parts of cells outside the specified triangulation using
 // intersecitons
-double
-ndd_discard_CH_1(const NDD_Vector &in_intersecting_coords,
+double ndd_discard_CH_1(const NDD_Vector &in_intersecting_coords,
                  const Triang_Vector &CH_triangs,
                  const std::vector<std::array<bool, 4>> &intersecting_bool,
                  const std::vector<unsigned int> &intersecting_total,
                  Poly_Vector &border_poly);
 }
-
 // Cluster neighbouring cells
 void cluster_cells_cgal(const NA_Vector &input_cells, NA_Matrix &output_cells,
                         const unsigned int min_cells_cluster);
