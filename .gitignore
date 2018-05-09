@@ -1,3 +1,5 @@
 ANA
+Makefile
+.clang-format
 docs
 *png
