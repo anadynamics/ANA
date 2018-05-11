@@ -2,21 +2,24 @@
 ###############################################################################
 # Utility to displace a PDB along many vectors, generating 1 PDB for each
 # vector, useful for NDD analysis.
-# Calpha only. 
+# Calpha only.
 # by https://github.com/pgbarletta
 ###############################################################################
 using Chemfiles
+using StaticArrays
 using ArgParse
 ##########
 # functions
 ##########
-function read_ptraj_modes(file, modes_elements, norma::Bool=true)
-    modes_file = open(file, "r")
-    modes_text = readdlm(modes_file, skipstart=0, skipblanks=true,
-    ignore_invalid_chars=true, comments=true, comment_char='\*')
-    close(modes_file)
+function read_ptraj_modes(filename, nmodes::Int64=0, norma::Bool=true)
+    modes_text = readdlm(filename, skipstart=0, skipblanks=true, comments=true,
+        comment_char='\*')
 
-    nmodes = modes_text[1, 5]
+    if nmodes == 0
+        nmodes = modes_text[1, 5]
+    end
+    modes_elements = modes_text[2, 1]
+
     ncoords = convert(Int64, modes_elements)
     lines = ceil(Int64, ncoords/7)
     rest = convert(Int64, ncoords % 7)
@@ -26,16 +29,15 @@ function read_ptraj_modes(file, modes_elements, norma::Bool=true)
     temp1 = Array{Float64}(ncoords, 1);
     temp2 = Array{Float64}(ncoords+(7-rest));
 
-    j = lines + 1 + 2 # 1 p/ q lea la prox linea 2 por el header
-
-    for i = 1:nmodes
+    j=lines + 1 + 2 # 1 p/ q lea la prox linea 2 por el header
+    for i=1:nmodes
         eval[i] = modes_text[j, 2]
-        temp = transpose(modes_text[(j+1):(lines+j), :])
+        temp = permutedims(modes_text[(j+1):(lines+j), :], [2, 1])
         temp2 = reshape(temp, ncoords+(7-rest))
         for k=(rest+1):7
             pop!(temp2)
         end
-    mode[:, i] = temp2
+        mode[:, i] = temp2
         j = j + lines + 1
     end
 
@@ -86,7 +88,7 @@ function displaceAA(in_frm, aa, aa_3, in_vec)
     # Tengo q hacer esto por ahora. Hasta q arreglemos Chemfiles.
     for i = 1:size(in_xyz)[1]
         for j = 1:size(in_xyz)[2]
-            out_xyz[i, j]  = in_xyz[i, j] + sum_mat[i, j]
+            out_xyz[i, j]  = round(in_xyz[i, j] + sum_mat[i, j], 3)
         end
     end
     return out_frm
@@ -156,9 +158,6 @@ for (arg, val) in parsed_args
     arg = Symbol(arg)
     @eval (($arg) = ($val))
 end
-# Append ".pdb" to output pdb
-suffix = suffix * ".pdb"
-
 println("Input parameters:")
 println("INPDB          ", in_pdb_filename)
 println("MODES          ", modes_filename)
@@ -173,54 +172,77 @@ const in_frm = read(in_trj)
 const in_top = Topology(in_frm)
 const aa = convert(Int64, count_residues(in_top))
 const aa_3 = aa * 3
-
+# Initialize modes vectors
 in_modes = Array{Float64, 2}(aa_3, aa)
+in_evals = Array{Float64, 1}(aa_3)
 if (amber_modes)
-# Modos de PCA Amber
     try
-        in_modes = read_ptraj_modes(modes_filename, aa_3, true)[1][:, index]
-    catch
-        try
-            in_modes = read_ptraj_modes(modes_filename, natom_xyz,
-                true)[1][:, index]
-        end
+        in_modes, in_evals = read_ptraj_modes(modes_filename)
+    catch e
+        println(modes_filename, " error:")
+        error(e)
     end
 else
     try
         in_modes = convert(Array{Float64, 2}, readdlm(modes_filename))
     catch e
-        error(string("\n\n", modes_filename, " could not be found."))
+        println(modes_filename, " error:")
+        error(e)
     end
 end
-
+const l_modes = size(in_modes)[1]
+const n_modes = size(in_modes)[2]
 # Check input modes
-if size(in_modes)[1] != aa_3
+if l_modes != aa_3
 # Asumo q el modo es de Calpha y está ordenado en una columna
     error(string("\n\n", " Input PDB has ", aa, " residues, so input ",
         "modes should be ", aa_3, " long."))
 end
 
-weights = fill(1.0, size(in_modes)[2])
-if weights_filename != "none"
-    weights = convert(Array{Float64}, readdlm(weights_filename))[:, 1]
-    if length(weights) != size(in_modes)[2]
-        error(string("\n\n", weights_filename, " is .", length(weights),
-            " long and should be ", size(in_modes)[2], " long."))
+# Initialize weights
+weights = MVector{n_modes, Float64}()
+if (amber_modes)
+    if weights_filename != "none"
+        try
+            weights = convert(MVector{n_modes, Float64},
+                readdlm(weights_filename)[:, 1])
+        catch e
+            println(weights_filename, " error:")
+            error(e)
+        end
+    else
+        try
+            weights = convert(MVector{n_modes, Float64}, in_evals)
+        catch e
+            println("Number of amber PCA eigenvalues does not match number of ",
+                "PCA modes")
+            error(e)
+        end
+    end
+else
+    if weights_filename != "none"
+        try
+            weights = convert(MVector{n_modes, Float64},
+                readdlm(weights_filename)[:, 1])
+        catch e
+            println(weights_filename, " error:")
+            error(e)
+        end
+    else
+        weights = convert(MVector{n_modes, Float64}, fill(1.0, n_modes))
     end
 end
 
-
-
 # Ahora desplazo
-pdb_names = Array{String}(size(in_modes)[2])
-for i = 1:size(in_modes)[2]
+pdb_names = Array{String}(n_modes)
+for i = 1:n_modes
     # Escalo vector
     const modo = in_modes[:, i] .* mul ./ weights[i]
     # Desplazo
     const out_frm = displaceAA(in_frm, aa, aa_3, modo);
     # Y guardo
     pos = positions(out_frm)
-    pdb_names[i] = string(i, "_", basename(suffix))
+    pdb_names[i] = string(i, "_", suffix, ".pdb")
     out_trj = Trajectory(pdb_names[i], 'w')
     write(out_trj, out_frm)
 end
