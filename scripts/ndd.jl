@@ -246,6 +246,8 @@ for i = 1:n_modes
     out_trj = Trajectory(pdb_names[i], 'w')
     write(out_trj, out_frm)
 end
-
-writedlm(string(dirname(in_pdb_filename), "in_ndd_",
-    splitext(in_pdb_filename)[1]), pdb_names)
+# Write in_ndd file
+const in_ndd_filename = string("in_ndd_",
+    splitext(basename(in_pdb_filename))[1])
+const in_ndd_location = dirname(in_pdb_filename)
+writedlm(joinpath(in_ndd_location, in_ndd_filename), pdb_names)
