@@ -43,19 +43,6 @@ void ndd_nondelaunay_dynamics(const NA_Vector& cavity_void_cells,
                 double poly_vol =
                     ndd_discard_CH_1(cavity_intersecting_coords, CH_triangs,
                         intersecting_bool, intersecting_total, border_poly);
-
-                std::cout << "----------" << '\n';
-                std::cout << " cavity_void_cells " << cavity_void_cells.size()
-                          << '\n';
-                std::cout << " new_cells_coordinates "
-                          << new_cells_coordinates.size() << '\n';
-                std::cout << " CH_triangs " << CH_triangs.size() << '\n';
-                std::cout << " cavity_void_coords " << cavity_void_coords.size()
-                          << '\n';
-                std::cout << " cavity_intersecting_coords "
-                          << cavity_intersecting_coords.size() << '\n';
-                std::cout << " border_poly " << border_poly.size() << '\n';
-
                 // Store result
                 output_volumes.push_back(
                     poly_vol + ndd_get_void_volume(cavity_void_coords));
