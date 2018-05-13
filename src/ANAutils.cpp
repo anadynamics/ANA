@@ -36,14 +36,26 @@ void ndd_nondelaunay_dynamics(const NA_Vector& cavity_void_cells,
                 ANA::NDD::ndd_read_PDB_get_cells(pdb_filename, cells_indices,
                     include_CH_atoms, new_cells_coordinates, CH_triangs);
                 // Separate fully inside cells and the intersecting ones. Get
-                // the volume
-                // of this last group.
+                // the volume of this last group.
                 ndd_discard_CH_0(new_cells_coordinates, CH_triangs,
                     cavity_void_coords, cavity_intersecting_coords,
                     intersecting_bool, intersecting_total);
                 double poly_vol =
                     ndd_discard_CH_1(cavity_intersecting_coords, CH_triangs,
                         intersecting_bool, intersecting_total, border_poly);
+
+                std::cout << "----------" << '\n';
+                std::cout << " cavity_void_cells " << cavity_void_cells.size()
+                          << '\n';
+                std::cout << " new_cells_coordinates "
+                          << new_cells_coordinates.size() << '\n';
+                std::cout << " CH_triangs " << CH_triangs.size() << '\n';
+                std::cout << " cavity_void_coords " << cavity_void_coords.size()
+                          << '\n';
+                std::cout << " cavity_intersecting_coords "
+                          << cavity_intersecting_coords.size() << '\n';
+                std::cout << " border_poly " << border_poly.size() << '\n';
+
                 // Store result
                 output_volumes.push_back(
                     poly_vol + ndd_get_void_volume(cavity_void_coords));
@@ -134,12 +146,11 @@ void ndd_discard_CH_0(const NDD_Vector& in_coords,
     std::vector<Vector> CH_normals;
     std::vector<Point> CH_vtces;
     // Triangle normals point inwards. Only inside points will give a positive
-    // dot
-    // product against all normals
+    // dot product against all normals
     for (auto const& triangle : CH_triangs) {
         Vector v1 = triangle.vertex(1) - triangle.vertex(0);
         Vector v2 = triangle.vertex(2) - triangle.vertex(1);
-        Vector normal = CGAL::cross_product(v1, v2);
+        Vector normal = CGAL::cross_product(v2, v1);
         normal = normal / std::sqrt(CGAL::to_double(normal.squared_length()));
         CH_normals.push_back(normal);
         CH_vtces.push_back(triangle.vertex(1));
