@@ -1,25 +1,24 @@
 #include "ANAPO.hpp"
 namespace ANA {
-int get_parameters(
-    int ac, char *av[], std::string &input_struct_filename,
-    std::string &input_md_filename, std::string &include_CH_filename,
-    std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
-    std::string &AA_indices_proto, bool &triangulate_only_included_aas,
-    bool &atom_only, unsigned int &precision, unsigned int &clusters_min_size,
-    unsigned int &nbr_of_vertices_to_include, unsigned int &md_start,
-    unsigned int &md_step, unsigned int &md_end, double &minVR, double &maxSR,
-    double &max_probe, double &max_probe_length, double &sphere_size,
-    unsigned int &sphere_count, std::string &list_wall,
-    std::string &list_wall_separator, std::string &clusters_method,
-    std::string &only_side_ASA, std::string &ASA_method,
-    std::string &exclude_ca_for_ASA, std::string &pdbs_list_ndd_filename,
-    std::string &out_CH_filename, std::string &out_ndd_filename,
-    std::string &out_filename, std::string &output_type,
-    std::string &tool_check_CH, std::string &tool_pdb_to_ch,
-    std::string &sphere_proto, std::string &cylinder_proto,
-    std::string &prism_proto, std::string &tool_pdb_norm,
-    std::string &tool_aa_to_ca) {
-  // clang-format off
+int get_parameters(int ac, char* av[], std::string& input_struct_filename,
+    std::string& input_md_filename, std::string& include_CH_filename,
+    std::string& include_CH_aa_proto, std::string& include_CH_atom_proto,
+    std::string& AA_indices_proto, bool& triangulate_only_included_aas,
+    bool& atom_only, unsigned int& precision, unsigned int& clusters_min_size,
+    unsigned int& nbr_of_vertices_to_include, unsigned int& md_start,
+    unsigned int& md_step, unsigned int& md_end, double& minVR, double& maxSR,
+    double& max_probe, double& max_probe_length, double& sphere_size,
+    unsigned int& sphere_count, std::string& list_wall,
+    std::string& list_wall_separator, std::string& clusters_method,
+    std::string& only_side_ASA, std::string& ASA_method,
+    std::string& exclude_ca_for_ASA, std::string& pdbs_list_ndd_filename,
+    std::string& out_CH_filename, std::string& out_ndd_filename,
+    std::string& out_filename, std::string& out_vol, std::string& output_type,
+    std::string& tool_check_CH, std::string& tool_pdb_to_ch,
+    std::string& sphere_proto, std::string& cylinder_proto,
+    std::string& prism_proto, std::string& tool_pdb_norm,
+    std::string& tool_aa_to_ca) {
+    // clang-format off
   try {
     std::string config_filename;
     // Declare options that are allowed only in the command line
@@ -36,6 +35,8 @@ int get_parameters(
     ->default_value("ANA.cfg"), "Filename of the configuration file. Default: \"ANA.cfg\".\n")
     ("output_draw,o", PO::value<std::string>(&out_filename)
     ->default_value("none")->composing(),"Output filename.\n")
+    ("out_vol,v", PO::value<std::string>(&out_vol)
+    ->default_value("none")->composing(),"Volume output filename.\n")
     ("NDD_output,O", PO::value<std::string>(&out_ndd_filename)
     ->default_value("ANA_NDD.out")->composing(),
     "Name of the non Delaunay dynamics output file. Default: \"ANA_NDD.out\".\n")
@@ -55,7 +56,7 @@ int get_parameters(
     ("tool_aa_to_ca,T", PO::value<std::string>(&tool_aa_to_ca)->default_value("none")
       ->composing(), "Write Calpha atoms indices for the included residues "
       "to stdout.\n")
-    ("ver,v", "Output version number.\n")("help,h", "Output help message.\n");
+    ("ver", "Output version number.\n")("help,h", "Output help message.\n");
 
     // Input structures is a positional argument
     PO::positional_options_description input_struct;

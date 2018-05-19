@@ -8,10 +8,11 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     std::string& include_CH_atom_proto, std::string& sphere_proto,
     std::string& cylinder_proto, std::string& prism_proto,
     const std::string& include_CH_filename, std::string& out_filename,
-    const std::string& out_type, const bool triangulate_only_included_aas,
-    const bool atom_only, const double minVR, const double maxSR,
-    const double max_probe, const double max_probe_length,
-    const double sphere_size, const unsigned int& sphere_count,
+    const std::string& out_vol, const std::string& out_type,
+    const bool triangulate_only_included_aas, const bool atom_only,
+    const double minVR, const double maxSR, const double max_probe,
+    const double max_probe_length, const double sphere_size,
+    const unsigned int& sphere_count,
     const unsigned int nbr_of_vertices_to_include, const unsigned int precision,
     const unsigned int& md_start, const unsigned int& md_step,
     unsigned int& md_end) {
@@ -22,6 +23,7 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     if (md_end == 0) {
         md_end = in_traj.nsteps();
     }
+
     // Get ready.
     double poly_vol = 0;
     unsigned int frame_cnt = 1;
@@ -42,6 +44,7 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     Poly_Matrix polys_md(nbr_of_frames);
     std::vector<std::vector<unsigned int>> list_intersecting_total(
         nbr_of_frames);
+    ANA::volume_writer salida(out_vol);
 
     // Handle input trajectory file format.
     std::string in_md_format =
@@ -158,8 +161,8 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
                 precision, 1, frame_cnt, list_wall_separator);
         }
 
-        const double volume = ANA::get_void_volume(cavity_void_cells);
-        std::cout << frame_cnt << "\t" << volume + poly_vol << '\n';
+        std::cout << "check:  " << frame_cnt << '\n';
+        salida.write(cavity_void_cells, poly_vol, frame_cnt);
 
         // Get the number of vertices (atoms) to write, look for the highest nbr
         // of "voids_md" them, and store it. Then, store voids for later output.

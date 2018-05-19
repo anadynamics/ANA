@@ -13,6 +13,7 @@
 #include  <string>
 #include  <sstream>
 #include  <iterator>
+#include  <typeinfo>
 #include  <boost/program_options.hpp>
 #include  "chemfiles.hpp"
 
