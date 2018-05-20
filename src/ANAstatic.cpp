@@ -155,7 +155,7 @@ int static_ANA(const std::string& in_filename, std::string& AA_indices_proto,
         }
     }
 
-    write_output_volume(null_areas_mtx, poly_vol, out_vol);
+    ANA::write_output_volume(null_areas_mtx, poly_vol, out_vol);
 
     return 0;
 }

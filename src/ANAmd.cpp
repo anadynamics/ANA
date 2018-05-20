@@ -44,7 +44,6 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     Poly_Matrix polys_md(nbr_of_frames);
     std::vector<std::vector<unsigned int>> list_intersecting_total(
         nbr_of_frames);
-    ANA::volume_writer salida(out_vol);
 
     // Handle input trajectory file format.
     std::string in_md_format =
@@ -161,8 +160,7 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
                 precision, 1, frame_cnt, list_wall_separator);
         }
 
-        std::cout << "check:  " << frame_cnt << '\n';
-        salida.write(cavity_void_cells, poly_vol, frame_cnt);
+        ANA::write_output_volume(cavity_void_cells, poly_vol, frame_cnt);
 
         // Get the number of vertices (atoms) to write, look for the highest nbr
         // of "voids_md" them, and store it. Then, store voids for later output.

@@ -1974,117 +1974,64 @@ void write_wall_file(std::ofstream& pock_out_file,
 
     return;
 }
-
+// Open output volume file, if requested.
+void open_vol_file(std::string const& out_vol) {
+    if (out_vol != "none") {
+        out_vol_stream.open(out_vol);
+        if (!(out_vol_stream)) {
+            std::cerr << "Coulnd't open volume output file. Redirecting to "
+                         "stdout"
+                      << '\n';
+        }
+    }
+    return;
+}
 // Final function to output volume. NA_Matrix (static) version.
 void write_output_volume(NA_Matrix const& null_areas_vt_mt, double poly_vol,
     const std::string& out_vol) {
 
     unsigned int pock_cnt = 1;
-    if (out_vol == "none") {
+    if (out_vol_stream.is_open()) {
         for (const NA_Vector& null_areas_vtor : null_areas_vt_mt) {
-            double volume = ANA::get_void_volume(null_areas_vtor);
-            std::cout << "Pocket " << pock_cnt << "\t\t" << volume + poly_vol
-                      << '\n';
+            double const volume = ANA::get_void_volume(null_areas_vtor);
+            out_vol_stream << "Pocket " << pock_cnt << '\t' << volume + poly_vol
+                           << '\n';
             ++pock_cnt;
         }
     } else {
-        std::ofstream out_vol_stream(out_vol);
-        if (out_vol_stream) {
-            for (const NA_Vector& null_areas_vtor : null_areas_vt_mt) {
-                double volume = ANA::get_void_volume(null_areas_vtor);
-                out_vol_stream << "Pocket " << pock_cnt << "\t\t"
-                               << volume + poly_vol << '\n';
-                ++pock_cnt;
-            }
-        } else {
-            std::cerr
-                << "Coulnd't open volume output file. Redirecting to stdout "
-                << '\n';
-            for (const NA_Vector& null_areas_vtor : null_areas_vt_mt) {
-                double volume = ANA::get_void_volume(null_areas_vtor);
-                std::cout << "Pocket " << pock_cnt << "\t\t"
-                          << volume + poly_vol << '\n';
-                ++pock_cnt;
-            }
+        for (const NA_Vector& null_areas_vtor : null_areas_vt_mt) {
+            double const volume = ANA::get_void_volume(null_areas_vtor);
+            std::cout << "Pocket " << '\t' << volume + poly_vol << '\n';
+            ++pock_cnt;
         }
     }
+    return;
 }
 
 // Final function to output volume. NA_Vector (NDD) version.
 void write_output_volume(NA_Vector const& null_areas_vtor,
     const double poly_vol, const std::string& out_vol) {
 
-    if (out_vol == "none") {
-        double volume = ANA::get_void_volume(null_areas_vtor);
-        std::cout << "Pocket "
-                  << "\t\t" << volume + poly_vol << '\n';
-    } else {
-        std::ofstream out_vol_stream(out_vol);
-        if (out_vol_stream) {
-            double volume = ANA::get_void_volume(null_areas_vtor);
-            out_vol_stream << "Pocket "
-                           << "\t\t" << volume + poly_vol << '\n';
-        } else {
-            std::cerr
-                << "Coulnd't open volume output file. Redirecting to stdout "
-                << '\n';
-            double volume = ANA::get_void_volume(null_areas_vtor);
-            std::cout << "Pocket "
-                      << "\t\t" << volume + poly_vol << '\n';
-        }
-    }
-}
-
-// Final function to output volume. NA_Vector (MD) version.
-void write_output_volume(NA_Vector const& null_areas_vtor,
-    const double poly_vol, const unsigned int frame_cnt,
-    const std::string& out_vol) {
-
-    if (out_vol == "none") {
-        double volume = ANA::get_void_volume(null_areas_vtor);
-        std::cout << frame_cnt << "\t\t" << volume + poly_vol << '\n';
-    } else {
-        if (frame_cnt == 1) {
-            static std::ofstream out_vol_stream(out_vol);
-        } else {
-            if (out_vol_stream) {
-                double volume = ANA::get_void_volume(null_areas_vtor);
-                out_vol_stream << frame_cnt << "\t\t" << volume + poly_vol
-                               << '\n';
-            } else {
-                std::cerr << "Coulnd't open volume output file. Redirecting to "
-                             "stdout "
-                          << '\n';
-                double volume = ANA::get_void_volume(null_areas_vtor);
-                std::cout << frame_cnt << "\t\t" << volume + poly_vol << '\n';
-            }
-        }
-    }
-}
-// Class for writing final volume
-volume_writer::volume_writer(std::string const& out_vol) {
-    if (out_vol != "none") {
-        out_vol_stream.open(out_vol);
-        if (!(out_vol_stream)) {
-            std::cerr << "Coulnd't open volume output file. Redirecting to "
-                         "stdout "
-                      << '\n';
-        }
-    }
-}
-// Write volume to output
-void volume_writer::write(NA_Vector const& null_areas_vtor,
-    double const poly_vol, unsigned int const frame_cnt) {
-
     double const volume = ANA::get_void_volume(null_areas_vtor);
-    if (out_vol_stream) {
-        out_vol_stream << "Frame " << frame_cnt << "\t\t" << volume + poly_vol
-                       << '\n';
+    if (out_vol_stream.is_open()) {
+        out_vol_stream << "Pocket " << '\t' << volume + poly_vol << '\n';
     } else {
-        std::cout << "Frame " << frame_cnt << "\t\t" << volume + poly_vol
-                  << '\n';
+        std::cout << "Pocket " << '\t' << volume + poly_vol << '\n';
     }
     return;
 }
 
+// Final function to output volume. NA_Vector (MD) version.
+void write_output_volume(NA_Vector const& null_areas_vtor,
+    double const poly_vol, unsigned int const frame_cnt) {
+
+    double const volume = ANA::get_void_volume(null_areas_vtor);
+    if (out_vol_stream.is_open()) {
+        out_vol_stream << "Frame " << frame_cnt << '\t' << volume + poly_vol
+                       << '\n';
+    } else {
+        std::cout << "Frame " << frame_cnt << '\t' << volume + poly_vol << '\n';
+    }
+    return;
+}
 } // namespace ANA

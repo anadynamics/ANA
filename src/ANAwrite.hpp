@@ -168,17 +168,10 @@ void write_output_volume(NA_Vector const& null_areas_vt_mt,
 void write_output_volume(NA_Vector const& null_areas_vtor,
     const double poly_vol, const unsigned int frame_cnt,
     const std::string& out_vol);
-// Class for writing final volume
-class volume_writer {
-  public:
-    volume_writer(std::string const& out_vol);
-
-    void write(NA_Vector const& null_areas_vtor, double const poly_vol,
-        unsigned int const frame_cnt);
-
-  private:
-    std::ofstream out_vol_stream;
-    std::string sasa = "sas";
-};
+// Open output volume file, if requested.
+void open_vol_file(std::string const& out_vol);
+// Final function to output volume. NA_Vector (MD) version.
+void write_output_volume(NA_Vector const& null_areas_vtor,
+    double const poly_vol, unsigned int const frame_cnt);
 }
 #endif

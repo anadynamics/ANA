@@ -151,6 +151,8 @@ int main(int argc, char* argv[]) {
     /////////////////////////////// end tools
     ///////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////
+    // Get output volume file ready, if requested.
+    ANA::open_vol_file(out_vol);
 
     if (in_md_filename == "none") {
         if (pdbs_list_ndd_filename == "none") {
