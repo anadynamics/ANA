@@ -5,7 +5,10 @@
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-#include "ANAincludes.hpp"
+#include "ANAstatic.hpp"
+#include "ANAmd.hpp"
+#include "ANAndd.hpp"
+#include "ANAPO.hpp"
 
 int main(int argc, char* argv[]) {
     std::string in_filename, AA_indices_proto, exclude_ca_for_ASA_indices_proto,

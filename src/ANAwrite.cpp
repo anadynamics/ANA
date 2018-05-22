@@ -1,25 +1,6 @@
 #include "ANAwrite.hpp"
 namespace ANA {
-namespace NDD {
-extern std::ofstream out_vol_stream;
-// Write file with volumes of each input PDB
-inline void ndd_write_out_file(
-    const std::vector<double>& output_volumes, const std::string& out_file) {
-    std::ofstream output(out_file);
-    int i = 1;
-
-    if (output.is_open()) {
-        output << "Frame\tVolume" << '\n';
-        for (double volume : output_volumes) {
-            output << i << "\t" << volume << '\n';
-            ++i;
-        }
-    } else
-        throw std::runtime_error("Unable to open output file for NDD");
-    return;
-}
-} // namespace NDD
-
+std::ofstream out_vol_stream;
 // Draw tetrahedrons in pymol CGO objects.
 void draw_raw_cgo(const NA_Matrix& list_of_pockets, const Poly_Vector& polys,
     std::string& out_script_template, const std::string pdb_filename,
@@ -54,7 +35,6 @@ void draw_raw_cgo(const NA_Matrix& list_of_pockets, const Poly_Vector& polys,
 
     return;
 }
-
 // Draw cells as tetrahedrons in pymol CGO objects
 void draw_raw_cgo(std::ofstream& pymol_script, const NA_Vector& cells_to_draw) {
 

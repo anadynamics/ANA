@@ -1,5 +1,9 @@
 #ifndef ANANDD
 #define ANANDD
+#include  "ANAincludes.cpp"
+#include  "ANAread.hpp"
+#include  "ANAwrite.hpp"
+#include  "ANAutils.hpp"
 // prototype functions
 namespace ANA {
 // Main function for NDD version of ANA.

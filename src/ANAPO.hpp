@@ -1,5 +1,8 @@
 #ifndef ANAPO
 #define ANAPO
+#include  <iostream>
+#include  <fstream>
+#include  <boost/program_options.hpp>
 namespace ANA {
 namespace PO = boost::program_options;
 using namespace std;

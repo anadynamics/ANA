@@ -1,5 +1,7 @@
 #ifndef ANAREAD
 #define ANAREAD
+#include  "ANAincludes.cpp"
+
 // prototype functions
 namespace ANA {
 namespace NDD {
@@ -11,7 +13,7 @@ void ndd_read_PDB_get_cells(const std::string &filename,
 // NDD Specific function for PDB input. Hi precision method
 void ndd_read_PDB_get_cells(const std::string &filename,
                             const NDD_IVector &in_void_cells_indices,
-                            std::vector<unsigned int> &include_CH_atoms,
+                            const std::vector<unsigned int> &include_CH_atoms,
                             NDD_Vector &output_cells,
                             Triang_Vector &CH_triangs);
 }

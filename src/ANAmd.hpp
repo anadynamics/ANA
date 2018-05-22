@@ -1,5 +1,9 @@
 #ifndef ANAMD
 #define ANAMD
+#include  "ANAincludes.cpp"
+#include  "ANAread.hpp"
+#include  "ANAwrite.hpp"
+#include  "ANAutils.hpp"
 namespace ANA {
 // Main function for dynamic version of ANA.
 int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,

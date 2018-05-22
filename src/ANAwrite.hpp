@@ -1,12 +1,10 @@
 #ifndef ANAWRITE
 #define ANAWRITE
+#include "ANAincludes.cpp"
+#include "ANAutils.hpp"
+
 namespace ANA {
-namespace NDD {
-// Write file with volumes of each input PDB
-void ndd_write_out_file(
-    const std::vector<double>& output_volumes, const std::string& out_file);
-}
-std::ofstream out_vol_stream;
+extern std::ofstream out_vol_stream;
 // Draw pockets in pymol CGO objects
 void draw_raw_cgo(const NA_Matrix& list_of_pockets, const Poly_Vector& polys,
     std::string& out_script_template, const std::string pdb_filename,
@@ -39,8 +37,8 @@ void draw_raw_PDB(const NA_Vector& list_of_pockets, const Poly_Vector& polys,
 void draw_raw_PDB(const NA_Vector& pocket, const Poly_Vector& polys,
     std::string out_filename, const unsigned int frame_cnt);
 // Draw pockets in .PDB format. MD version, whole trajectory.
-void draw_raw_PDB(const NA_Matrix& list_of_pockets,
-    const Poly_Matrix& list_of_polys, std::string out_filename,
+void draw_raw_PDB(const NDD_Matrix& list_of_pockets,
+    const Poly_Matrix& list_of_polys, std::string& out_filename,
     const unsigned int max_atom_cnt);
 // Draw pockets as dots in a PDB. MD version, whole trajectory.
 void draw_grid_pdb(const NDD_Matrix& list_of_pockets,
@@ -174,4 +172,24 @@ void open_vol_file(std::string const& out_vol);
 void write_output_volume(NA_Vector const& null_areas_vtor,
     double const poly_vol, unsigned int const frame_cnt);
 }
+namespace ANA {
+namespace NDD {
+// Write file with volumes of each input PDB
+inline void ndd_write_out_file(
+    const std::vector<double>& output_volumes, const std::string& out_file) {
+    std::ofstream output(out_file);
+    int i = 1;
+
+    if (output.is_open()) {
+        output << "Frame\tVolume" << '\n';
+        for (double volume : output_volumes) {
+            output << i << "\t" << volume << '\n';
+            ++i;
+        }
+    } else
+        throw std::runtime_error("Unable to open output file for NDD");
+    return;
+}
+} // namespace NDD
+} // namespace ANA
 #endif
