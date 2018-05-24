@@ -1,4 +1,4 @@
-#include "ANAwrite.hpp"
+#include <ANA/ANAwrite.hpp>
 namespace ANA {
 std::ofstream out_vol_stream;
 // Draw tetrahedrons in pymol CGO objects.

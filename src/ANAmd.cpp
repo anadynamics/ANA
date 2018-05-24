@@ -1,4 +1,4 @@
-#include "ANAmd.hpp"
+#include <ANA/ANAmd.hpp>
 namespace ANA {
 int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     std::string& AA_indices_proto, const std::string& ASA_method,

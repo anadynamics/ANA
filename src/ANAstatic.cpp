@@ -1,4 +1,4 @@
-#include "ANAstatic.hpp"
+#include <ANA/ANAstatic.hpp>
 namespace ANA {
 int static_ANA(const std::string& in_filename, std::string& AA_indices_proto,
     const std::string& ASA_method, const std::string& only_side_ASA,

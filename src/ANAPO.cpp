@@ -1,4 +1,4 @@
-#include "ANAPO.hpp"
+#include <ANA/ANAPO.hpp>
 namespace ANA {
 int get_parameters(int ac, char* av[], std::string& input_struct_filename,
     std::string& input_md_filename, std::string& include_CH_filename,

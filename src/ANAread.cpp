@@ -1,4 +1,4 @@
-#include "ANAread.hpp"
+#include <ANA/ANAread.hpp>
 namespace ANA {
 namespace NDD {
 // NDD Specific function for PDB input

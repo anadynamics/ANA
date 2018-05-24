@@ -1,4 +1,4 @@
-#include "ANAndd.hpp"
+#include <ANA/ANAndd.hpp>
 namespace ANA {
 int NDD_ANA(const std::string& in_filename, std::string& AA_indices_proto,
     const std::string& only_side_ASA, const std::string& ASA_method,

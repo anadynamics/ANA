@@ -1,4 +1,4 @@
-#include "ANAutils.hpp"
+#include <ANA/ANAutils.hpp>
 namespace ANA {
 // Cluster neighbouring cells. CGAL neighbouring method
 void cluster_cells_cgal(const NA_Vector& input_cells, NA_Matrix& output_cells,
