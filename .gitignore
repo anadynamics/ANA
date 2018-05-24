@@ -1,6 +1,6 @@
-ANA
-Makefile
 .clang-format
 docs
 *png
+ANA
 *o
+*d
