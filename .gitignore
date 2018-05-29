@@ -1,6 +1,5 @@
 .clang-format
-docs
-*png
+*.png
+*.o
+*.d
 ANA
-*o
-*d
