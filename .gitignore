@@ -2,4 +2,6 @@
 *.png
 *.o
 *.d
-ANA
+bin
+obj
+dep
