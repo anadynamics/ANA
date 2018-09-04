@@ -241,7 +241,7 @@ for i = 1:n_modes
     # Desplazo
     const out_frm = displaceAA(in_frm, aa, aa_3, modo);
     # Y guardo
-    pdb_names[i] = string(i, "_", suffix, ".pdb")
+    pdb_names[i] = joinpath(pwd(), string(i, "_", suffix, ".pdb"))
     out_trj = Trajectory(pdb_names[i], 'w')
     write(out_trj, out_frm)
 end

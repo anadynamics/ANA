@@ -31,10 +31,10 @@ ANA: $(Objects)
 
 clean-fail:
 	rm *.o *.d ANA
-	rm -r bin dep dir
+	rm -r bin dep obj
 
 clean:
-	rm -r bin dep dir
+	rm -r bin dep obj
 
 build_msg:
 	@echo "\n Building ANA \n"

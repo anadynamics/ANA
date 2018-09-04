@@ -31,6 +31,9 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     const auto nbr_of_frames =
         ceil((md_end - md_start + 1) / static_cast<float>(md_step));
 
+
+    
+
     std::vector<unsigned int> atom_cnt_md(nbr_of_frames);
     std::vector<unsigned int> CA_indices, AA_indices, include_CH_atoms;
     std::vector<unsigned int> hetatm_atoms;
