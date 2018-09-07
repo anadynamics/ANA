@@ -8,12 +8,13 @@
 using Chemfiles
 using StaticArrays
 using ArgParse
+using DelimitedFiles
 ##########
 # functions
 ##########
 function read_ptraj_modes(filename, nmodes::Int64=0, norma::Bool=true)
     modes_text = readdlm(filename, skipstart=0, skipblanks=true, comments=true,
-        comment_char='\*')
+        comment_char='*')
 
     if nmodes == 0
         nmodes = modes_text[1, 5]
@@ -52,21 +53,21 @@ end
 #########
 function displaceAA(in_frm, aa, aa_3, in_vec)
     # Preparo variables
-    const in_top = Topology(in_frm)
+    in_top = Topology(in_frm)
     natoms = convert(Int64, size(in_top))
-    const in_xyz = positions(in_frm)
+    in_xyz = positions(in_frm)
 
     # Determino orden de residuos (hay q actualizar el Julia Chemfiles)
     tmp = Array{Int64}(aa)
     ids = Array{Int64}(aa)
     [ ids[i+1] = convert(Int64, id((Residue(in_top, i)))) for i = 0:aa-1 ]
-    const idx = sortperm(ids)
+    idx = sortperm(ids)
     # Determino el nro de atomos de c/ aminoácido
     [ tmp[i+1] = size(Residue(in_top, i)) for i = 0:aa-1 ]
-    const natom_aa = tmp[idx]
+    natom_aa = tmp[idx]
 
     # Paso el vector columna de tamaño 1xaa_3 a 3xaa
-    const vector = reshape(in_vec, 3, aa)
+    vector = reshape(in_vec, 3, aa)
     # Adapto el vector p/ darle la misma forma q la matriz de coordenadas
     sum_mat = Array{Float64}(3, natoms)
     cursor = 0
@@ -76,7 +77,7 @@ function displaceAA(in_frm, aa, aa_3, in_vec)
             cursor = natom_aa[i]
             continue
         end
-        const rango = collect(cursor+1:cursor + natom_aa[i])
+        rango = collect(cursor+1:cursor + natom_aa[i])
         sum_mat[:, rango] = repmat(vector[:, i], 1, natom_aa[i])
         cursor += natom_aa[i]
     end
@@ -173,8 +174,8 @@ const in_top = Topology(in_frm)
 const aa = convert(Int64, count_residues(in_top))
 const aa_3 = aa * 3
 # Initialize modes vectors
-in_modes = Array{Float64, 2}(aa_3, aa)
-in_evals = Array{Float64, 1}(aa_3)
+in_modes = Array{Float64, 2}(undef, aa_3, aa)
+in_evals = Array{Float64, 1}(undef, aa_3)
 if (amber_modes)
     try
         in_modes, in_evals = read_ptraj_modes(modes_filename)
@@ -234,7 +235,7 @@ else
 end
 
 # Ahora desplazo
-pdb_names = Array{String}(n_modes)
+pdb_names = Array{String}(undef, n_modes)
 for i = 1:n_modes
     # Escalo vector
     const modo = in_modes[:, i] .* mul ./ weights[i]
