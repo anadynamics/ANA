@@ -5,52 +5,11 @@
 # Calpha only.
 # by https://github.com/pgbarletta
 ###############################################################################
-using Chemfiles
+using Chemfiles, JUMD
 using StaticArrays
 using ArgParse
-using DelimitedFiles
-##########
-# functions
-##########
-function read_ptraj_modes(filename, nmodes::Int64=0, norma::Bool=true)
-    modes_text = readdlm(filename, skipstart=0, skipblanks=true, comments=true,
-        comment_char='*')
+using DelimitedFiles, LinearAlgebra, FileIO
 
-    if nmodes == 0
-        nmodes = modes_text[1, 5]
-    end
-    modes_elements = modes_text[2, 1]
-
-    ncoords = convert(Int64, modes_elements)
-    lines = ceil(Int64, ncoords/7)
-    rest = convert(Int64, ncoords % 7)
-
-    eval = Array{Float64}(nmodes);
-    mode = Array{Float64}(ncoords, nmodes);
-    temp1 = Array{Float64}(ncoords, 1);
-    temp2 = Array{Float64}(ncoords+(7-rest));
-
-    j=lines + 1 + 2 # 1 p/ q lea la prox linea 2 por el header
-    for i=1:nmodes
-        eval[i] = modes_text[j, 2]
-        temp = permutedims(modes_text[(j+1):(lines+j), :], [2, 1])
-        temp2 = reshape(temp, ncoords+(7-rest))
-        for k=(rest+1):7
-            pop!(temp2)
-        end
-        mode[:, i] = temp2
-        j = j + lines + 1
-    end
-
-    if norma == true
-        for i=1:nmodes
-            mode[: ,i] = mode[:, i] / norm(mode[:, i])
-        end
-    end
-
-    return mode, eval
-end
-#########
 function displaceAA(in_frm, aa, aa_3, in_vec)
     # Preparo variables
     in_top = Topology(in_frm)
@@ -58,8 +17,8 @@ function displaceAA(in_frm, aa, aa_3, in_vec)
     in_xyz = positions(in_frm)
 
     # Determino orden de residuos (hay q actualizar el Julia Chemfiles)
-    tmp = Array{Int64}(aa)
-    ids = Array{Int64}(aa)
+    tmp = Array{Int64}(undef, aa)
+    ids = Array{Int64}(undef, aa)
     [ ids[i+1] = convert(Int64, id((Residue(in_top, i)))) for i = 0:aa-1 ]
     idx = sortperm(ids)
     # Determino el nro de atomos de c/ aminoácido
@@ -69,7 +28,7 @@ function displaceAA(in_frm, aa, aa_3, in_vec)
     # Paso el vector columna de tamaño 1xaa_3 a 3xaa
     vector = reshape(in_vec, 3, aa)
     # Adapto el vector p/ darle la misma forma q la matriz de coordenadas
-    sum_mat = Array{Float64}(3, natoms)
+    sum_mat = Array{Float64}(undef, 3, natoms)
     cursor = 0
     for i = 1:aa
         if i == 1
@@ -94,29 +53,7 @@ function displaceAA(in_frm, aa, aa_3, in_vec)
     end
     return out_frm
 end
-#########
-function displaceAtoms(mod_pdb, vector1, multiplier)
-  # Preparo variables
-    pdb = copy(mod_pdb)
-    struct_xyz = coordinatesmatrix(pdb)
-#    new_struct_xyz = copy(struct_xyz)
-    vector = Array{Float64}(1, 3)
 
-    # Adapto el vector p/ darle la misma forma q la matriz de coordenadas
-    for i = 1:3:length(vector1)
-        if i== 1
-            vector = reshape(vector1[i:i+2], 1, 3)
-            continue
-        end
-        vector = vcat(vector, reshape(vector1[i:i+2], 1, 3))
-    end
-
-    # Listo, ahora puedo mover el pdb
-    new_struct_xyz  = struct_xyz + vector .* multiplier
-    pdb = change_coordinates(pdb, new_struct_xyz);
-   return pdb
-end
-#########
 # Arg Parse settings
 s = ArgParseSettings()
 @add_arg_table s begin
@@ -154,7 +91,7 @@ end
 
 # Read arguments from console
 parsed_args = parse_args(ARGS, s)
-args = Array{Any, 1}(0)
+args = Array{Any, 1}(undef, 0)
 for (arg, val) in parsed_args
     arg = Symbol(arg)
     @eval (($arg) = ($val))
@@ -178,9 +115,10 @@ in_modes = Array{Float64, 2}(undef, aa_3, aa)
 in_evals = Array{Float64, 1}(undef, aa_3)
 if (amber_modes)
     try
-        in_modes, in_evals = read_ptraj_modes(modes_filename)
+        in_modes, in_evals = JUMD.readPtrajModes(modes_filename)
     catch e
-        println(modes_filename, " error:")
+        println("")
+        println("Error when reading Amber modes: ", modes_filename)
         error(e)
     end
 else

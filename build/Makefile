@@ -1,7 +1,8 @@
 CXX = /usr/bin/g++
-CXXFLAGS = -g -O3 -std=c++14 -Wall -isystem -rdynamic
-LinOpt = -L/usr/lib -L/usr/local/lib -L../chemfiles/install/lib -lchemfiles -lnetcdf -lCGAL -lboost_program_options -lmpfr -lgmp -lm
-IncOpt = -I../chemfiles/install/include -I../include
+CXXFLAGS = -g -O3 -std=c++14 -Wall
+#LinOpt = -L/usr/lib -L/usr/local/lib -L../chemfiles/build/install/lib -lchemfiles -lnetcdf -lCGAL -lboost_program_options -lmpfr -lgmp -lm
+LinOpt = ../chemfiles/build/install/lib/libchemfiles.a -lnetcdf -lCGAL -lboost_program_options -lmpfr -lgmp -lm
+IncOpt = -I../chemfiles/build/install/include -I../include
 
 SrcDir = ../src
 IncDir = ../include/ANA
@@ -20,7 +21,7 @@ Dependencies := $(Sources:$(SrcDir)/%.cpp=%.d)
 all: build_msg ANA
 
 ANA: $(Objects)
-	$(CXX) $^ -o $@ $(LinOpt) $(CXXFLAGS) 
+	$(CXX) $^ $(CXXFLAGS) -o $@ $(LinOpt)
 	mkdir bin dep obj
 	mv *.o obj
 	mv *.d dep
