@@ -151,6 +151,7 @@ for i = 1:n_modes
     pdb_names[i] = joinpath(pwd(), string(i, "_", suffix, ".pdb"))
     out_trj = Trajectory(pdb_names[i], 'w')
     write(out_trj, out_frm)
+    close(out_trj)
 end
 
 # Write in_ndd file
