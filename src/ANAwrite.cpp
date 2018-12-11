@@ -2,9 +2,9 @@
 namespace ANA {
 std::ofstream out_vol_stream;
 // Draw tetrahedrons in pymol CGO objects.
-void draw_raw_cgo(const NA_Matrix& list_of_pockets, const Poly_Vector& polys,
-    std::string& out_script_template, const std::string pdb_filename,
-    const unsigned int precision) {
+void draw_raw_cgo(const NA_Matrix &list_of_pockets, const Poly_Vector &polys,
+    std::string &out_script_template, const std::string pdb_filename,
+    unsigned int const precision) {
 
     unsigned int cont = 1;
     std::string model_template = out_script_template;
@@ -14,7 +14,7 @@ void draw_raw_cgo(const NA_Matrix& list_of_pockets, const Poly_Vector& polys,
     std::ofstream pymol_script(out_script_template);
     header_script_pymol(pymol_script, pdb_filename);
 
-    for (const NA_Vector& pocket : list_of_pockets) {
+    for (NA_Vector const &pocket : list_of_pockets) {
         model_name = model_template;
         model_name.append(std::to_string(cont));
         pymol_script << model_name << " = [" << '\n';
@@ -36,9 +36,9 @@ void draw_raw_cgo(const NA_Matrix& list_of_pockets, const Poly_Vector& polys,
     return;
 }
 // Draw cells as tetrahedrons in pymol CGO objects
-void draw_raw_cgo(std::ofstream& pymol_script, const NA_Vector& cells_to_draw) {
+void draw_raw_cgo(std::ofstream &pymol_script, NA_Vector const &cells_to_draw) {
 
-    for (const Finite_cells_iterator& ac_ite : cells_to_draw) {
+    for (Finite_cells_iterator const &ac_ite : cells_to_draw) {
         pymol_script << "# new cell" << '\n';
         pymol_script << "\tVERTEX,\t" << ac_ite->vertex(0)->point().x() << ",\t"
                      << ac_ite->vertex(0)->point().y() << ",\t"
@@ -92,8 +92,8 @@ void draw_raw_cgo(std::ofstream& pymol_script, const NA_Vector& cells_to_draw) {
 }
 
 // Draw a vector of polyhedrons as CGO pymol tetrahedrons
-void draw_raw_polyhedrons(std::ofstream& pymol_script,
-    const Poly_Vector& CH_vec, const std::string& model_template) {
+void draw_raw_polyhedrons(std::ofstream &pymol_script,
+    const Poly_Vector &CH_vec, const std::string &model_template) {
 
     std::string model_name = model_template;
     model_name.append("_border_1");
@@ -103,7 +103,7 @@ void draw_raw_polyhedrons(std::ofstream& pymol_script,
     pymol_script << "\tLINEWIDTH, 1.0," << '\n';
     pymol_script << "\tBEGIN, LINES," << '\n';
 
-    for (const auto& CH : CH_vec) {
+    for (const auto &CH : CH_vec) {
         P_Facet_const_iterator fc_ite, fc_ite_end = CH.facets_end();
         pymol_script << "# new polyhedron" << '\n';
 
@@ -134,12 +134,12 @@ void draw_raw_polyhedrons(std::ofstream& pymol_script,
 }
 
 // Draw pockets as points in pymol CGO objects
-void draw_grid_cgo(const NA_Matrix& list_of_pockets,
-    const std::vector<std::array<double, 3>>& in_vtces_radii,
-    const std::vector<unsigned int>& intersecting_total,
-    const Poly_Vector& polys, std::string& out_script_template,
-    const std::string pdb_filename, const double sphere_size,
-    const unsigned int sphere_count, const unsigned int precision) {
+void draw_grid_cgo(const NA_Matrix &list_of_pockets,
+    const std::vector<std::array<double, 3>> &in_vtces_radii,
+    const std::vector<unsigned int> &intersecting_total,
+    const Poly_Vector &polys, std::string &out_script_template,
+    const std::string pdb_filename, double const sphere_size,
+    unsigned int const sphere_count, unsigned int const precision) {
 
     unsigned int cont = 1;
     std::string model_template = out_script_template;
@@ -149,7 +149,7 @@ void draw_grid_cgo(const NA_Matrix& list_of_pockets,
     std::ofstream pymol_script(out_script_template);
     header_script_pymol(pymol_script, pdb_filename);
 
-    for (const NA_Vector& pocket : list_of_pockets) {
+    for (NA_Vector const &pocket : list_of_pockets) {
         model_name = model_template;
         model_name.append(std::to_string(cont));
         pymol_script << model_name << " = [" << '\n';
@@ -180,22 +180,22 @@ void draw_grid_cgo(const NA_Matrix& list_of_pockets,
 }
 
 // Draw cells as points in pymol CGO objects
-void draw_grid_cgo(std::ofstream& pymol_script, const NA_Vector& cells_to_draw,
-    const double sphere_size, const unsigned int sphere_count) {
+void draw_grid_cgo(std::ofstream &pymol_script, NA_Vector const &cells_to_draw,
+    double const sphere_size, unsigned int const sphere_count) {
 
     unsigned int n = sphere_count;
-    const unsigned int corner = (int)(sphere_count / 3);
+    unsigned int const corner = (int)(sphere_count / 3);
 
-    for (const auto& ac_ite : cells_to_draw) {
+    for (const auto &ac_ite : cells_to_draw) {
         Point p0 = ac_ite->vertex(0)->point();
         Point p1 = ac_ite->vertex(1)->point();
         Point p2 = ac_ite->vertex(2)->point();
         Point p3 = ac_ite->vertex(3)->point();
 
-        const double VdW_0 = ac_ite->vertex(0)->info().GetRadii();
-        const double VdW_1 = ac_ite->vertex(1)->info().GetRadii();
-        const double VdW_2 = ac_ite->vertex(2)->info().GetRadii();
-        const double VdW_3 = ac_ite->vertex(3)->info().GetRadii();
+        double const VdW_0 = ac_ite->vertex(0)->info().GetRadii();
+        double const VdW_1 = ac_ite->vertex(1)->info().GetRadii();
+        double const VdW_2 = ac_ite->vertex(2)->info().GetRadii();
+        double const VdW_3 = ac_ite->vertex(3)->info().GetRadii();
 
         std::array<double, 3> p0_ = {CGAL::to_double(p0.x()),
             CGAL::to_double(p0.y()), CGAL::to_double(p0.z())};
@@ -221,28 +221,28 @@ void draw_grid_cgo(std::ofstream& pymol_script, const NA_Vector& cells_to_draw,
 
                     if (i <= corner || j <= corner || k <= corner) {
                         // Check if any sphere is in conflict with a vtx
-                        const double dist0 =
+                        double const dist0 =
                             std::sqrt(pow((point[0] - p0_[0]), 2.0) +
                                       pow((point[1] - p0_[1]), 2.0) +
                                       pow((point[2] - p0_[2]), 2.0));
                         if (dist0 < VdW_0 + sphere_size) {
                             continue;
                         }
-                        const double dist1 =
+                        double const dist1 =
                             std::sqrt(pow((point[0] - p1_[0]), 2.0) +
                                       pow((point[1] - p1_[1]), 2.0) +
                                       pow((point[2] - p1_[2]), 2.0));
                         if (dist1 < VdW_1 + sphere_size) {
                             continue;
                         }
-                        const double dist2 =
+                        double const dist2 =
                             std::sqrt(pow((point[0] - p2_[0]), 2.0) +
                                       pow((point[1] - p2_[1]), 2.0) +
                                       pow((point[2] - p2_[2]), 2.0));
                         if (dist2 < VdW_2 + sphere_size) {
                             continue;
                         }
-                        const double dist3 =
+                        double const dist3 =
                             std::sqrt(pow((point[0] - p3_[0]), 2.0) +
                                       pow((point[1] - p3_[1]), 2.0) +
                                       pow((point[2] - p3_[2]), 2.0));
@@ -274,14 +274,14 @@ void draw_grid_cgo(std::ofstream& pymol_script, const NA_Vector& cells_to_draw,
 // Waals radius of the vertex 0, 1 and 2 of the original intersecting cell are
 // stored in the 0, 1 and 2 elements of the corresponding array. That is, in the
 // case of an intersecting cell with 3 vtces inside the included area.
-void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
-    const std::vector<std::array<double, 3>>& in_vtces_radii,
-    const std::vector<unsigned int>& intersecting_total,
-    const Poly_Vector& CH_vec, const double sphere_size,
-    const double sphere_count) {
+void draw_grid_cgo_polyhedrons(std::ofstream &pymol_script,
+    const std::vector<std::array<double, 3>> &in_vtces_radii,
+    const std::vector<unsigned int> &intersecting_total,
+    const Poly_Vector &CH_vec, double const sphere_size,
+    double const sphere_count) {
 
     unsigned int n = sphere_count;
-    const unsigned int corner = (int)(sphere_count / 3);
+    unsigned int const corner = (int)(sphere_count / 3);
 
     for (unsigned int ii = 0; ii < CH_vec.size(); ++ii) {
 
@@ -323,7 +323,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
 
                         if (i <= corner || j <= corner || k <= corner) {
                             // Check if any sphere is in conflict with a vtx
-                            const double dist0 =
+                            double const dist0 =
                                 std::sqrt(pow((point[0] - p0_[0]), 2.0) +
                                           pow((point[1] - p0_[1]), 2.0) +
                                           pow((point[2] - p0_[2]), 2.0));
@@ -384,7 +384,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                 switch (jj) {
                                 case 0: {
                                     // 1st and 4th vtces correspond to atoms
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -393,7 +393,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                         continue;
                                     }
 
-                                    const double dist1 = std::sqrt(
+                                    double const dist1 = std::sqrt(
                                         pow((point[0] - p3_[0]), 2.0) +
                                         pow((point[1] - p3_[1]), 2.0) +
                                         pow((point[2] - p3_[2]), 2.0));
@@ -405,7 +405,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                 }
                                 case 1: {
                                     // 1st vtx corresponds to an atom
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -416,7 +416,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                 }
                                 case 2: {
                                     // 1st vtx corresponds to an atom
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -483,7 +483,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                 case 0: {
                                     // 1st, 2nd and 3rd vtces correspond to
                                     // atoms
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -492,7 +492,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                         continue;
                                     }
 
-                                    const double dist1 = std::sqrt(
+                                    double const dist1 = std::sqrt(
                                         pow((point[0] - p1_[0]), 2.0) +
                                         pow((point[1] - p1_[1]), 2.0) +
                                         pow((point[2] - p1_[2]), 2.0));
@@ -501,7 +501,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                         continue;
                                     }
 
-                                    const double dist2 = std::sqrt(
+                                    double const dist2 = std::sqrt(
                                         pow((point[0] - p2_[0]), 2.0) +
                                         pow((point[1] - p2_[1]), 2.0) +
                                         pow((point[2] - p2_[2]), 2.0));
@@ -513,7 +513,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                 }
                                 case 1: {
                                     // 1st, and 2nd vtces correspond to atoms
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -521,7 +521,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                         in_vtces_radii[ii][0] + sphere_size) {
                                         continue;
                                     }
-                                    const double dist1 = std::sqrt(
+                                    double const dist1 = std::sqrt(
                                         pow((point[0] - p1_[0]), 2.0) +
                                         pow((point[1] - p1_[1]), 2.0) +
                                         pow((point[2] - p1_[2]), 2.0));
@@ -533,7 +533,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
                                 }
                                 case 2: {
                                     // 1st vtx corresponds to an atom
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -562,8 +562,8 @@ void draw_grid_cgo_polyhedrons(std::ofstream& pymol_script,
 }
 
 // Draw pockets in .PDB format. Static version
-void draw_raw_PDB(const NA_Vector& list_of_pockets, const Poly_Vector& polys,
-    const std::string& out_filename) {
+void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
+    const std::string &out_filename) {
 
     unsigned int atom_cnt = 4;
     // Write PDB header.
@@ -571,7 +571,7 @@ void draw_raw_PDB(const NA_Vector& list_of_pockets, const Poly_Vector& polys,
     chemfiles::Frame ana_void_frame;
     auto out_traj = chemfiles::Trajectory(out_filename, 'w');
 
-    for (const Finite_cells_iterator& cell : list_of_pockets) {
+    for (Finite_cells_iterator const &cell : list_of_pockets) {
         // Add the 4 vertices to the topology and their coords to the frame.
         ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
         ana_void_frame.add_atom(chemfiles::Atom("N"),
@@ -606,7 +606,7 @@ void draw_raw_PDB(const NA_Vector& list_of_pockets, const Poly_Vector& polys,
     // Now, the polyhedron of the intersecting cells, if there are any.
     unsigned int res_cnt = atom_cnt * 0.25;
     atom_cnt -= 4;
-    for (const auto& polyhedron : polys) {
+    for (const auto &polyhedron : polys) {
         P_Facet_const_iterator fc_end = polyhedron.facets_end();
         unsigned int first_atom = atom_cnt;
 
@@ -642,8 +642,8 @@ void draw_raw_PDB(const NA_Vector& list_of_pockets, const Poly_Vector& polys,
 }
 
 // Draw pockets in .PDB format. MD version
-void draw_raw_PDB(const NA_Vector& pocket, const Poly_Vector& polys,
-    std::string out_filename, const unsigned int frame_nbr) {
+void draw_raw_PDB(NA_Vector const &pocket, const Poly_Vector &polys,
+    std::string out_filename, unsigned int const frame_nbr) {
 
     unsigned int atom_cnt = 4;
     // Write PDB header
@@ -651,7 +651,7 @@ void draw_raw_PDB(const NA_Vector& pocket, const Poly_Vector& polys,
     chemfiles::Frame ana_void_frame;
     auto out_traj = chemfiles::Trajectory(out_filename, 'a');
 
-    for (const Finite_cells_iterator& cell : pocket) {
+    for (Finite_cells_iterator const &cell : pocket) {
         // Add the 4 vertices to the topology and their cords to the frame
         ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
         ana_void_frame.add_atom(chemfiles::Atom("N"),
@@ -686,7 +686,7 @@ void draw_raw_PDB(const NA_Vector& pocket, const Poly_Vector& polys,
     // Now, the polyhedron of the intersecting cells.
     unsigned int res_cnt = atom_cnt * 0.25;
     atom_cnt -= 4;
-    for (const auto& polyhedron : polys) {
+    for (const auto &polyhedron : polys) {
         P_Facet_const_iterator fc_end = polyhedron.facets_end();
         unsigned int first_atom = atom_cnt;
 
@@ -722,9 +722,9 @@ void draw_raw_PDB(const NA_Vector& pocket, const Poly_Vector& polys,
 }
 
 // Draw pockets in .PDB format. MD version, whole trajectory.
-void draw_raw_PDB(const NDD_Matrix& list_of_pockets,
-    const Poly_Matrix& list_of_polys, std::string& out_filename,
-    const unsigned int max_atom_cnt) {
+void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
+    const Poly_Matrix &list_of_polys, std::string &out_filename,
+    unsigned int const max_atom_cnt) {
 
     out_filename.append(".pdb");
     auto out_traj = chemfiles::Trajectory(out_filename, 'w');
@@ -735,7 +735,7 @@ void draw_raw_PDB(const NDD_Matrix& list_of_pockets,
         chemfiles::Topology ana_void_top;
         chemfiles::Frame ana_void_frame;
 
-        for (const auto& cell : list_of_pockets[i]) {
+        for (const auto &cell : list_of_pockets[i]) {
             // Add the 4 vertices to the topology and their cords to the frame
             ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
 
@@ -774,7 +774,7 @@ void draw_raw_PDB(const NDD_Matrix& list_of_pockets,
         if (list_of_polys.size() != 0) {
             atom_cnt -= 4;
             // Now, the polyhedron of the intersecting cells, if there are any.
-            for (const auto& polyhedron : list_of_polys[i]) {
+            for (const auto &polyhedron : list_of_polys[i]) {
                 P_Vertex_const_iterator v_end = polyhedron.vertices_end();
                 P_Vertex_const_iterator v_beg = polyhedron.vertices_begin();
                 unsigned int first_atom = atom_cnt;
@@ -799,7 +799,7 @@ void draw_raw_PDB(const NDD_Matrix& list_of_pockets,
                     }
                 } else if ((atom_cnt - first_atom) == 12) {
                     // These polyhedron is composed of 3 tetrahedrons.
-                    const unsigned int low_treshold = first_atom + 4,
+                    unsigned int const low_treshold = first_atom + 4,
                                        hi_treshold = first_atom + 8;
 
                     for (size_t j = first_atom; j < low_treshold - 1; j++) {
@@ -850,12 +850,12 @@ void draw_raw_PDB(const NDD_Matrix& list_of_pockets,
 }
 
 // Draw pockets as dots in a PDB. MD version. Whole trajectory.
-void draw_grid_pdb(const NDD_Matrix& list_of_pockets,
-    const Poly_Matrix& list_of_polys,
-    const std::vector<std::array<double, 3>>& in_vtces_radii,
-    const std::vector<std::vector<unsigned int>>& list_intersecting_total,
-    const unsigned int sphere_count, const unsigned int precision,
-    std::string& out_filename) {
+void draw_grid_pdb(const NDD_Matrix &list_of_pockets,
+    const Poly_Matrix &list_of_polys,
+    const std::vector<std::array<double, 3>> &in_vtces_radii,
+    const std::vector<std::vector<unsigned int>> &list_intersecting_total,
+    unsigned int const sphere_count, unsigned int const precision,
+    std::string &out_filename) {
 
     // Write PDB header.
     unsigned int frame_nbr = list_of_pockets.size(), max_atom_cnt = 0;
@@ -912,14 +912,14 @@ void draw_grid_pdb(const NDD_Matrix& list_of_pockets,
 }
 
 // Draw cells as dots in a PDB. Using "NDD_Vector" data structure.
-unsigned int make_grid_pdb(const NDD_Vector& cells_to_draw,
-    chemfiles::Topology& ana_void_top, chemfiles::Frame& ana_void_frame,
-    const unsigned int sphere_count, unsigned int& res_cnt) {
+unsigned int make_grid_pdb(NDD_Vector const &cells_to_draw,
+    chemfiles::Topology &ana_void_top, chemfiles::Frame &ana_void_frame,
+    unsigned int const sphere_count, unsigned int &res_cnt) {
 
     unsigned int n = sphere_count, atom_cnt_old, atom_cnt = 0;
-    const unsigned int corner = (int)(sphere_count / 3);
+    unsigned int const corner = (int)(sphere_count / 3);
 
-    for (const auto& cell : cells_to_draw) {
+    for (const auto &cell : cells_to_draw) {
         atom_cnt_old = atom_cnt;
         ++res_cnt;
         Point p0 = cell[0].first;
@@ -927,10 +927,10 @@ unsigned int make_grid_pdb(const NDD_Vector& cells_to_draw,
         Point p2 = cell[2].first;
         Point p3 = cell[3].first;
 
-        const double VdW_0 = cell[0].second;
-        const double VdW_1 = cell[1].second;
-        const double VdW_2 = cell[2].second;
-        const double VdW_3 = cell[3].second;
+        double const VdW_0 = cell[0].second;
+        double const VdW_1 = cell[1].second;
+        double const VdW_2 = cell[2].second;
+        double const VdW_3 = cell[3].second;
 
         std::array<double, 3> p0_ = {CGAL::to_double(p0.x()),
             CGAL::to_double(p0.y()), CGAL::to_double(p0.z())};
@@ -956,28 +956,28 @@ unsigned int make_grid_pdb(const NDD_Vector& cells_to_draw,
 
                     if (i <= corner || j <= corner || k <= corner) {
                         // Check if any sphere is in conflict with a vtx
-                        const double dist0 =
+                        double const dist0 =
                             std::sqrt(pow((point[0] - p0_[0]), 2.0) +
                                       pow((point[1] - p0_[1]), 2.0) +
                                       pow((point[2] - p0_[2]), 2.0));
                         if (dist0 < VdW_0) {
                             continue;
                         }
-                        const double dist1 =
+                        double const dist1 =
                             std::sqrt(pow((point[0] - p1_[0]), 2.0) +
                                       pow((point[1] - p1_[1]), 2.0) +
                                       pow((point[2] - p1_[2]), 2.0));
                         if (dist1 < VdW_1) {
                             continue;
                         }
-                        const double dist2 =
+                        double const dist2 =
                             std::sqrt(pow((point[0] - p2_[0]), 2.0) +
                                       pow((point[1] - p2_[1]), 2.0) +
                                       pow((point[2] - p2_[2]), 2.0));
                         if (dist2 < VdW_2) {
                             continue;
                         }
-                        const double dist3 =
+                        double const dist3 =
                             std::sqrt(pow((point[0] - p3_[0]), 2.0) +
                                       pow((point[1] - p3_[1]), 2.0) +
                                       pow((point[2] - p3_[2]), 2.0));
@@ -1002,15 +1002,15 @@ unsigned int make_grid_pdb(const NDD_Vector& cells_to_draw,
 }
 
 // Draw a vector of polyhedrons as dots in a PDB.
-unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
-    chemfiles::Frame& ana_void_frame,
-    const std::vector<std::array<double, 3>>& in_vtces_radii,
-    const std::vector<unsigned int>& intersecting_total,
-    const Poly_Vector& CH_vec, const double sphere_count, unsigned int atom_cnt,
-    unsigned int& res_cnt) {
+unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
+    chemfiles::Frame &ana_void_frame,
+    const std::vector<std::array<double, 3>> &in_vtces_radii,
+    const std::vector<unsigned int> &intersecting_total,
+    const Poly_Vector &CH_vec, double const sphere_count, unsigned int atom_cnt,
+    unsigned int &res_cnt) {
 
     unsigned int n = sphere_count, atom_cnt_old;
-    const unsigned int corner = (int)(sphere_count / 3);
+    unsigned int const corner = (int)(sphere_count / 3);
 
     for (unsigned int ii = 0; ii < CH_vec.size(); ++ii) {
 
@@ -1055,7 +1055,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
 
                         if (i <= corner || j <= corner || k <= corner) {
                             // Check if any sphere is in conflict with a vtx
-                            const double dist0 =
+                            double const dist0 =
                                 std::sqrt(pow((point[0] - p0_[0]), 2.0) +
                                           pow((point[1] - p0_[1]), 2.0) +
                                           pow((point[2] - p0_[2]), 2.0));
@@ -1115,7 +1115,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                 switch (jj) {
                                 case 0: {
                                     // 1st and 4th vtces correspond to atoms
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -1123,7 +1123,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                         continue;
                                     }
 
-                                    const double dist1 = std::sqrt(
+                                    double const dist1 = std::sqrt(
                                         pow((point[0] - p3_[0]), 2.0) +
                                         pow((point[1] - p3_[1]), 2.0) +
                                         pow((point[2] - p3_[2]), 2.0));
@@ -1134,7 +1134,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                 }
                                 case 1: {
                                     // 1st vtx corresponds to an atom
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -1144,7 +1144,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                 }
                                 case 2: {
                                     // 1st vtx corresponds to an atom
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -1211,7 +1211,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                 case 0: {
                                     // 1st, 2nd and 3rd vtces correspond to
                                     // atoms
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -1219,7 +1219,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                         continue;
                                     }
 
-                                    const double dist1 = std::sqrt(
+                                    double const dist1 = std::sqrt(
                                         pow((point[0] - p1_[0]), 2.0) +
                                         pow((point[1] - p1_[1]), 2.0) +
                                         pow((point[2] - p1_[2]), 2.0));
@@ -1227,7 +1227,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                         continue;
                                     }
 
-                                    const double dist2 = std::sqrt(
+                                    double const dist2 = std::sqrt(
                                         pow((point[0] - p2_[0]), 2.0) +
                                         pow((point[1] - p2_[1]), 2.0) +
                                         pow((point[2] - p2_[2]), 2.0));
@@ -1238,14 +1238,14 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                 }
                                 case 1: {
                                     // 1st, and 2nd vtces correspond to atoms
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
                                     if (dist0 < in_vtces_radii[ii][0]) {
                                         continue;
                                     }
-                                    const double dist1 = std::sqrt(
+                                    double const dist1 = std::sqrt(
                                         pow((point[0] - p1_[0]), 2.0) +
                                         pow((point[1] - p1_[1]), 2.0) +
                                         pow((point[2] - p1_[2]), 2.0));
@@ -1256,7 +1256,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
                                 }
                                 case 2: {
                                     // 1st vtx corresponds to an atom
-                                    const double dist0 = std::sqrt(
+                                    double const dist0 = std::sqrt(
                                         pow((point[0] - p0_[0]), 2.0) +
                                         pow((point[1] - p0_[1]), 2.0) +
                                         pow((point[2] - p0_[2]), 2.0));
@@ -1290,11 +1290,11 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology& ana_void_top,
 
 // Draw pockets as points in a PDB. Using CGAL Cell data structure. Static
 // version.
-void draw_grid_pdb(const NA_Vector& pocket,
-    const std::vector<std::array<double, 3>>& in_vtces_radii,
-    const std::vector<unsigned int>& intersecting_total,
-    const Poly_Vector& polys, std::string& out_filename,
-    const unsigned int sphere_count, const unsigned int precision) {
+void draw_grid_pdb(NA_Vector const &pocket,
+    const std::vector<std::array<double, 3>> &in_vtces_radii,
+    const std::vector<unsigned int> &intersecting_total,
+    const Poly_Vector &polys, std::string &out_filename,
+    unsigned int const sphere_count, unsigned int const precision) {
     // Write PDB header.
     unsigned int res_cnt = 0;
     chemfiles::Topology ana_void_top;
@@ -1317,14 +1317,14 @@ void draw_grid_pdb(const NA_Vector& pocket,
 }
 
 // Draw cells as dots in a PDB. Using CGAL Cell data structure.
-unsigned int make_grid_pdb(const NA_Vector& cells_to_draw,
-    chemfiles::Topology& ana_void_top, chemfiles::Frame& ana_void_frame,
-    const unsigned int sphere_count, unsigned int& res_cnt) {
+unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
+    chemfiles::Topology &ana_void_top, chemfiles::Frame &ana_void_frame,
+    unsigned int const sphere_count, unsigned int &res_cnt) {
 
     unsigned int n = sphere_count, atom_cnt_old, atom_cnt = 0;
-    const unsigned int corner = (int)(sphere_count / 3);
+    unsigned int const corner = (int)(sphere_count / 3);
 
-    for (const auto& ac_ite : cells_to_draw) {
+    for (const auto &ac_ite : cells_to_draw) {
         atom_cnt_old = atom_cnt;
         ++res_cnt;
         Point p0 = ac_ite->vertex(0)->point();
@@ -1332,10 +1332,10 @@ unsigned int make_grid_pdb(const NA_Vector& cells_to_draw,
         Point p2 = ac_ite->vertex(2)->point();
         Point p3 = ac_ite->vertex(3)->point();
 
-        const double VdW_0 = ac_ite->vertex(0)->info().GetRadii();
-        const double VdW_1 = ac_ite->vertex(1)->info().GetRadii();
-        const double VdW_2 = ac_ite->vertex(2)->info().GetRadii();
-        const double VdW_3 = ac_ite->vertex(3)->info().GetRadii();
+        double const VdW_0 = ac_ite->vertex(0)->info().GetRadii();
+        double const VdW_1 = ac_ite->vertex(1)->info().GetRadii();
+        double const VdW_2 = ac_ite->vertex(2)->info().GetRadii();
+        double const VdW_3 = ac_ite->vertex(3)->info().GetRadii();
 
         std::array<double, 3> p0_ = {CGAL::to_double(p0.x()),
             CGAL::to_double(p0.y()), CGAL::to_double(p0.z())};
@@ -1361,28 +1361,28 @@ unsigned int make_grid_pdb(const NA_Vector& cells_to_draw,
 
                     if (i <= corner || j <= corner || k <= corner) {
                         // Check if any sphere is in conflict with a vtx
-                        const double dist0 =
+                        double const dist0 =
                             std::sqrt(pow((point[0] - p0_[0]), 2.0) +
                                       pow((point[1] - p0_[1]), 2.0) +
                                       pow((point[2] - p0_[2]), 2.0));
                         if (dist0 < VdW_0) {
                             continue;
                         }
-                        const double dist1 =
+                        double const dist1 =
                             std::sqrt(pow((point[0] - p1_[0]), 2.0) +
                                       pow((point[1] - p1_[1]), 2.0) +
                                       pow((point[2] - p1_[2]), 2.0));
                         if (dist1 < VdW_1) {
                             continue;
                         }
-                        const double dist2 =
+                        double const dist2 =
                             std::sqrt(pow((point[0] - p2_[0]), 2.0) +
                                       pow((point[1] - p2_[1]), 2.0) +
                                       pow((point[2] - p2_[2]), 2.0));
                         if (dist2 < VdW_2) {
                             continue;
                         }
-                        const double dist3 =
+                        double const dist3 =
                             std::sqrt(pow((point[0] - p3_[0]), 2.0) +
                                       pow((point[1] - p3_[1]), 2.0) +
                                       pow((point[2] - p3_[2]), 2.0));
@@ -1412,7 +1412,7 @@ unsigned int make_grid_pdb(const NA_Vector& cells_to_draw,
 
 // Write pymol script header
 inline void header_script_pymol(
-    std::ofstream& pymol_script, const std::string pdb_filename) {
+    std::ofstream &pymol_script, const std::string pdb_filename) {
     pymol_script << "from pymol.cgo import *" << '\n';
     pymol_script << "from pymol import cmd\n" << '\n';
     pymol_script << "cmd.load(\"" << pdb_filename << "\")" << '\n';
@@ -1423,13 +1423,13 @@ inline void header_script_pymol(
 
 // Write .PDB header
 inline void header_PDB(
-    const std::string& out_pdb_filename, const std::string& in_pdb_filename) {
+    const std::string &out_pdb_filename, const std::string &in_pdb_filename) {
     return;
 }
 
 // Construct a residue object with 4 atoms starting at index cell_cnt
 inline chemfiles::Residue make_cell_residue(
-    const unsigned int cell_cnt, const unsigned int atom_cnt) {
+    unsigned int const cell_cnt, unsigned int const atom_cnt) {
     // Each cell will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", cell_cnt);
     // Create all cell "atoms"
@@ -1441,8 +1441,8 @@ inline chemfiles::Residue make_cell_residue(
 }
 
 // Construct a residue object with atoms from 'first_atom' to 'atom_cnt'
-inline chemfiles::Residue make_polyhedron_residue(const unsigned int res_cnt,
-    const unsigned int first_atom, const unsigned int atom_cnt) {
+inline chemfiles::Residue make_polyhedron_residue(unsigned int const res_cnt,
+    unsigned int const first_atom, unsigned int const atom_cnt) {
     // Each polyhedron will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", res_cnt);
 
@@ -1454,8 +1454,8 @@ inline chemfiles::Residue make_polyhedron_residue(const unsigned int res_cnt,
 }
 
 // Construct a residue object for grid output
-inline chemfiles::Residue make_grid_residue(const unsigned int atom_cnt_old,
-    const unsigned int atom_cnt, const unsigned int res_cnt) {
+inline chemfiles::Residue make_grid_residue(unsigned int const atom_cnt_old,
+    unsigned int const atom_cnt, unsigned int const res_cnt) {
     // Each cell will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", res_cnt);
     // Create all cell "atoms"
@@ -1467,7 +1467,7 @@ inline chemfiles::Residue make_grid_residue(const unsigned int atom_cnt_old,
 
 // Connect a residue object with the atoms starting at index cell_cnt
 inline void connect_cell_residue(
-    chemfiles::Topology& topology, const unsigned int atom_index) {
+    chemfiles::Topology &topology, unsigned int const atom_index) {
     topology.add_bond(atom_index - 4, atom_index - 3);
     topology.add_bond(atom_index - 4, atom_index - 2);
     topology.add_bond(atom_index - 4, atom_index - 1);
@@ -1479,7 +1479,7 @@ inline void connect_cell_residue(
 
 // Connect a facet of a polyhedron with the atoms starting at index atom_index
 inline void connect_facet(
-    chemfiles::Topology& topology, const unsigned int atom_index) {
+    chemfiles::Topology &topology, unsigned int const atom_index) {
 
     topology.add_bond(atom_index, atom_index + 1);
     topology.add_bond(atom_index, atom_index + 2);
@@ -1492,7 +1492,7 @@ inline void connect_facet(
 /////////
 
 // Draw a whole convex hull contained in a polyhedron. Static version.
-void draw_CH(const Polyhedron& CH, std::string& out_filename) {
+void draw_CH(const Polyhedron &CH, std::string &out_filename) {
 
     P_Facet_const_iterator fc_ite_end = CH.facets_end();
     out_filename.append(".pdb");
@@ -1525,7 +1525,7 @@ void draw_CH(const Polyhedron& CH, std::string& out_filename) {
 }
 
 // Draw a whole convex hull contained in vector of triangles. Static version.
-void draw_CH(const Triang_Vector& CH_triang, std::string& out_filename) {
+void draw_CH(Triang_Vector const &CH_triang, std::string &out_filename) {
 
     out_filename.append(".pdb");
     chemfiles::Trajectory out_trj(out_filename, 'w');
@@ -1533,7 +1533,7 @@ void draw_CH(const Triang_Vector& CH_triang, std::string& out_filename) {
     chemfiles::Topology out_top;
     unsigned int atom_cnt = 0;
 
-    for (auto const& triangle : CH_triang) {
+    for (auto const &triangle : CH_triang) {
         for (size_t i = 0; i < 3; i++) {
             out_top.add_atom(chemfiles::Atom("CH", "C"));
             out_frm.add_atom(chemfiles::Atom("C"),
@@ -1553,13 +1553,13 @@ void draw_CH(const Triang_Vector& CH_triang, std::string& out_filename) {
 }
 
 // Draw a whole convex hull contained in vector of triangles. MD version.
-void draw_CH(const Triang_Vector& CH_triang, chemfiles::Trajectory& out_traj) {
+void draw_CH(Triang_Vector const &CH_triang, chemfiles::Trajectory &out_traj) {
 
     chemfiles::Frame out_frm;
     chemfiles::Topology out_top;
     unsigned int atom_cnt = 0;
 
-    for (auto const& triangle : CH_triang) {
+    for (auto const &triangle : CH_triang) {
         for (size_t i = 0; i < 3; i++) {
             out_top.add_atom(chemfiles::Atom("CH", "C"));
             out_frm.add_atom(chemfiles::Atom("C"),
@@ -1579,7 +1579,7 @@ void draw_CH(const Triang_Vector& CH_triang, chemfiles::Trajectory& out_traj) {
 }
 
 // Draw a whole triangulation
-void draw_triangulation(const Delaunay& T, std::string& script_filename) {
+void draw_triangulation(Delaunay const &T, std::string &script_filename) {
 
     Finite_cells_iterator cell, ac_ite_end = T.finite_cells_end();
     std::string model_name = script_filename;
@@ -1653,12 +1653,12 @@ void draw_triangulation(const Delaunay& T, std::string& script_filename) {
 }
 
 // Write wall amino acids and atoms
-void wall_atom_output(std::ofstream& wall_out, const NA_Vector& in_cells,
-    const NA_Vector& in_intersecting_cells,
+void wall_atom_output(std::ofstream &wall_out, NA_Vector const &in_cells,
+    NA_Vector const &in_intersecting_cells,
     const std::vector<std::array<bool, 4>> intersecting_bool,
-    const bool requested_CH, const unsigned int precision,
-    const unsigned int pock_cnt, const unsigned int frame_cnt,
-    const std::string& list_wall_separator) {
+    bool const requested_CH, unsigned int const precision,
+    unsigned int const pock_cnt, unsigned int const frame_cnt,
+    const std::string &list_wall_separator) {
 
     std::vector<unsigned int> wall_aa_idx, wall_atom_idx;
     std::vector<std::string> wall_aa_id;
@@ -1680,12 +1680,12 @@ void wall_atom_output(std::ofstream& wall_out, const NA_Vector& in_cells,
 }
 
 // Write wall amino acids.
-void wall_aa_output(std::ofstream& wall_out, const NA_Vector& in_cells,
-    const NA_Vector& in_intersecting_cells,
+void wall_aa_output(std::ofstream &wall_out, NA_Vector const &in_cells,
+    NA_Vector const &in_intersecting_cells,
     const std::vector<std::array<bool, 4>> intersecting_bool,
-    const bool requested_CH, const unsigned int precision,
-    const unsigned int pock_cnt, const unsigned int frame_cnt,
-    const std::string& list_wall_separator) {
+    bool const requested_CH, unsigned int const precision,
+    unsigned int const pock_cnt, unsigned int const frame_cnt,
+    const std::string &list_wall_separator) {
 
     std::vector<unsigned int> wall_aa_idx;
     std::vector<std::string> wall_aa_id;
@@ -1707,16 +1707,16 @@ void wall_aa_output(std::ofstream& wall_out, const NA_Vector& in_cells,
 }
 
 // Get names and indices of participating atoms and amino acids
-void get_info_cell(const NA_Vector& null_areas_vtor,
-    std::vector<unsigned int>& wall_aa_idx,
-    std::vector<std::string>& wall_aa_id,
-    std::vector<unsigned int>& wall_atom_idx) {
+void get_info_cell(NA_Vector const &null_areas_vtor,
+    std::vector<unsigned int> &wall_aa_idx,
+    std::vector<std::string> &wall_aa_id,
+    std::vector<unsigned int> &wall_atom_idx) {
 
     std::vector<unsigned int>::iterator a_idx;
     unsigned int atom_idx, a;
     Vtx_info v_info;
 
-    for (auto const& cell : null_areas_vtor) {
+    for (auto const &cell : null_areas_vtor) {
         for (unsigned int i = 0; i < 3; i++) {
             // Get Info data structure
             v_info = cell->vertex(i)->info();
@@ -1750,17 +1750,17 @@ void get_info_cell(const NA_Vector& null_areas_vtor,
 
 // Get names and indices of participating atoms and amino acids from
 // intersecting cells
-void get_info_cell(const NA_Vector& cavity_intersecting_cells,
-    const std::vector<std::array<bool, 4>>& intersecting_bool,
-    std::vector<unsigned int>& wall_aa_idx,
-    std::vector<std::string>& wall_aa_id,
-    std::vector<unsigned int>& wall_atom_idx) {
+void get_info_cell(NA_Vector const &cavity_intersecting_cells,
+    const std::vector<std::array<bool, 4>> &intersecting_bool,
+    std::vector<unsigned int> &wall_aa_idx,
+    std::vector<std::string> &wall_aa_id,
+    std::vector<unsigned int> &wall_atom_idx) {
 
     std::vector<unsigned int>::iterator a_idx;
     unsigned int atom_idx, a, ii = 0;
     Vtx_info v_info;
 
-    for (auto const& cell : cavity_intersecting_cells) {
+    for (auto const &cell : cavity_intersecting_cells) {
         for (unsigned int i = 0; i < 3; i++) {
             if (intersecting_bool[ii][i]) {
                 // This vtx is outside the included area
@@ -1798,15 +1798,15 @@ void get_info_cell(const NA_Vector& cavity_intersecting_cells,
 }
 
 // Get names and indices of participating amino acids.
-void get_info_cell(const NA_Vector& null_areas_vtor,
-    std::vector<unsigned int>& wall_aa_idx,
-    std::vector<std::string>& wall_aa_id) {
+void get_info_cell(NA_Vector const &null_areas_vtor,
+    std::vector<unsigned int> &wall_aa_idx,
+    std::vector<std::string> &wall_aa_id) {
 
     std::vector<unsigned int>::iterator r_idx;
     unsigned int res_idx, r;
     Vtx_info v_info;
 
-    for (auto const& cell : null_areas_vtor) {
+    for (auto const &cell : null_areas_vtor) {
         for (unsigned int i = 0; i < 3; i++) {
             // Get Info data structure
             v_info = cell->vertex(i)->info();
@@ -1836,16 +1836,16 @@ void get_info_cell(const NA_Vector& null_areas_vtor,
 }
 
 // Get names and indices of participating amino acids from intersecting cells
-void get_info_cell(const NA_Vector& cavity_intersecting_cells,
-    const std::vector<std::array<bool, 4>>& intersecting_bool,
-    std::vector<unsigned int>& wall_aa_idx,
-    std::vector<std::string>& wall_aa_id) {
+void get_info_cell(NA_Vector const &cavity_intersecting_cells,
+    const std::vector<std::array<bool, 4>> &intersecting_bool,
+    std::vector<unsigned int> &wall_aa_idx,
+    std::vector<std::string> &wall_aa_id) {
 
     std::vector<unsigned int>::iterator r_idx;
     unsigned int res_idx, r, ii = 0;
     Vtx_info v_info;
 
-    for (auto const& cell : cavity_intersecting_cells) {
+    for (auto const &cell : cavity_intersecting_cells) {
         for (unsigned int i = 0; i < 3; i++) {
             if (intersecting_bool[ii][i]) {
                 // This vtx is outside the included area
@@ -1881,12 +1881,12 @@ void get_info_cell(const NA_Vector& cavity_intersecting_cells,
 }
 
 // Write wall amino acids and atoms
-void write_wall_file(std::ofstream& pock_out_file,
-    const std::string& pock_out_filename,
-    const std::vector<unsigned int>& wall_aa_idx,
-    const std::vector<std::string>& wall_aa_id,
-    const std::vector<unsigned int>& wall_atom_idx,
-    const unsigned int frame_cnt, const std::string& list_wall_separator) {
+void write_wall_file(std::ofstream &pock_out_file,
+    const std::string &pock_out_filename,
+    const std::vector<unsigned int> &wall_aa_idx,
+    const std::vector<std::string> &wall_aa_id,
+    const std::vector<unsigned int> &wall_atom_idx,
+    unsigned int const frame_cnt, const std::string &list_wall_separator) {
 
     unsigned int atom_length = wall_atom_idx.size();
 
@@ -1920,11 +1920,11 @@ void write_wall_file(std::ofstream& pock_out_file,
 }
 
 // Write wall amino acids
-void write_wall_file(std::ofstream& pock_out_file,
-    const std::string& pock_out_filename,
-    const std::vector<unsigned int>& wall_aa_idx,
-    const std::vector<std::string>& wall_aa_id, const unsigned int frame_cnt,
-    const std::string& list_wall_separator) {
+void write_wall_file(std::ofstream &pock_out_file,
+    const std::string &pock_out_filename,
+    const std::vector<unsigned int> &wall_aa_idx,
+    const std::vector<std::string> &wall_aa_id, unsigned int const frame_cnt,
+    const std::string &list_wall_separator) {
 
     unsigned int resi_length = wall_aa_idx.size();
 
@@ -1955,7 +1955,7 @@ void write_wall_file(std::ofstream& pock_out_file,
     return;
 }
 // Open output volume file, if requested.
-void open_vol_file(std::string const& out_vol) {
+void open_vol_file(std::string const &out_vol) {
     if (out_vol != "none") {
         out_vol_stream.open(out_vol);
         if (!(out_vol_stream)) {
@@ -1967,19 +1967,19 @@ void open_vol_file(std::string const& out_vol) {
     return;
 }
 // Final function to output volume. NA_Matrix (static) version.
-void write_output_volume(NA_Matrix const& null_areas_vt_mt, double poly_vol,
-    const std::string& out_vol) {
+void write_output_volume(NA_Matrix const &null_areas_vt_mt, double poly_vol,
+    const std::string &out_vol) {
 
     unsigned int pock_cnt = 1;
     if (out_vol_stream.is_open()) {
-        for (const NA_Vector& null_areas_vtor : null_areas_vt_mt) {
+        for (NA_Vector const &null_areas_vtor : null_areas_vt_mt) {
             double const volume = ANA::get_void_volume(null_areas_vtor);
             out_vol_stream << "Pocket " << pock_cnt << '\t' << volume + poly_vol
                            << '\n';
             ++pock_cnt;
         }
     } else {
-        for (const NA_Vector& null_areas_vtor : null_areas_vt_mt) {
+        for (NA_Vector const &null_areas_vtor : null_areas_vt_mt) {
             double const volume = ANA::get_void_volume(null_areas_vtor);
             std::cout << "Pocket " << '\t' << volume + poly_vol << '\n';
             ++pock_cnt;
@@ -1989,8 +1989,8 @@ void write_output_volume(NA_Matrix const& null_areas_vt_mt, double poly_vol,
 }
 
 // Final function to output volume. NA_Vector (NDD) version.
-void write_output_volume(NA_Vector const& null_areas_vtor,
-    const double poly_vol, const std::string& out_vol) {
+void write_output_volume(NA_Vector const &null_areas_vtor,
+    double const poly_vol, const std::string &out_vol) {
 
     double const volume = ANA::get_void_volume(null_areas_vtor);
     if (out_vol_stream.is_open()) {
@@ -2002,7 +2002,7 @@ void write_output_volume(NA_Vector const& null_areas_vtor,
 }
 
 // Final function to output volume. NA_Vector (MD) version.
-void write_output_volume(NA_Vector const& null_areas_vtor,
+void write_output_volume(NA_Vector const &null_areas_vtor,
     double const poly_vol, unsigned int const frame_cnt) {
 
     double const volume = ANA::get_void_volume(null_areas_vtor);

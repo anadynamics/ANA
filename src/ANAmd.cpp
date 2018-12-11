@@ -1,21 +1,21 @@
 #include <ANA/ANAmd.hpp>
 namespace ANA {
-int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
-    std::string& AA_indices_proto, const std::string& ASA_method,
-    const std::string& only_side_ASA,
-    std::string& exclude_ca_for_ASA_indices_proto, const std::string& list_wall,
-    const std::string& list_wall_separator, std::string& include_CH_aa_proto,
-    std::string& include_CH_atom_proto, std::string& sphere_proto,
-    std::string& cylinder_proto, std::string& prism_proto,
-    const std::string& include_CH_filename, std::string& out_filename,
-    const std::string& out_vol, const std::string& out_type,
-    const bool triangulate_only_included_aas, const bool atom_only,
-    const double minVR, const double maxSR, const double max_probe,
-    const double max_probe_length, const double sphere_size,
-    const unsigned int& sphere_count,
-    const unsigned int nbr_of_vertices_to_include, const unsigned int precision,
-    const unsigned int& md_start, const unsigned int& md_step,
-    unsigned int& md_end) {
+int MD_ANA(const std::string &in_filename, const std::string &in_md_filename,
+    std::string &AA_indices_proto, const std::string &ASA_method,
+    const std::string &only_side_ASA,
+    std::string &exclude_ca_for_ASA_indices_proto, const std::string &list_wall,
+    const std::string &list_wall_separator, std::string &include_CH_aa_proto,
+    std::string &include_CH_atom_proto, std::string &sphere_proto,
+    std::string &cylinder_proto, std::string &prism_proto,
+    const std::string &include_CH_filename, std::string &out_filename,
+    const std::string &out_vol, const std::string &out_type,
+    bool const triangulate_only_included_aas, bool const atom_only,
+    double const minVR, double const maxSR, double const max_probe,
+    double const max_probe_length, double const sphere_size,
+    unsigned int const &sphere_count,
+    unsigned int const nbr_of_vertices_to_include, unsigned int const precision,
+    unsigned int const &md_start, unsigned int const &md_step,
+    unsigned int &md_end) {
 
     // Read trajectory.
     chemfiles::Trajectory in_traj(in_md_filename);
@@ -30,9 +30,6 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     unsigned int max_atom_cnt = 0;
     const auto nbr_of_frames =
         ceil((md_end - md_start + 1) / static_cast<float>(md_step));
-
-
-    
 
     std::vector<unsigned int> atom_cnt_md(nbr_of_frames);
     std::vector<unsigned int> CA_indices, AA_indices, include_CH_atoms;
@@ -51,7 +48,7 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
     // Handle input trajectory file format.
     std::string in_md_format =
         in_md_filename.substr(in_md_filename.length() - 2, 2);
-    const bool in_md_nc = (in_md_format == "nc");
+    bool const in_md_nc = (in_md_format == "nc");
     if (md_step != 1 && !in_md_nc) {
         std::cerr << "Warning: netcdf is the only format that supports an "
                      "\"md_step\" value other than 1. Reading every step."
@@ -66,7 +63,7 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
         wall_out.open(filename);
     }
     // Get topology
-    const bool requested_CH = ANA::read_static(in_filename,
+    bool const requested_CH = ANA::read_static(in_filename,
         triangulate_only_included_aas, atom_only, AA_indices_proto,
         exclude_ca_for_ASA_indices_proto, include_CH_aa_proto,
         include_CH_atom_proto, sphere_proto, cylinder_proto, prism_proto,
@@ -84,7 +81,7 @@ int MD_ANA(const std::string& in_filename, const std::string& in_md_filename,
         std::vector<unsigned int> intersecting_total;
 
         // Set next step.
-        const unsigned int current_step =
+        unsigned int const current_step =
             (frame_cnt - 1) * md_step + (md_start - 1);
         if (current_step >= md_end) {
             // Done.

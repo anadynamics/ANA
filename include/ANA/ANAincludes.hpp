@@ -4,42 +4,42 @@
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef ANAINCLUDES
 #define ANAINCLUDES
-#include  <iostream>
-#include  <fstream>
-#include  <assert.h>
-#include  <vector>
-#include  <numeric>
-#include  <cmath>
-#include  <algorithm>
-#include  <string>
-#include  <sstream>
-#include  <iterator>
-#include  <typeinfo>
-#include  <boost/program_options.hpp>
-#include  "chemfiles.hpp"
+#include "chemfiles.hpp"
+#include <algorithm>
+#include <assert.h>
+#include <boost/program_options.hpp>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+#include <numeric>
+#include <sstream>
+#include <string>
+#include <typeinfo>
+#include <vector>
 
-#include  <CGAL/Origin.h>
-#include  <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include  <CGAL/Triangulation_3.h>
-#include  <CGAL/Delaunay_triangulation_3.h>
-#include  <CGAL/Triangulation_vertex_base_with_info_3.h>
-#include  <CGAL/Tetrahedron_3.h>
-#include  <CGAL/Polyhedron_3.h>
-#include  <CGAL/Triangle_3.h>
-#include  <CGAL/convex_hull_3.h>
-#include  <CGAL/box_intersection_d.h>
+#include <CGAL/Delaunay_triangulation_3.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Origin.h>
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/Tetrahedron_3.h>
+#include <CGAL/Triangle_3.h>
+#include <CGAL/Triangulation_3.h>
+#include <CGAL/Triangulation_vertex_base_with_info_3.h>
+#include <CGAL/box_intersection_d.h>
+#include <CGAL/convex_hull_3.h>
 
 // clang-format off
 class Vtx_info  {
 public:
 // Return the atom index
-	const unsigned int& GetIndex() const    { return index_; }
+	unsigned int const& GetIndex() const    { return index_; }
 // Return the atom radii
-	const double& GetRadii() const  { return radii_; }
+	double const& GetRadii() const  { return radii_; }
 // Return the atom's amino acid name
-	const std::string& GetAa() const    { return residue_; }
+	std::string const& GetAa() const    { return residue_; }
 // Return the atom's residue number
-	const unsigned int& GetResn() const { return resn_; }
+	unsigned int const& GetResn() const { return resn_; }
 
 // Assign the atom index
 	void AssignIndex(unsigned int input_index) { index_ = input_index; }
@@ -60,7 +60,7 @@ unsigned int resn_;
 };
 
 // Colours for pymol CGO objects
-const unsigned int col_nbr = 16;
+unsigned int const col_nbr = 16;
 const std::array<float, col_nbr> red = {1.0, 1.0, 0.0,   0.0, 1.0, 1.0, 0.0, 0.4,  0.4,
  0.0,  0.75, 0.75,  0.0, 0.875, 0.875,   0.0};
 const std::array<float, col_nbr> green = {1.0, 0.0, 1.0,   0.0, 1.0, 0.0, 1.0, 0.4,  0.0,

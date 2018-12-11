@@ -1,5 +1,5 @@
 CXX = /usr/bin/g++
-CXXFLAGS = -g -O3 -std=c++14 -Wall
+CXXFLAGS = -g -O3 -std=c++17 -Wall
 #LinOpt = -L/usr/lib -L/usr/local/lib -L../chemfiles/build/install/lib -lchemfiles -lnetcdf -lCGAL -lboost_program_options -lmpfr -lgmp -lm
 LinOpt = ../chemfiles/build/install/lib/libchemfiles.a -lnetcdf -lCGAL -lboost_program_options -lmpfr -lgmp -lm
 IncOpt = -I../chemfiles/build/install/include -I../include
@@ -22,10 +22,7 @@ all: build_msg ANA
 
 ANA: $(Objects)
 	$(CXX) $^ $(CXXFLAGS) -o $@ $(LinOpt)
-	mkdir bin dep obj
-	mv *.o obj
-	mv *.d dep
-	mv ANA bin
+#	mv ANA ../bin
 
 %.o: ../src/%.cpp
 	$(CXX) $(CXXFLAGS) $(IncOpt) -MMD -MP -c $< -o $@

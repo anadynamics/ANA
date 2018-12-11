@@ -2,8 +2,8 @@
 namespace ANA {
 namespace NDD {
 // NDD Specific function for PDB input
-void ndd_read_PDB_get_cells(const std::string& filename,
-    const NDD_IVector& in_void_cells_indices, NDD_Vector& output_cells) {
+void ndd_read_PDB_get_cells(const std::string &filename,
+    NDD_IVector const &in_void_cells_indices, NDD_Vector &output_cells) {
 
     // Read molecule
     chemfiles::Trajectory in_traj(filename);
@@ -13,11 +13,11 @@ void ndd_read_PDB_get_cells(const std::string& filename,
     Vtx_info vi1;
     NDD_Element temp_cell_coords;
 
-    for (const NDD_IElement& idx : in_void_cells_indices) {
+    for (NDD_IElement const &idx : in_void_cells_indices) {
         // Iterate over each cell of the current pocket
         for (unsigned int i = 0; i < 4; ++i) {
             // Iterate over each vertex of the current cell
-            const Point p0 =
+            Point const p0 =
                 Point(in_xyz[idx[i]][0], in_xyz[idx[i]][1], in_xyz[idx[i]][2]);
             temp_cell_coords[i] =
                 std::make_pair(p0, in_top[idx[i]].vdw_radius().value_or(1.5));
@@ -29,10 +29,10 @@ void ndd_read_PDB_get_cells(const std::string& filename,
 }
 
 // NDD Specific function for PDB input. Hi precision method
-void ndd_read_PDB_get_cells(const std::string& filename,
-    const NDD_IVector& in_void_cells_indices,
-    const std::vector<unsigned int>& include_CH_atoms, NDD_Vector& output_cells,
-    Triang_Vector& CH_triangs) {
+void ndd_read_PDB_get_cells(const std::string &filename,
+    NDD_IVector const &in_void_cells_indices,
+    const std::vector<unsigned int> &include_CH_atoms, NDD_Vector &output_cells,
+    Triang_Vector &CH_triangs) {
 
     // Read molecule
     chemfiles::Trajectory in_traj(filename);
@@ -43,11 +43,11 @@ void ndd_read_PDB_get_cells(const std::string& filename,
     NDD_Element temp_cell_coords;
     std::vector<Point> incl_area_points;
 
-    for (const NDD_IElement& idx : in_void_cells_indices) {
+    for (NDD_IElement const &idx : in_void_cells_indices) {
         // Iterate over each cell of the current pocket
         for (unsigned int i = 0; i < 4; ++i) {
             // Iterate over each vertex of the current cell
-            const Point p0 =
+            Point const p0 =
                 Point(in_xyz[idx[i]][0], in_xyz[idx[i]][1], in_xyz[idx[i]][2]);
             temp_cell_coords[i] =
                 std::make_pair(p0, in_top[idx[i]].vdw_radius().value_or(1.5));
@@ -56,7 +56,7 @@ void ndd_read_PDB_get_cells(const std::string& filename,
     }
 
     // Actualize convex hull of the include area.
-    for (auto const& each : include_CH_atoms) {
+    for (auto const &each : include_CH_atoms) {
         incl_area_points.push_back(
             Point(in_xyz[each][0], in_xyz[each][1], in_xyz[each][2]));
     }
@@ -79,12 +79,12 @@ void ndd_read_PDB_get_cells(const std::string& filename,
     return;
 }
 
-} //	namespace NDD
+} // namespace NDD
 
 // Refine the provided list of amino acids. If its not present, then return an
 // array of two '0' elements.
 template <class tipo>
-bool adapt_aa_list(std::string& aa_list_proto, std::vector<tipo>& aa_list) {
+bool adapt_aa_list(std::string &aa_list_proto, std::vector<tipo> &aa_list) {
     unsigned int aa;
 
     if (aa_list_proto == "none") {
@@ -100,7 +100,7 @@ bool adapt_aa_list(std::string& aa_list_proto, std::vector<tipo>& aa_list) {
             stream_aa >> temp_aa;
             try {
                 aa = std::stoi(temp_aa);
-            } catch (const std::invalid_argument& ia) {
+            } catch (const std::invalid_argument &ia) {
                 // some character present. Doesn't matter, skip it and keep
                 // reading.
                 continue;
@@ -122,16 +122,16 @@ bool adapt_aa_list(std::string& aa_list_proto, std::vector<tipo>& aa_list) {
 }
 
 // Read coordinates in pdb format using chemfiles.
-bool read_static(const std::string& filename,
-    const bool triangulate_only_included_aas, const bool atom_only,
-    std::string& aa_list_proto, std::string& exclude_ca_for_ASA_proto,
-    std::string& include_CH_aa_proto, std::string& include_CH_atom_proto,
-    std::string& sphere_proto, std::string& cylinder_proto,
-    std::string& prism_proto, const std::string& include_CH_filename,
-    ANA_molecule& molecule_points, Point& cm,
-    std::vector<unsigned int>& aa_list, std::vector<unsigned int>& CA_indices,
-    std::vector<Point>& CAs_Points, std::vector<unsigned int>& include_CH_atoms,
-    Triang_Vector& CH_triangs, std::vector<unsigned int>& hetatm_atoms) {
+bool read_static(const std::string &filename,
+    bool const triangulate_only_included_aas, bool const atom_only,
+    std::string &aa_list_proto, std::string &exclude_ca_for_ASA_proto,
+    std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
+    std::string &sphere_proto, std::string &cylinder_proto,
+    std::string &prism_proto, const std::string &include_CH_filename,
+    ANA_molecule &molecule_points, Point &cm,
+    std::vector<unsigned int> &aa_list, std::vector<unsigned int> &CA_indices,
+    std::vector<Point> &CAs_Points, std::vector<unsigned int> &include_CH_atoms,
+    Triang_Vector &CH_triangs, std::vector<unsigned int> &hetatm_atoms) {
 
     bool requested_CH = false;
     std::vector<unsigned int> exclude_ca_for_ASA, include_CH_aa;
@@ -148,17 +148,17 @@ bool read_static(const std::string& filename,
     auto in_xyz = input_pdb_frame.positions();
     chemfiles::Topology input_pdb_top = input_pdb_frame.topology();
     // get center of mass
-    const unsigned int natoms = input_pdb_top.natoms();
+    unsigned int const natoms = input_pdb_top.natoms();
     cm = getCM(in_xyz, natoms);
     // Turn list of aminoacids and atoms from strings to vectors of ints.
-    const bool listed_included_aa = adapt_aa_list(aa_list_proto, aa_list);
+    bool const listed_included_aa = adapt_aa_list(aa_list_proto, aa_list);
     const auto AA_end = aa_list.end();
-    const bool listed_excluded_ASA =
+    bool const listed_excluded_ASA =
         adapt_aa_list(exclude_ca_for_ASA_proto, exclude_ca_for_ASA);
     const auto CA_ASA_end = exclude_ca_for_ASA.end();
     // Residue selection takes precedence over atom selection, for included
     // area.
-    const bool listed_incl_res_CH =
+    bool const listed_incl_res_CH =
         ANA::adapt_aa_list(include_CH_aa_proto, include_CH_aa);
     const auto CH_aa_end = include_CH_aa.end();
     bool listed_incl_atom_CH = false;
@@ -178,7 +178,7 @@ bool read_static(const std::string& filename,
                 << '\n';
             exit(0);
         }
-        for (auto& each : include_CH_atoms) {
+        for (auto &each : include_CH_atoms) {
             // 0-index normalization.
             each = each - 1;
             incl_area_points.push_back(
@@ -195,17 +195,16 @@ bool read_static(const std::string& filename,
                 "Not possible to triangulate less than 4 points.");
         }
 
-        for (const auto& residuo : input_pdb_top.residues()) {
+        for (const auto &residuo : input_pdb_top.residues()) {
             auto resid = residuo.id().value();
             if (std::lower_bound(aa_list.begin(), AA_end, resid) != AA_end) {
                 // The current residue was specified
                 auto res_name = residuo.name();
-                for (const auto& i : residuo) {
-                    if (atom_only &&
-                        input_pdb_top[i]
-                            .get("is_hetatm")
-                            .value_or(false)
-                            .as_bool()) {
+                for (const auto &i : residuo) {
+                    if (atom_only && input_pdb_top[i]
+                                         .get("is_hetatm")
+                                         .value_or(false)
+                                         .as_bool()) {
                         hetatm_atoms.push_back(i);
                         continue;
                     }
@@ -251,12 +250,11 @@ bool read_static(const std::string& filename,
                 }
             } else {
                 // The current residue was not specified
-                for (const auto& i : residuo) {
-                    if (atom_only &&
-                        input_pdb_top[i]
-                            .get("is_hetatm")
-                            .value_or(false)
-                            .as_bool()) {
+                for (const auto &i : residuo) {
+                    if (atom_only && input_pdb_top[i]
+                                         .get("is_hetatm")
+                                         .value_or(false)
+                                         .as_bool()) {
                         hetatm_atoms.push_back(i);
                         continue;
                     }
@@ -287,14 +285,13 @@ bool read_static(const std::string& filename,
             }
         }
     } else { // triangulate the whole molecule
-        for (const auto& residuo : input_pdb_top.residues()) {
+        for (const auto &residuo : input_pdb_top.residues()) {
             auto res_name = residuo.name();
-            for (const auto& i : residuo) {
-                if (atom_only &&
-                    input_pdb_top[i]
-                        .get("is_hetatm")
-                        .value_or(false)
-                        .as_bool()) {
+            for (const auto &i : residuo) {
+                if (atom_only && input_pdb_top[i]
+                                     .get("is_hetatm")
+                                     .value_or(false)
+                                     .as_bool()) {
                     // Save the HEATM indices to discard them during MD and NDD
                     // runs.
                     hetatm_atoms.push_back(i);
@@ -379,8 +376,8 @@ bool read_static(const std::string& filename,
         double y = ANA::parse_double(stream_sphere);
         double z = ANA::parse_double(stream_sphere);
         double r = ANA::parse_double(stream_sphere);
-        const double cos_30 = sqrt(3) / 2;
-        const double sin_30 = 0.5;
+        double const cos_30 = sqrt(3) / 2;
+        double const sin_30 = 0.5;
 
         Point center(x, y, z);
         incl_area_points.push_back(center + Vector(r, 0, 0));
@@ -453,8 +450,8 @@ bool read_static(const std::string& filename,
         double z2 = ANA::parse_double(stream_cylinder);
         double r = ANA::parse_double(stream_cylinder);
 
-        const double cos_30 = sqrt(3) / 2;
-        const double sin_30 = 0.5;
+        double const cos_30 = sqrt(3) / 2;
+        double const sin_30 = 0.5;
 
         Point center_1(x1, y1, z1);
         Point center_2(x2, y2, z2);
@@ -605,19 +602,19 @@ bool read_static(const std::string& filename,
 }
 
 // Read coordinates in netcdf format.
-void read_MD(const chemfiles::Frame& in_frame, const bool requested_CH,
-    const std::string& sphere_proto, const std::string& cylinder_proto,
-    const std::string& prism_proto,
-    const std::vector<unsigned int>& hetatm_atoms,
-    std::vector<unsigned int>& include_CH_atoms,
-    const std::string& include_CH_filename, Triang_Vector& CH_triangs,
-    const std::string& ASA_method, const std::vector<unsigned int>& CA_indices,
-    std::vector<Point>& CAs_points, ANA_molecule& molecule_points) {
+void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
+    const std::string &sphere_proto, const std::string &cylinder_proto,
+    const std::string &prism_proto,
+    const std::vector<unsigned int> &hetatm_atoms,
+    std::vector<unsigned int> &include_CH_atoms,
+    const std::string &include_CH_filename, Triang_Vector &CH_triangs,
+    const std::string &ASA_method, const std::vector<unsigned int> &CA_indices,
+    std::vector<Point> &CAs_points, ANA_molecule &molecule_points) {
     unsigned int i;
     Point p1;
 
     // Get positions. Discard hetatms if so requested.
-    const unsigned int natoms = molecule_points.size();
+    unsigned int const natoms = molecule_points.size();
     auto in_xyz = in_frame.positions();
     if (hetatm_atoms.size() != 0) {
         auto ite_beg = hetatm_atoms.begin();
@@ -645,7 +642,7 @@ void read_MD(const chemfiles::Frame& in_frame, const bool requested_CH,
         Polyhedron CH;
         std::vector<Point> incl_area_points;
 
-        for (const auto& idx : include_CH_atoms) {
+        for (const auto &idx : include_CH_atoms) {
             incl_area_points.push_back(
                 Point(in_xyz[idx][0], in_xyz[idx][1], in_xyz[idx][2]));
         }
@@ -672,7 +669,7 @@ void read_MD(const chemfiles::Frame& in_frame, const bool requested_CH,
         if (ASA_method == "dot_pdt") {
             // Get CAs positions
             i = 0;
-            for (const auto& CA_index : CA_indices) {
+            for (const auto &CA_index : CA_indices) {
                 CAs_points[i] = Point(in_xyz[CA_index][0], in_xyz[CA_index][1],
                     in_xyz[CA_index][2]);
                 ++i;
@@ -684,8 +681,8 @@ void read_MD(const chemfiles::Frame& in_frame, const bool requested_CH,
 }
 
 // Get the center of mass from a chemfiles molecule.
-inline Point getCM(const chemfiles::span<chemfiles::Vector3D>& in_xyz,
-    const unsigned int natoms) {
+inline Point getCM(const chemfiles::span<chemfiles::Vector3D> &in_xyz,
+    unsigned int const natoms) {
     double x_cm = 0;
     double y_cm = 0;
     double z_cm = 0;
@@ -699,7 +696,7 @@ inline Point getCM(const chemfiles::span<chemfiles::Vector3D>& in_xyz,
 }
 // Read file with included area coordinates
 inline void read_included_area(
-    const std::string& filename, std::vector<Point>& area_points) {
+    const std::string &filename, std::vector<Point> &area_points) {
 
     std::string linea, xs, ys, zs;
     std::ifstream infile(filename);
@@ -723,7 +720,7 @@ inline void read_included_area(
                 streamm >> x >> y >> z;
                 area_points.push_back(Point(x, y, z));
 
-            } catch (const std::invalid_argument& ia) {
+            } catch (const std::invalid_argument &ia) {
                 // some character present
                 throw std::invalid_argument(
                     "Invalid input: " + xs + "  " + ys + "  " + zs);
@@ -743,14 +740,14 @@ inline void read_included_area(
 }
 
 // Tool for parsing a double from input file stringstream
-double parse_double(std::stringstream& in_stream) {
+double parse_double(std::stringstream &in_stream) {
     std::string temp;
     double coord = 0;
 
     in_stream >> temp;
     try {
         coord = std::stod(temp);
-    } catch (const std::invalid_argument& ia) {
+    } catch (const std::invalid_argument &ia) {
         // some character present
         throw std::runtime_error("Can't parse pseudosphere/pseudocylinder/ "
                                  "prism input. There may be non-numerical "
@@ -764,4 +761,4 @@ double parse_double(std::stringstream& in_stream) {
     return coord;
 }
 
-} //	namespace ANA
+} // namespace ANA

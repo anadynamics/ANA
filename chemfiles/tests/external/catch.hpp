@@ -964,12 +964,12 @@ namespace Internal {
 namespace Catch {
 
     struct TrueType {
-        static const bool value = true;
+        static bool const value = true;
         typedef void Enable;
         char sizer[1];
     };
     struct FalseType {
-        static const bool value = false;
+        static bool const value = false;
         typedef void Disable;
         char sizer[2];
     };
@@ -3198,9 +3198,9 @@ namespace STITCH_TBC_TEXT_FORMAT_OUTER_NAMESPACE {
 namespace Tbc {
 
 #ifdef TBC_TEXT_FORMAT_CONSOLE_WIDTH
-    const unsigned int consoleWidth = TBC_TEXT_FORMAT_CONSOLE_WIDTH;
+    unsigned int const consoleWidth = TBC_TEXT_FORMAT_CONSOLE_WIDTH;
 #else
-    const unsigned int consoleWidth = 80;
+    unsigned int const consoleWidth = 80;
 #endif
 
     struct TextAttributes {
@@ -3350,9 +3350,9 @@ namespace Clara {
     namespace Detail {
 
 #ifdef CLARA_CONSOLE_WIDTH
-    const unsigned int consoleWidth = CLARA_CONFIG_CONSOLE_WIDTH;
+    unsigned int const consoleWidth = CLARA_CONFIG_CONSOLE_WIDTH;
 #else
-    const unsigned int consoleWidth = 80;
+    unsigned int const consoleWidth = 80;
 #endif
 
         using namespace Tbc;
@@ -3366,8 +3366,8 @@ namespace Clara {
         template<typename T> struct RemoveConstRef<T const&>{ typedef T type; };
         template<typename T> struct RemoveConstRef<T const>{ typedef T type; };
 
-        template<typename T>    struct IsBool       { static const bool value = false; };
-        template<>              struct IsBool<bool> { static const bool value = true; };
+        template<typename T>    struct IsBool       { static bool const value = false; };
+        template<>              struct IsBool<bool> { static bool const value = true; };
 
         template<typename T>
         void convertInto( std::string const& _source, T& _dest ) {
@@ -4186,9 +4186,9 @@ namespace CLICHE_TBC_TEXT_FORMAT_OUTER_NAMESPACE {
 namespace Tbc {
 
 #ifdef TBC_TEXT_FORMAT_CONSOLE_WIDTH
-    const unsigned int consoleWidth = TBC_TEXT_FORMAT_CONSOLE_WIDTH;
+    unsigned int const consoleWidth = TBC_TEXT_FORMAT_CONSOLE_WIDTH;
 #else
-    const unsigned int consoleWidth = 80;
+    unsigned int const consoleWidth = 80;
 #endif
 
     struct TextAttributes {

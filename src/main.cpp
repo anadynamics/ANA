@@ -5,15 +5,15 @@
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-#include <ANA/ANAstatic.hpp>
+#include <ANA/ANAPO.hpp>
 #include <ANA/ANAmd.hpp>
 #include <ANA/ANAndd.hpp>
-#include <ANA/ANAPO.hpp>
+#include <ANA/ANAstatic.hpp>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     std::string in_filename, AA_indices_proto, exclude_ca_for_ASA_indices_proto,
-        in_md_filename, out_type, pdbs_list_ndd_filename, out_CH_filename,
-        out_ndd_filename, include_CH_filename,
+        in_md_filename, out_type, modes_ndd_filename, pdbs_list_ndd_filename,
+        out_CH_filename, out_ndd_filename, include_CH_filename,
         include_CH_aa_proto = "none", include_CH_atom_proto = "none",
         out_filename, out_vol, clusters_method = "facets",
         ASA_method = "dot_pdt", only_side_ASA, list_wall, list_wall_separator,
@@ -34,17 +34,17 @@ int main(int argc, char* argv[]) {
         md_end, minVR, maxSR, max_probe, max_probe_length, sphere_size,
         sphere_count, list_wall, list_wall_separator, clusters_method,
         only_side_ASA, ASA_method, exclude_ca_for_ASA_indices_proto,
-        pdbs_list_ndd_filename, out_CH_filename, out_ndd_filename, out_filename,
-        out_vol, out_type, tool_check_CH, tool_pdb_to_ch, sphere_proto,
-        cylinder_proto, prism_proto, tool_pdb_norm, tool_aa_to_ca);
+        modes_ndd_filename, pdbs_list_ndd_filename, out_CH_filename,
+        out_ndd_filename, out_filename, out_vol, out_type, tool_check_CH,
+        tool_pdb_to_ch, sphere_proto, cylinder_proto, prism_proto,
+        tool_pdb_norm, tool_aa_to_ca);
     if (estado == 1) {
         // Some error was found. Terminating execution.
         return 0;
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////// tools
-    ////////////////////////////////////////
+    // tools
     //////////////////////////////////////////////////////////////////////////////
 
     // Tool for CH included area visual check.
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
         Point cm;
 
         // Read input file
-        const bool requested_CH = ANA::read_static(in_filename,
+        bool const requested_CH = ANA::read_static(in_filename,
             triangulate_only_included_aas, atom_only, AA_indices_proto,
             exclude_ca_for_ASA_indices_proto, include_CH_aa_proto,
             include_CH_atom_proto, sphere_proto, cylinder_proto, prism_proto,
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 
             while (!in_traj.done()) {
                 // Set next step.
-                const unsigned int current_step =
+                unsigned int const current_step =
                     (frame_cnt - 1) * md_step + (md_start - 1);
                 if (current_step >= md_end) {
                     // Done.
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
         std::sort(include_CH_atoms.begin(), include_CH_atoms.end());
 
         std::cout << "\t\t/// Calpha indices ///" << '\n';
-        for (const auto& each : include_CH_atoms) {
+        for (const auto &each : include_CH_atoms) {
             std::cout << each + 1 << " ";
         }
         std::cout << '\n';
@@ -151,8 +151,7 @@ int main(int argc, char* argv[]) {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////// end tools
-    ///////////////////////////////////////
+    // end tools
     //////////////////////////////////////////////////////////////////////////////
     // Get output volume file ready, if requested.
     ANA::open_vol_file(out_vol);
@@ -177,10 +176,11 @@ int main(int argc, char* argv[]) {
                 ASA_method, exclude_ca_for_ASA_indices_proto, list_wall,
                 list_wall_separator, include_CH_aa_proto, include_CH_atom_proto,
                 sphere_proto, cylinder_proto, prism_proto, include_CH_filename,
-                pdbs_list_ndd_filename, out_ndd_filename, out_filename, out_vol,
-                out_type, triangulate_only_included_aas, atom_only, minVR,
-                maxSR, max_probe, max_probe_length, sphere_size, sphere_count,
-                nbr_of_vertices_to_include, precision);
+                modes_ndd_filename, pdbs_list_ndd_filename, out_ndd_filename,
+                out_filename, out_vol, out_type, triangulate_only_included_aas,
+                atom_only, minVR, maxSR, max_probe, max_probe_length,
+                sphere_size, sphere_count, nbr_of_vertices_to_include,
+                precision);
             if (estado == 1) {
                 return 0;
             }

@@ -1,21 +1,22 @@
 #include <ANA/ANAndd.hpp>
 namespace ANA {
-int NDD_ANA(const std::string& in_filename, std::string& AA_indices_proto,
-    const std::string& only_side_ASA, const std::string& ASA_method,
-    std::string& exclude_ca_for_ASA_indices_proto, const std::string& list_wall,
-    const std::string& list_wall_separator, std::string& include_CH_aa_proto,
-    std::string& include_CH_atom_proto, std::string& sphere_proto,
-    std::string& cylinder_proto, std::string& prism_proto,
-    const std::string& include_CH_filename,
-    const std::string& pdbs_list_ndd_filename,
-    const std::string& out_ndd_filename, std::string& out_filename,
-    const std::string& out_vol, const std::string& out_type,
-    const bool triangulate_only_included_aas, const bool atom_only,
-    const double minVR, const double maxSR, const double max_probe,
-    const double max_probe_length, const double sphere_size,
-    const unsigned int sphere_count,
-    const unsigned int nbr_of_vertices_to_include,
-    const unsigned int precision) {
+int NDD_ANA(std::string const &in_filename, std::string &AA_indices_proto,
+    std::string const &only_side_ASA, std::string const &ASA_method,
+    std::string &exclude_ca_for_ASA_indices_proto, std::string const &list_wall,
+    std::string const &list_wall_separator, std::string &include_CH_aa_proto,
+    std::string &include_CH_atom_proto, std::string &sphere_proto,
+    std::string &cylinder_proto, std::string &prism_proto,
+    std::string const &include_CH_filename,
+    std::string const &modes_ndd_filename,
+    std::string const &pdbs_list_ndd_filename,
+    std::string const &out_ndd_filename, std::string &out_filename,
+    std::string const &out_vol, std::string const &out_type,
+    bool const triangulate_only_included_aas, bool const atom_only,
+    double const minVR, double const maxSR, double const max_probe,
+    double const max_probe_length, double const sphere_size,
+    unsigned int const sphere_count,
+    unsigned int const nbr_of_vertices_to_include,
+    unsigned int const precision) {
 
     // atom_cnt_poly is for MD only.
     unsigned int atom_cnt_poly = 0;
@@ -37,7 +38,7 @@ int NDD_ANA(const std::string& in_filename, std::string& AA_indices_proto,
     std::vector<std::array<double, 3>> in_vtces_radii;
 
     // Read original file
-    const bool requested_CH = ANA::read_static(in_filename,
+    bool const requested_CH = ANA::read_static(in_filename,
         triangulate_only_included_aas, atom_only, AA_indices_proto,
         exclude_ca_for_ASA_indices_proto, include_CH_aa_proto,
         include_CH_atom_proto, sphere_proto, cylinder_proto, prism_proto,
@@ -111,8 +112,10 @@ int NDD_ANA(const std::string& in_filename, std::string& AA_indices_proto,
         cavity_void_cells.begin(), cavity_void_cells.end());
     cavity_joint_cells.insert(cavity_joint_cells.end(),
         cavity_intersecting_cells.begin(), cavity_intersecting_cells.end());
-    ANA::NDD::ndd_nondelaunay_dynamics(cavity_joint_cells,
+    ANA::NDD::ndd_nondelaunay_dynamics_old(cavity_joint_cells,
         pdbs_list_ndd_filename, precision, include_CH_atoms, out_ndd_filename);
+
+    ANA::NDD::ndd(cavity_joint_cells, modes_ndd_filename, out_ndd_filename);
 
     if (list_wall == "atom") {
         unsigned int pock_cnt = 1;
@@ -120,7 +123,7 @@ int NDD_ANA(const std::string& in_filename, std::string& AA_indices_proto,
         std::string filename = in_filename.substr(0, in_filename.size() - 4);
         filename.insert(0, "wall_");
         std::ofstream wall_out(filename);
-        for (const NA_Vector& null_areas_vtor : null_areas_mtx) {
+        for (NA_Vector const &null_areas_vtor : null_areas_mtx) {
             ANA::wall_atom_output(wall_out, null_areas_vtor,
                 cavity_intersecting_cells, intersecting_bool, requested_CH,
                 precision, pock_cnt, 1, list_wall_separator);
@@ -132,7 +135,7 @@ int NDD_ANA(const std::string& in_filename, std::string& AA_indices_proto,
         std::string filename = in_filename.substr(0, in_filename.size() - 4);
         filename.insert(0, "wall_");
         std::ofstream wall_out(filename);
-        for (const NA_Vector& null_areas_vtor : null_areas_mtx) {
+        for (NA_Vector const &null_areas_vtor : null_areas_mtx) {
             ANA::wall_aa_output(wall_out, null_areas_vtor,
                 cavity_intersecting_cells, intersecting_bool, requested_CH,
                 precision, pock_cnt, 1, list_wall_separator);
