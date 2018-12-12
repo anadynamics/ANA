@@ -197,8 +197,7 @@ namespace NDD {
         const std::vector<unsigned int> include_CH_atoms,
         std::string const &out_file);
     // Get the indices of the atoms involved in the given cells
-    void ndd_get_involved_vertices(
-        NA_Vector const &cavity_void_cells, NDD_IVector &cells_indices);
+    NDD_IVector get_vertices(NA_Vector const &cavity_void_cells);
     // Calc volume of the input cells. Reedited for array container.
     double ndd_get_void_volume(NDD_Vector const &cavity_void_cells);
     // Substract the volume filled with the 4 atoms from the total volume of

@@ -33,13 +33,13 @@
 class Vtx_info  {
 public:
 // Return the atom index
-	unsigned int const& GetIndex() const    { return index_; }
+	unsigned int const GetIndex() const    { return index_; }
 // Return the atom radii
-	double const& GetRadii() const  { return radii_; }
+	double const GetRadii() const  { return radii_; }
 // Return the atom's amino acid name
-	std::string const& GetAa() const    { return residue_; }
+	std::string const GetAa() const    { return residue_; }
 // Return the atom's residue number
-	unsigned int const& GetResn() const { return resn_; }
+	unsigned int const GetResn() const { return resn_; }
 
 // Assign the atom index
 	void AssignIndex(unsigned int input_index) { index_ = input_index; }

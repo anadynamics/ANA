@@ -142,6 +142,7 @@ int main(int argc, char *argv[]) {
         std::sort(include_CH_atoms.begin(), include_CH_atoms.end());
 
         std::cout << "\t\t/// Calpha indices ///" << '\n';
+        std::cout << "include_area_residues = ";
         for (const auto &each : include_CH_atoms) {
             std::cout << each + 1 << " ";
         }
@@ -157,7 +158,7 @@ int main(int argc, char *argv[]) {
     ANA::open_vol_file(out_vol);
 
     if (in_md_filename == "none") {
-        if (pdbs_list_ndd_filename == "none") {
+        if (pdbs_list_ndd_filename == "none" && modes_ndd_filename == "none") {
             // Static PDB
             estado = ANA::static_ANA(in_filename, AA_indices_proto, ASA_method,
                 only_side_ASA, exclude_ca_for_ASA_indices_proto, list_wall,

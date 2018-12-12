@@ -1449,7 +1449,12 @@ void ndd(NA_Vector const &cavity_void_cells,
     std::vector<double> output_volumes;
     std::vector<unsigned int> all_indices;
 
-    NDD_IVector cells_indices;
+    NDD_IVector const cells_indices = get_vertices(cavity_void_cells);
+
+    for (auto const &each : cells_indices) {
+        printf("%i %i %i %i ", each[0], each[1], each[2], each[3]);
+    }
+    printf("\n");
 
     // if (input_pdbs_filename.is_open()) {
     //     // Get the atoms involved in each pocket.
@@ -1460,7 +1465,7 @@ void ndd(NA_Vector const &cavity_void_cells,
     //     these
     //     // pockets (vectors of arrays) are compiled into a vector.
 
-    //     ndd_get_involved_vertices(cavity_void_cells, cells_indices);
+    //     get_vertices(cavity_void_cells, cells_indices);
 
     //     if (precision == 1) {
     //         while (std::getline(input_pdbs_filename, pdb_filename)) {
@@ -1526,7 +1531,7 @@ void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
         // to a cell. Each vector of arrays refer to a pocket and all of these
         // pockets (vectors of arrays) are compiled into a vector.
 
-        ndd_get_involved_vertices(cavity_void_cells, cells_indices);
+        auto cells_indices = get_vertices(cavity_void_cells);
 
         if (precision == 1) {
             while (std::getline(input_pdbs_filename, pdb_filename)) {
@@ -1573,21 +1578,20 @@ void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
 }
 
 // Get the indices of the atoms involved in the given cells
-void ndd_get_involved_vertices(
-    NA_Vector const &cavity_void_cells, NDD_IVector &cells_indices) {
-    NDD_IElement temp_indices;
+NDD_IVector get_vertices(NA_Vector const &cavity_void_cells) {
 
+    NDD_IVector cells_indices;
     cells_indices.reserve(cavity_void_cells.size() * 4);
-    for (Finite_cells_iterator ac_ite : cavity_void_cells) {
-        // Iterate over each cell and store the atoms indices.
-        temp_indices[0] = ac_ite->vertex(0)->info().GetIndex();
-        temp_indices[1] = ac_ite->vertex(1)->info().GetIndex();
-        temp_indices[2] = ac_ite->vertex(2)->info().GetIndex();
-        temp_indices[3] = ac_ite->vertex(3)->info().GetIndex();
-        cells_indices.push_back(temp_indices);
+
+    for (Finite_cells_iterator const &ac_ite : cavity_void_cells) {
+        NDD_IElement temp{ac_ite->vertex(0)->info().GetIndex(),
+            ac_ite->vertex(1)->info().GetIndex(),
+            ac_ite->vertex(2)->info().GetIndex(),
+            ac_ite->vertex(3)->info().GetIndex()};
+        cells_indices.push_back(std::move(temp));
     }
 
-    return;
+    return cells_indices;
 }
 
 // Calc volume of the input cells. Reedited for array container.
