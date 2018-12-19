@@ -1444,14 +1444,14 @@ namespace NDD {
 
         Modes const modes(modes_ndd_filename);
 
-        for (auto each : modes.evals) {
-            std::cout << each << ' ';
-        }
-        std::cout << '\n' << "------------" << '\n';
-        for (auto each : modes.evectors[398]) {
-            std::cout << each << ' ';
-        }
-        std::cout << '\n';
+        // for (auto each : modes.evals) {
+        //     std::cout << each << ' ';
+        // }
+        // std::cout << '\n' << "------------" << '\n';
+        // for (auto each : modes.evectors[398]) {
+        //     std::cout << each << ' ';
+        // }
+        // std::cout << '\n';
 
         // ANA::NDD::ndd_write_out_file(output_volumes, out_file);
 
