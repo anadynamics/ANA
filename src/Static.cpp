@@ -1,5 +1,7 @@
-#include <ANA/ANAstatic.hpp>
+#include <ANA/Static.hpp>
+
 namespace ANA {
+
 int static_ANA(const std::string &in_filename, std::string &AA_indices_proto,
     const std::string &ASA_method, const std::string &only_side_ASA,
     std::string &exclude_ca_for_ASA_indices_proto, const std::string &list_wall,
@@ -159,4 +161,5 @@ int static_ANA(const std::string &in_filename, std::string &AA_indices_proto,
 
     return 0;
 }
+
 } // namespace ANA

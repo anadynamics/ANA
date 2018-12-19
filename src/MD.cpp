@@ -1,5 +1,7 @@
-#include <ANA/ANAmd.hpp>
+#include <ANA/MD.hpp>
+
 namespace ANA {
+
 int MD_ANA(const std::string &in_filename, const std::string &in_md_filename,
     std::string &AA_indices_proto, const std::string &ASA_method,
     const std::string &only_side_ASA,
@@ -193,4 +195,5 @@ int MD_ANA(const std::string &in_filename, const std::string &in_md_filename,
 
     return 0;
 }
+
 } // namespace ANA

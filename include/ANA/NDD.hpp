@@ -1,10 +1,10 @@
 #ifndef ANA_NDD_H
 #define ANA_NDD_H
 
-#include <ANA/ANAincludes.hpp>
-#include <ANA/ANAread.hpp>
-#include <ANA/ANAutils.hpp>
-#include <ANA/ANAwrite.hpp>
+#include <ANA/Includes.hpp>
+#include <ANA/Read.hpp>
+#include <ANA/Utils.hpp>
+#include <ANA/Write.hpp>
 
 namespace ANA {
 

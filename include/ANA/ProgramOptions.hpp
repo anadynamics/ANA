@@ -1,9 +1,12 @@
-#ifndef ANAPO
-#define ANAPO
+#ifndef ANA_PROGRAM_OPTIONS_H
+#define ANA_PROGRAM_OPTIONS_H
+
 #include <boost/program_options.hpp>
 #include <fstream>
 #include <iostream>
+
 namespace ANA {
+
 namespace PO = boost::program_options;
 using namespace std;
 std::string const help_header = "\t\t\t----- ANA -----";
@@ -26,5 +29,7 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     std::string &tool_pdb_to_ch, std::string &sphere_proto,
     std::string &cylinder_proto, std::string &prism_proto,
     std::string &tool_pdb_norm, std::string &tool_aa_to_ca);
+
 } // namespace ANA
-#endif
+
+#endif // _H

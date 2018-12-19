@@ -1,5 +1,7 @@
-#include <ANA/ANAwrite.hpp>
+#include <ANA/Write.hpp>
+
 namespace ANA {
+
 std::ofstream out_vol_stream;
 // Draw tetrahedrons in pymol CGO objects.
 void draw_raw_cgo(const NA_Matrix &list_of_pockets, const Poly_Vector &polys,
@@ -2014,4 +2016,5 @@ void write_output_volume(NA_Vector const &null_areas_vtor,
     }
     return;
 }
+
 } // namespace ANA

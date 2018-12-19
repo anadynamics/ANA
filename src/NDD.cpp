@@ -114,8 +114,10 @@ int NDD_ANA(std::string const &in_filename, std::string &AA_indices_proto,
         cavity_void_cells.begin(), cavity_void_cells.end());
     cavity_joint_cells.insert(cavity_joint_cells.end(),
         cavity_intersecting_cells.begin(), cavity_intersecting_cells.end());
-    ANA::NDD::ndd_nondelaunay_dynamics_old(cavity_joint_cells,
-        pdbs_list_ndd_filename, precision, include_CH_atoms, out_ndd_filename);
+
+    // ANA::NDD::ndd_nondelaunay_dynamics_old(cavity_joint_cells,
+    //     pdbs_list_ndd_filename, precision, include_CH_atoms,
+    //     out_ndd_filename);
 
     ANA::NDD::ndd(cavity_joint_cells, modes_ndd_filename, out_ndd_filename);
 

@@ -5,10 +5,10 @@
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-#include <ANA/ANAPO.hpp>
-#include <ANA/ANAmd.hpp>
-#include <ANA/ANAndd.hpp>
-#include <ANA/ANAstatic.hpp>
+#include <ANA/MD.hpp>
+#include <ANA/NDD.hpp>
+#include <ANA/ProgramOptions.hpp>
+#include <ANA/Static.hpp>
 
 int main(int argc, char *argv[]) {
     std::string in_filename, AA_indices_proto, exclude_ca_for_ASA_indices_proto,

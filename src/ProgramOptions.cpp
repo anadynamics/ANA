@@ -1,5 +1,7 @@
-#include <ANA/ANAPO.hpp>
+#include <ANA/ProgramOptions.hpp>
+
 namespace ANA {
+
 int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     std::string &input_md_filename, std::string &include_CH_filename,
     std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
@@ -250,4 +252,5 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
 
   return 0;
 }
-}
+
+} // namespace ANAs

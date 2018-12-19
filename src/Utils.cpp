@@ -1,6 +1,8 @@
+#include <ANA/NDDUtils.hpp>
 #include <ANA/Utils.hpp>
 
 namespace ANA {
+
 // Cluster neighbouring cells. CGAL neighbouring method
 void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
     unsigned int const min_cells_cluster) {
@@ -54,15 +56,16 @@ void get_neighbors(NA_Vector const &input_cells,
 
 // Functor to get pairs of intersecting boxes and group them in clusters.
 class callback_for_boxes {
-  public:
+public:
     std::vector<unsigned int> *_id_vector_a, *_id_vector_b;
     NA_Vector *_neighbors_a, *_neighbors_b;
 
     callback_for_boxes(std::vector<unsigned int> &id_vector_a,
         std::vector<unsigned int> &id_vector_b, NA_Vector &neighbors_a,
-        NA_Vector &neighbors_b)
-        : _id_vector_a(&id_vector_a), _id_vector_b(&id_vector_b),
-          _neighbors_a(&neighbors_a), _neighbors_b(&neighbors_b) {}
+        NA_Vector &neighbors_b) :
+        _id_vector_a(&id_vector_a),
+        _id_vector_b(&id_vector_b), _neighbors_a(&neighbors_a),
+        _neighbors_b(&neighbors_b) {}
 
     void operator()(const Box &a, const Box &b) {
         // New boxes. Store their indices and their cells.
@@ -168,7 +171,7 @@ void cluster_cells_boxes(
 
         } else if (lb_with_indices(
                        id_vector_b, indices_b, map_aux[i], result) &&
-                   (id_vector_b[indices_b[result]] == map_aux[i])) {
+            (id_vector_b[indices_b[result]] == map_aux[i])) {
             neighbors.push_back(neighbors_b[indices_b[result]]);
         } else {
             std::cerr << "Iso-oriented boxes clustering method. Invalid "
@@ -288,7 +291,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
                 cell_ite->vertex(3)->point());
             Vector diff_cm = test_point - cm;
             diff_cm = diff_cm /
-                      (std::sqrt(CGAL::to_double(diff_cm.squared_length())));
+                (std::sqrt(CGAL::to_double(diff_cm.squared_length())));
 
             for (Point const &current_point : Calpha_xyz) {
                 // if ( current_point == test_point ) continue; // only when
@@ -316,7 +319,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
                 cell_ite->vertex(3)->point());
             Vector diff_cm = test_point - cm;
             diff_cm = diff_cm /
-                      (std::sqrt(CGAL::to_double(diff_cm.squared_length())));
+                (std::sqrt(CGAL::to_double(diff_cm.squared_length())));
 
             for (Point const &current_point : Calpha_xyz) {
                 // if ( current_point == test_point ) continue; // only when
@@ -383,7 +386,7 @@ void discard_ASA_CACH(std::vector<Point> const &Calpha_xyz,
         for (unsigned int j = 0; j < CH_vtces.size(); j++) {
             Vector test_vtor = test_point - CH_vtces[j];
             test_vtor = test_vtor /
-                        std::sqrt(CGAL::to_double(test_vtor.squared_length()));
+                std::sqrt(CGAL::to_double(test_vtor.squared_length()));
             double test_dot_pdt = CGAL::to_double(test_vtor * CH_normals[j]);
             if (test_dot_pdt < 0) {
                 // This centroid lies outside the Calpha convex hull
@@ -477,8 +480,7 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
                 // being
                 // inside
                 unsigned int const sum_halves = bool_half_xy + bool_half_yx +
-                                                bool_half_xz + bool_half_zx +
-                                                bool_half_yz + bool_half_zy;
+                    bool_half_xz + bool_half_zx + bool_half_yz + bool_half_zy;
                 if (sum_halves < 4) {
                     // can't say yet
                     continue;
@@ -566,8 +568,7 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
                 // being
                 // inside
                 unsigned int const sum_halves = bool_half_xy + bool_half_yx +
-                                                bool_half_xz + bool_half_zx +
-                                                bool_half_yz + bool_half_zy;
+                    bool_half_xz + bool_half_zx + bool_half_yz + bool_half_zy;
 
                 if (sum_halves > 4) {
                     // inside
@@ -657,8 +658,8 @@ double refine_cell_volume(
     double const vertex_3_sphere_sector_vol =
         sphere_sector_vol(p_1, p_2, p_3, p_0, rdW_1);
     return (entire_cell_vol - vertex_0_sphere_sector_vol -
-            vertex_1_sphere_sector_vol - vertex_2_sphere_sector_vol -
-            vertex_3_sphere_sector_vol);
+        vertex_1_sphere_sector_vol - vertex_2_sphere_sector_vol -
+        vertex_3_sphere_sector_vol);
 }
 // Get the volume ocuppied by the sector of the sphere inscribed in the
 // incident
@@ -688,7 +689,7 @@ double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
     Vector plane_normal = CGAL::cross_product(plane_vec_1, plane_vec_2);
     // normalize the normal vector
     plane_normal = plane_normal /
-                   (std::sqrt(CGAL::to_double(plane_normal.squared_length())));
+        (std::sqrt(CGAL::to_double(plane_normal.squared_length())));
     // get the distance between the delaunay vertex and the plane formed by p_1,
     // p_2 and p_3
     double dist_to_plane = CGAL::to_double(plane_normal * vec_1);
@@ -739,8 +740,8 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
 
             for (unsigned int j = 0; j < CH_vtces.size(); ++j) {
                 Vector test_vtor = test_point - CH_vtces[j];
-                test_vtor = test_vtor / std::sqrt(CGAL::to_double(
-                                            test_vtor.squared_length()));
+                test_vtor = test_vtor /
+                    std::sqrt(CGAL::to_double(test_vtor.squared_length()));
                 double test_dot_pdt =
                     CGAL::to_double(test_vtor * CH_normals[j]);
 
@@ -791,8 +792,8 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
 
             for (unsigned int j = 0; j < CH_vtces.size(); j++) {
                 Vector test_vtor = test_point - CH_vtces[j];
-                test_vtor = test_vtor / std::sqrt(CGAL::to_double(
-                                            test_vtor.squared_length()));
+                test_vtor = test_vtor /
+                    std::sqrt(CGAL::to_double(test_vtor.squared_length()));
                 double test_dot_pdt =
                     CGAL::to_double(test_vtor * CH_normals[j]);
                 if (test_dot_pdt < 0) {
@@ -889,7 +890,7 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                         for (unsigned int k = i + 1; k < i_points.size(); k++) {
                             if (i_points[i] == i_points[k]) {
                                 i_points[k] = i_points[k] +
-                                              Vector(0.01 * i, 0.01 * k, 0.01);
+                                    Vector(0.01 * i, 0.01 * k, 0.01);
                                 degeneracies_bool = true;
                             }
                         }
@@ -906,14 +907,14 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                     // This polyhedron contains 4 vertices
                     atom_cnt_poly += 4;
                     // Add the volume of this polyhedron
-                    volume =
-                        volume + std::abs(CGAL::to_double(CGAL::volume(p0,
-                                     i_points[0], i_points[1], i_points[2])));
+                    volume = volume +
+                        std::abs(CGAL::to_double(CGAL::volume(
+                            p0, i_points[0], i_points[1], i_points[2])));
 
                     // Substract the volume of the sphere sector
-                    volume =
-                        volume - sphere_sector_vol(p0, i_points[0], i_points[1],
-                                     i_points[2], VdW_radius_0);
+                    volume = volume -
+                        sphere_sector_vol(p0, i_points[0], i_points[1],
+                            i_points[2], VdW_radius_0);
                 }
             }
             break;
@@ -987,7 +988,7 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                      k < i_points.size(); k++) {
                                     if (i_points[k] == i_points[k]) {
                                         i_points[k] = i_points[k] +
-                                                      Vector(0.01, 0.01, 0.01);
+                                            Vector(0.01, 0.01, 0.01);
                                         degeneracies_bool = true;
                                     }
                                 }
@@ -1010,27 +1011,25 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                             atom_cnt_poly += 12;
                             // Add the volume of this polyhedron
                             volume = volume +
-                                     std::abs(CGAL::to_double(CGAL::volume(
-                                         p0, i_points[0], i_points[1], p1)));
-                            volume =
-                                volume +
+                                std::abs(CGAL::to_double(CGAL::volume(
+                                    p0, i_points[0], i_points[1], p1)));
+                            volume = volume +
                                 std::abs(CGAL::to_double(CGAL::volume(p1,
                                     i_points[0], i_points[1], i_points[2])));
-                            volume =
-                                volume +
+                            volume = volume +
                                 std::abs(CGAL::to_double(CGAL::volume(p1,
                                     i_points[1], i_points[2], i_points[3])));
 
                             // Substract the volume of the sphere sector
-                            volume =
-                                volume - sphere_sector_vol(p0, i_points[0],
-                                             i_points[1], p1, VdW_radius_0);
-                            volume = volume - sphere_sector_vol(p1, i_points[0],
-                                                  i_points[1], i_points[2],
-                                                  VdW_radius_1);
-                            volume = volume - sphere_sector_vol(p1, i_points[1],
-                                                  i_points[2], i_points[3],
-                                                  VdW_radius_1);
+                            volume = volume -
+                                sphere_sector_vol(p0, i_points[0], i_points[1],
+                                    p1, VdW_radius_0);
+                            volume = volume -
+                                sphere_sector_vol(p1, i_points[0], i_points[1],
+                                    i_points[2], VdW_radius_1);
+                            volume = volume -
+                                sphere_sector_vol(p1, i_points[1], i_points[2],
+                                    i_points[3], VdW_radius_1);
                         }
                     }
                 }
@@ -1115,8 +1114,7 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                         for (unsigned int k = i + 1;
                                              k < i_points.size(); k++) {
                                             if (i_points[k] == i_points[k]) {
-                                                i_points[k] =
-                                                    i_points[k] +
+                                                i_points[k] = i_points[k] +
                                                     Vector(0.01, 0.01, 0.01);
                                                 degeneracies_bool = true;
                                             }
@@ -1141,45 +1139,40 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                     // This polyhedron contains 12 vertices
                                     atom_cnt_poly += 12;
                                     // Add the volume of this polyhedron
-                                    volume =
-                                        volume +
+                                    volume = volume +
                                         std::abs(CGAL::to_double(CGAL::volume(
                                             p0, p1, p2, i_points[0])));
-                                    volume =
-                                        volume +
+                                    volume = volume +
                                         std::abs(CGAL::to_double(CGAL::volume(
                                             p0, p2, i_points[0], i_points[1])));
-                                    volume =
-                                        volume +
+                                    volume = volume +
                                         std::abs(CGAL::to_double(
                                             CGAL::volume(p2, i_points[0],
                                                 i_points[1], i_points[2])));
 
                                     // Substract the volume of the sphere sector
                                     // 1st tetra
-                                    volume =
-                                        volume - sphere_sector_vol(p0, p1, p2,
-                                                     i_points[0], VdW_radius_0);
-                                    volume =
-                                        volume - sphere_sector_vol(p1, p2, p0,
-                                                     i_points[0], VdW_radius_1);
-                                    volume =
-                                        volume - sphere_sector_vol(p2, p0, p1,
-                                                     i_points[0], VdW_radius_2);
+                                    volume = volume -
+                                        sphere_sector_vol(p0, p1, p2,
+                                            i_points[0], VdW_radius_0);
+                                    volume = volume -
+                                        sphere_sector_vol(p1, p2, p0,
+                                            i_points[0], VdW_radius_1);
+                                    volume = volume -
+                                        sphere_sector_vol(p2, p0, p1,
+                                            i_points[0], VdW_radius_2);
                                     // 2nd tetra
-                                    volume =
-                                        volume - sphere_sector_vol(p0, p2,
-                                                     i_points[0], i_points[1],
-                                                     VdW_radius_0);
-                                    volume =
-                                        volume - sphere_sector_vol(p2, p0,
-                                                     i_points[0], i_points[1],
-                                                     VdW_radius_2);
+                                    volume = volume -
+                                        sphere_sector_vol(p0, p2, i_points[0],
+                                            i_points[1], VdW_radius_0);
+                                    volume = volume -
+                                        sphere_sector_vol(p2, p0, i_points[0],
+                                            i_points[1], VdW_radius_2);
                                     // 3rd tetra
-                                    volume =
-                                        volume - sphere_sector_vol(p2,
-                                                     i_points[0], i_points[1],
-                                                     i_points[2], VdW_radius_2);
+                                    volume = volume -
+                                        sphere_sector_vol(p2, i_points[0],
+                                            i_points[1], i_points[2],
+                                            VdW_radius_2);
                                 }
                             }
                         }
@@ -1440,512 +1433,529 @@ query_type get_i_not_equal(const std::vector<query_type> &in_vec,
 
 namespace NDD {
 
-// Analytical NDD.
-void ndd(NA_Vector const &cavity_void_cells,
-    std::string const &modes_ndd_filename, std::string const &out_file) {
+    // Analytical NDD.
+    void ndd(NA_Vector const &cavity_void_cells,
+        std::string const &modes_ndd_filename, std::string const &out_file) {
 
-    std::vector<double> output_volumes;
-    std::vector<unsigned int> all_indices;
+        std::vector<double> output_volumes;
+        std::vector<unsigned int> all_indices;
 
-    NDD_IVector const cells_indices = get_vertices(cavity_void_cells);
+        NDD_IVector const cells_indices = get_vertices(cavity_void_cells);
 
-    read_ptraj_modes(modes_ndd_filename);
+        Modes const modes(modes_ndd_filename);
 
-    if (input_pdbs_filename.is_open()) {
-
-        ANA::NDD::ndd_write_out_file(output_volumes, out_file);
-    } else
-        std::cerr << "Unable to open " << pdb_list << " for NDD" << '\n';
-
-    return;
-}
-
-// Perform Non Delaunay Dynamics.
-void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
-    const std::string &pdb_list, bool const precision,
-    const std::vector<unsigned int> include_CH_atoms,
-    const std::string &out_file) {
-    std::vector<double> output_volumes;
-    std::vector<unsigned int> all_indices;
-
-    NDD_IVector cells_indices;
-    std::ifstream input_pdbs_filename(pdb_list);
-    std::string pdb_filename;
-
-    if (input_pdbs_filename.is_open()) {
-        // Get the atoms involved in each pocket.
-        // new_cells_coordinates and cells_indices have similar structure.
-        // They are vectors of vectors of arrays of 4 elements. Each array
-        // refers
-        // to a cell. Each vector of arrays refer to a pocket and all of these
-        // pockets (vectors of arrays) are compiled into a vector.
-
-        auto cells_indices = get_vertices(cavity_void_cells);
-
-        if (precision == 1) {
-            while (std::getline(input_pdbs_filename, pdb_filename)) {
-                NDD_Vector init_cells_coordinates, new_cells_coordinates,
-                    cavity_void_coords, cavity_intersecting_coords;
-                Triang_Vector CH_triangs;
-                std::vector<std::array<bool, 4>> intersecting_bool;
-                std::vector<unsigned int> intersecting_total;
-                Poly_Vector border_poly;
-
-                // Get cell coordinates and the new include area triangles
-                ANA::NDD::ndd_read_PDB_get_cells(pdb_filename, cells_indices,
-                    include_CH_atoms, new_cells_coordinates, CH_triangs);
-                // Separate fully inside cells and the intersecting ones. Get
-                // the volume of this last group.
-                ndd_discard_CH_0(new_cells_coordinates, CH_triangs,
-                    cavity_void_coords, cavity_intersecting_coords,
-                    intersecting_bool, intersecting_total);
-                double poly_vol =
-                    ndd_discard_CH_1(cavity_intersecting_coords, CH_triangs,
-                        intersecting_bool, intersecting_total, border_poly);
-                // Store result
-                output_volumes.push_back(
-                    poly_vol + ndd_get_void_volume(cavity_void_coords));
-            }
-        } else {
-            while (std::getline(input_pdbs_filename, pdb_filename)) {
-                NDD_Vector init_cells_coordinates, new_cells_coordinates,
-                    cavity_void_coords;
-                // Get cell coordinates
-                ANA::NDD::ndd_read_PDB_get_cells(
-                    pdb_filename, cells_indices, new_cells_coordinates);
-                // Store result
-                output_volumes.push_back(
-                    ndd_get_void_volume(new_cells_coordinates));
-            }
+        for (auto each : modes.evals) {
+            std::cout << each << ' ';
         }
+        std::cout << '\n' << "------------" << '\n';
+        for (auto each : modes.evectors[398]) {
+            std::cout << each << ' ';
+        }
+        std::cout << '\n';
 
-        ANA::NDD::ndd_write_out_file(output_volumes, out_file);
-    } else
-        std::cerr << "Unable to open " << pdb_list << " for NDD" << '\n';
+        // ANA::NDD::ndd_write_out_file(output_volumes, out_file);
 
-    return;
-}
-
-// Get the indices of the atoms involved in the given cells
-NDD_IVector get_vertices(NA_Vector const &cavity_void_cells) {
-
-    NDD_IVector cells_indices;
-    cells_indices.reserve(cavity_void_cells.size() * 4);
-
-    for (Finite_cells_iterator const &ac_ite : cavity_void_cells) {
-        NDD_IElement temp{ac_ite->vertex(0)->info().GetIndex(),
-            ac_ite->vertex(1)->info().GetIndex(),
-            ac_ite->vertex(2)->info().GetIndex(),
-            ac_ite->vertex(3)->info().GetIndex()};
-        cells_indices.push_back(std::move(temp));
+        return;
     }
 
-    return cells_indices;
-}
+    // Perform Non Delaunay Dynamics.
+    void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
+        const std::string &pdb_list, bool const precision,
+        const std::vector<unsigned int> include_CH_atoms,
+        const std::string &out_file) {
+        std::vector<double> output_volumes;
+        std::vector<unsigned int> all_indices;
 
-// Calc volume of the input cells. Reedited for array container.
-double ndd_get_void_volume(NDD_Vector const &cavity_void_cells) {
+        NDD_IVector cells_indices;
+        std::ifstream input_pdbs_filename(pdb_list);
+        std::string pdb_filename;
 
-    double current_cell_vol, volume = 0;
+        if (input_pdbs_filename.is_open()) {
+            // Get the atoms involved in each pocket.
+            // new_cells_coordinates and cells_indices have similar structure.
+            // They are vectors of vectors of arrays of 4 elements. Each array
+            // refers
+            // to a cell. Each vector of arrays refer to a pocket and all of
+            // these pockets (vectors of arrays) are compiled into a vector.
 
-    for (const NDD_Element &cell : cavity_void_cells) {
-        // Iterate over each cell of and get the total volume of the tetrahedron
-        current_cell_vol = CGAL::to_double(CGAL::volume(
-            cell[0].first, cell[1].first, cell[2].first, cell[3].first));
-        // Substract the volume filled by the 4 atoms in the vtces
-        current_cell_vol = ndd_refine_cell_volume(current_cell_vol, cell);
-        volume = volume + current_cell_vol;
-    }
+            auto cells_indices = get_vertices(cavity_void_cells);
 
-    return volume;
-}
-// Discard cells without a vertex inside the specified convex hull. Hi
-// precision. NDD version
-void ndd_discard_CH_0(NDD_Vector const &in_coords,
-    Triang_Vector const &CH_triangs, NDD_Vector &out_coords,
-    NDD_Vector &out_intersecting_coords,
-    std::vector<std::array<bool, 4>> &intersecting_bool,
-    std::vector<unsigned int> &intersecting_total) {
+            if (precision == 1) {
+                while (std::getline(input_pdbs_filename, pdb_filename)) {
+                    NDD_Vector init_cells_coordinates, new_cells_coordinates,
+                        cavity_void_coords, cavity_intersecting_coords;
+                    Triang_Vector CH_triangs;
+                    std::vector<std::array<bool, 4>> intersecting_bool;
+                    std::vector<unsigned int> intersecting_total;
+                    Poly_Vector border_poly;
 
-    std::vector<Vector> CH_normals;
-    std::vector<Point> CH_vtces;
-    // Triangle normals point inwards. Only inside points will give a positive
-    // dot product against all normals
-    for (auto const &triangle : CH_triangs) {
-        Vector v1 = triangle.vertex(1) - triangle.vertex(0);
-        Vector v2 = triangle.vertex(2) - triangle.vertex(1);
-        Vector normal = CGAL::cross_product(v2, v1);
-        normal = normal / std::sqrt(CGAL::to_double(normal.squared_length()));
-        CH_normals.push_back(normal);
-        CH_vtces.push_back(triangle.vertex(1));
-    }
-
-    // Now discard outside cells
-    for (const auto &ndd_array : in_coords) {
-        std::array<bool, 4> vtx_inside_bool = {false, false, false, false};
-        unsigned int total = 0;
-        // Get nbr of vertices that lie outside the include area.
-        for (unsigned int i = 0; i <= 3; ++i) {
-            Point test_point(ndd_array[i].first);
-
-            for (unsigned int j = 0; j < CH_vtces.size(); j++) {
-                Vector test_vtor = test_point - CH_vtces[j];
-                test_vtor = test_vtor / std::sqrt(CGAL::to_double(
-                                            test_vtor.squared_length()));
-                double test_dot_pdt =
-                    CGAL::to_double(test_vtor * CH_normals[j]);
-
-                if (test_dot_pdt < 0) {
-                    vtx_inside_bool[i] = true;
-                    ++total;
-                    break;
+                    // Get cell coordinates and the new include area triangles
+                    ANA::NDD::ndd_read_PDB_get_cells(pdb_filename,
+                        cells_indices, include_CH_atoms, new_cells_coordinates,
+                        CH_triangs);
+                    // Separate fully inside cells and the intersecting ones.
+                    // Get the volume of this last group.
+                    ndd_discard_CH_0(new_cells_coordinates, CH_triangs,
+                        cavity_void_coords, cavity_intersecting_coords,
+                        intersecting_bool, intersecting_total);
+                    double poly_vol =
+                        ndd_discard_CH_1(cavity_intersecting_coords, CH_triangs,
+                            intersecting_bool, intersecting_total, border_poly);
+                    // Store result
+                    output_volumes.push_back(
+                        poly_vol + ndd_get_void_volume(cavity_void_coords));
+                }
+            } else {
+                while (std::getline(input_pdbs_filename, pdb_filename)) {
+                    NDD_Vector init_cells_coordinates, new_cells_coordinates,
+                        cavity_void_coords;
+                    // Get cell coordinates
+                    ANA::NDD::ndd_read_PDB_get_cells(
+                        pdb_filename, cells_indices, new_cells_coordinates);
+                    // Store result
+                    output_volumes.push_back(
+                        ndd_get_void_volume(new_cells_coordinates));
                 }
             }
-        }
-        if (total == 0) {
-            // cell is entirely contained in the included area
-            out_coords.push_back(ndd_array);
-        } else if (total == 4) {
-            // cell is outside the included area
-            continue;
-        } else {
-            // cell instersects the included area
-            out_intersecting_coords.push_back(ndd_array);
-            intersecting_bool.push_back(vtx_inside_bool);
-            intersecting_total.push_back(total);
-        }
+
+            ANA::NDD::ndd_write_out_file(output_volumes, out_file);
+        } else
+            std::cerr << "Unable to open " << pdb_list << " for NDD" << '\n';
+
+        return;
     }
 
-    return;
-}
+    // Get the indices of the atoms involved in the given cells
+    NDD_IVector get_vertices(NA_Vector const &cavity_void_cells) {
 
-// Discard parts of cells outside the specified triangulation using
-// intersecitons. NDD version
-double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
-    Triang_Vector const &CH_triangs,
-    const std::vector<std::array<bool, 4>> &intersecting_bool,
-    const std::vector<unsigned int> &intersecting_total,
-    Poly_Vector &border_poly) {
-    // Use this vector to obtain the indices of the vtces used to form the
-    // intersecting segments
-    std::vector<unsigned int> v = {0, 1, 2, 3};
-    double volume = 0;
+        NDD_IVector cells_indices;
+        cells_indices.reserve(cavity_void_cells.size() * 4);
 
-    for (unsigned int each = 0; each < in_intersecting_coords.size(); ++each) {
+        for (Finite_cells_iterator const &ac_ite : cavity_void_cells) {
+            NDD_IElement temp{ac_ite->vertex(0)->info().GetIndex(),
+                ac_ite->vertex(1)->info().GetIndex(),
+                ac_ite->vertex(2)->info().GetIndex(),
+                ac_ite->vertex(3)->info().GetIndex()};
+            cells_indices.push_back(std::move(temp));
+        }
 
-        switch (intersecting_total[each]) {
-        case 3: {
-            for (unsigned int i = 0; i < 4; i++) {
-                if (!intersecting_bool[each][i]) {
-                    // Got the handles of the included_area cell(s) that contain
-                    // vertices of the intersecting cell
-                    // 1 vertex inside included area
-                    std::vector<Point> i_points;
+        return cells_indices;
+    }
 
-                    // Get the points of the vtces of the intersecting cell
-                    // p0 is the point inside the included area
-                    Point p0(in_intersecting_coords[each][i].first);
-                    double const VdW_radius_0 =
-                        double(in_intersecting_coords[each][i].second);
-                    Point p1(
-                        in_intersecting_coords[each][get_i_not_equal(v, i, 1)]
-                            .first);
-                    Point p2(
-                        in_intersecting_coords[each][get_i_not_equal(v, i, 2)]
-                            .first);
-                    Point p3(
-                        in_intersecting_coords[each][get_i_not_equal(v, i, 3)]
-                            .first);
+    // Calc volume of the input cells. Reedited for array container.
+    double ndd_get_void_volume(NDD_Vector const &cavity_void_cells) {
 
-                    // Get the intersecting segments
-                    std::vector<Segment> segments = {
-                        Segment(p0, p1), Segment(p0, p2), Segment(p0, p3)};
+        double current_cell_vol, volume = 0;
 
-                    // Get the intersections
-                    for (const auto &s : segments) {
-                        for (const auto &t : CH_triangs) {
-                            Object inter_obj = CGAL::intersection(s, t);
-                            if (Point const *inter_point =
-                                    CGAL::object_cast<Point>(&inter_obj)) {
-                                i_points.push_back(*inter_point);
-                                break;
-                            }
-                        }
+        for (const NDD_Element &cell : cavity_void_cells) {
+            // Iterate over each cell of and get the total volume of the
+            // tetrahedron
+            current_cell_vol = CGAL::to_double(CGAL::volume(
+                cell[0].first, cell[1].first, cell[2].first, cell[3].first));
+            // Substract the volume filled by the 4 atoms in the vtces
+            current_cell_vol = ndd_refine_cell_volume(current_cell_vol, cell);
+            volume = volume + current_cell_vol;
+        }
+
+        return volume;
+    }
+    // Discard cells without a vertex inside the specified convex hull. Hi
+    // precision. NDD version
+    void ndd_discard_CH_0(NDD_Vector const &in_coords,
+        Triang_Vector const &CH_triangs, NDD_Vector &out_coords,
+        NDD_Vector &out_intersecting_coords,
+        std::vector<std::array<bool, 4>> &intersecting_bool,
+        std::vector<unsigned int> &intersecting_total) {
+
+        std::vector<Vector> CH_normals;
+        std::vector<Point> CH_vtces;
+        // Triangle normals point inwards. Only inside points will give a
+        // positive dot product against all normals
+        for (auto const &triangle : CH_triangs) {
+            Vector v1 = triangle.vertex(1) - triangle.vertex(0);
+            Vector v2 = triangle.vertex(2) - triangle.vertex(1);
+            Vector normal = CGAL::cross_product(v2, v1);
+            normal =
+                normal / std::sqrt(CGAL::to_double(normal.squared_length()));
+            CH_normals.push_back(normal);
+            CH_vtces.push_back(triangle.vertex(1));
+        }
+
+        // Now discard outside cells
+        for (const auto &ndd_array : in_coords) {
+            std::array<bool, 4> vtx_inside_bool = {false, false, false, false};
+            unsigned int total = 0;
+            // Get nbr of vertices that lie outside the include area.
+            for (unsigned int i = 0; i <= 3; ++i) {
+                Point test_point(ndd_array[i].first);
+
+                for (unsigned int j = 0; j < CH_vtces.size(); j++) {
+                    Vector test_vtor = test_point - CH_vtces[j];
+                    test_vtor = test_vtor /
+                        std::sqrt(CGAL::to_double(test_vtor.squared_length()));
+                    double test_dot_pdt =
+                        CGAL::to_double(test_vtor * CH_normals[j]);
+
+                    if (test_dot_pdt < 0) {
+                        vtx_inside_bool[i] = true;
+                        ++total;
+                        break;
                     }
-
-                    // Check if included area and intersecting cell are sharing
-                    // vertices,
-                    // creating degeneracies.
-                    bool degeneracies_bool = false;
-                    for (unsigned int i = 0; i < i_points.size() - 1; i++) {
-                        for (unsigned int k = i + 1; k < i_points.size(); k++) {
-                            if (i_points[i] == i_points[k]) {
-                                i_points[k] = i_points[k] +
-                                              Vector(0.01 * i, 0.01 * k, 0.01);
-                                degeneracies_bool = true;
-                            }
-                        }
-                    }
-                    if (degeneracies_bool == true) {
-                        p0 = p0 - Vector(0.01, 0.01, 0.01);
-                    }
-
-                    // Construct the polyhedron and get its volume.
-                    Polyhedron CH;
-                    CH.make_tetrahedron(
-                        p0, i_points[0], i_points[1], i_points[2]);
-                    border_poly.push_back(CH);
-                    // Add the volume of this polyhedron.
-                    volume =
-                        volume + std::abs(CGAL::to_double(CGAL::volume(p0,
-                                     i_points[0], i_points[1], i_points[2])));
-
-                    // Substract the volume of the sphere sector.
-                    volume =
-                        volume - sphere_sector_vol(p0, i_points[0], i_points[1],
-                                     i_points[2], VdW_radius_0);
                 }
             }
-            break;
+            if (total == 0) {
+                // cell is entirely contained in the included area
+                out_coords.push_back(ndd_array);
+            } else if (total == 4) {
+                // cell is outside the included area
+                continue;
+            } else {
+                // cell instersects the included area
+                out_intersecting_coords.push_back(ndd_array);
+                intersecting_bool.push_back(vtx_inside_bool);
+                intersecting_total.push_back(total);
+            }
         }
-        case 2: {
-            for (unsigned int i = 0; i < 4; i++) {
-                if (!intersecting_bool[each][i]) {
-                    for (unsigned int j = i + 1; j < 4; j++) {
-                        if (!intersecting_bool[each][j]) {
-                            // 2 vertices inside included area
-                            std::vector<Point> i_points;
-                            // Get the points of the vtces of the intersecting
-                            // cell
-                            Point p0(in_intersecting_coords[each][i].first);
-                            Point p1(in_intersecting_coords[each][j].first);
-                            // p0 p1 are the points inside the included area
-                            double const VdW_radius_0 =
-                                double(in_intersecting_coords[each][i].second);
-                            double const VdW_radius_1 =
-                                double(in_intersecting_coords[each][j].second);
-                            std::vector<unsigned int> query_vec = {i, j};
-                            Point p2(
-                                in_intersecting_coords[each][get_i_not_equal(v,
-                                                                 query_vec, 1)]
-                                    .first);
-                            Point p3(
-                                in_intersecting_coords[each][get_i_not_equal(v,
-                                                                 query_vec, 2)]
-                                    .first);
 
-                            // Get the intersecting segments
-                            std::vector<Segment> segments = {Segment(p0, p2),
-                                Segment(p0, p3), Segment(p1, p2),
-                                Segment(p1, p3)};
+        return;
+    }
 
-                            // Get the intersections
-                            for (const auto &s : segments) {
-                                for (const auto &t : CH_triangs) {
-                                    Object inter_obj = CGAL::intersection(s, t);
-                                    if (Point const *inter_point =
-                                            CGAL::object_cast<Point>(
-                                                &inter_obj)) {
-                                        i_points.push_back(*inter_point);
-                                        break;
-                                    }
+    // Discard parts of cells outside the specified triangulation using
+    // intersecitons. NDD version
+    double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
+        Triang_Vector const &CH_triangs,
+        const std::vector<std::array<bool, 4>> &intersecting_bool,
+        const std::vector<unsigned int> &intersecting_total,
+        Poly_Vector &border_poly) {
+        // Use this vector to obtain the indices of the vtces used to form the
+        // intersecting segments
+        std::vector<unsigned int> v = {0, 1, 2, 3};
+        double volume = 0;
+
+        for (unsigned int each = 0; each < in_intersecting_coords.size();
+             ++each) {
+
+            switch (intersecting_total[each]) {
+            case 3: {
+                for (unsigned int i = 0; i < 4; i++) {
+                    if (!intersecting_bool[each][i]) {
+                        // Got the handles of the included_area cell(s) that
+                        // contain vertices of the intersecting cell 1 vertex
+                        // inside included area
+                        std::vector<Point> i_points;
+
+                        // Get the points of the vtces of the intersecting cell
+                        // p0 is the point inside the included area
+                        Point p0(in_intersecting_coords[each][i].first);
+                        double const VdW_radius_0 =
+                            double(in_intersecting_coords[each][i].second);
+                        Point p1(in_intersecting_coords[each][get_i_not_equal(
+                                                                  v, i, 1)]
+                                     .first);
+                        Point p2(in_intersecting_coords[each][get_i_not_equal(
+                                                                  v, i, 2)]
+                                     .first);
+                        Point p3(in_intersecting_coords[each][get_i_not_equal(
+                                                                  v, i, 3)]
+                                     .first);
+
+                        // Get the intersecting segments
+                        std::vector<Segment> segments = {
+                            Segment(p0, p1), Segment(p0, p2), Segment(p0, p3)};
+
+                        // Get the intersections
+                        for (const auto &s : segments) {
+                            for (const auto &t : CH_triangs) {
+                                Object inter_obj = CGAL::intersection(s, t);
+                                if (Point const *inter_point =
+                                        CGAL::object_cast<Point>(&inter_obj)) {
+                                    i_points.push_back(*inter_point);
+                                    break;
                                 }
                             }
+                        }
 
-                            // Check if included area and intersecting cell are
-                            // sharing
-                            // vertices, creating degeneracies.
-                            bool degeneracies_bool = false;
-                            for (unsigned int i = 0; i < i_points.size() - 1;
-                                 i++) {
-                                for (unsigned int k = i + 1;
-                                     k < i_points.size(); k++) {
-                                    if (i_points[k] == i_points[k]) {
-                                        i_points[k] = i_points[k] +
-                                                      Vector(0.01, 0.01, 0.01);
-                                        degeneracies_bool = true;
-                                    }
+                        // Check if included area and intersecting cell are
+                        // sharing vertices, creating degeneracies.
+                        bool degeneracies_bool = false;
+                        for (unsigned int i = 0; i < i_points.size() - 1; i++) {
+                            for (unsigned int k = i + 1; k < i_points.size();
+                                 k++) {
+                                if (i_points[i] == i_points[k]) {
+                                    i_points[k] = i_points[k] +
+                                        Vector(0.01 * i, 0.01 * k, 0.01);
+                                    degeneracies_bool = true;
                                 }
                             }
-                            if (degeneracies_bool == true) {
-                                p0 = p0 - Vector(0.01, 0.01, 0.01);
-                                p1 = p1 - Vector(0.01, -0.01, 0.01);
+                        }
+                        if (degeneracies_bool == true) {
+                            p0 = p0 - Vector(0.01, 0.01, 0.01);
+                        }
+
+                        // Construct the polyhedron and get its volume.
+                        Polyhedron CH;
+                        CH.make_tetrahedron(
+                            p0, i_points[0], i_points[1], i_points[2]);
+                        border_poly.push_back(CH);
+                        // Add the volume of this polyhedron.
+                        volume = volume +
+                            std::abs(CGAL::to_double(CGAL::volume(
+                                p0, i_points[0], i_points[1], i_points[2])));
+
+                        // Substract the volume of the sphere sector.
+                        volume = volume -
+                            sphere_sector_vol(p0, i_points[0], i_points[1],
+                                i_points[2], VdW_radius_0);
+                    }
+                }
+                break;
+            }
+            case 2: {
+                for (unsigned int i = 0; i < 4; i++) {
+                    if (!intersecting_bool[each][i]) {
+                        for (unsigned int j = i + 1; j < 4; j++) {
+                            if (!intersecting_bool[each][j]) {
+                                // 2 vertices inside included area
+                                std::vector<Point> i_points;
+                                // Get the points of the vtces of the
+                                // intersecting cell
+                                Point p0(in_intersecting_coords[each][i].first);
+                                Point p1(in_intersecting_coords[each][j].first);
+                                // p0 p1 are the points inside the included area
+                                double const VdW_radius_0 = double(
+                                    in_intersecting_coords[each][i].second);
+                                double const VdW_radius_1 = double(
+                                    in_intersecting_coords[each][j].second);
+                                std::vector<unsigned int> query_vec = {i, j};
+                                Point p2(
+                                    in_intersecting_coords[each]
+                                                          [get_i_not_equal(
+                                                               v, query_vec, 1)]
+                                                              .first);
+                                Point p3(
+                                    in_intersecting_coords[each]
+                                                          [get_i_not_equal(
+                                                               v, query_vec, 2)]
+                                                              .first);
+
+                                // Get the intersecting segments
+                                std::vector<Segment> segments = {
+                                    Segment(p0, p2), Segment(p0, p3),
+                                    Segment(p1, p2), Segment(p1, p3)};
+
+                                // Get the intersections
+                                for (const auto &s : segments) {
+                                    for (const auto &t : CH_triangs) {
+                                        Object inter_obj =
+                                            CGAL::intersection(s, t);
+                                        if (Point const *inter_point =
+                                                CGAL::object_cast<Point>(
+                                                    &inter_obj)) {
+                                            i_points.push_back(*inter_point);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // Check if included area and intersecting cell
+                                // are sharing vertices, creating degeneracies.
+                                bool degeneracies_bool = false;
+                                for (unsigned int i = 0;
+                                     i < i_points.size() - 1; i++) {
+                                    for (unsigned int k = i + 1;
+                                         k < i_points.size(); k++) {
+                                        if (i_points[k] == i_points[k]) {
+                                            i_points[k] = i_points[k] +
+                                                Vector(0.01, 0.01, 0.01);
+                                            degeneracies_bool = true;
+                                        }
+                                    }
+                                }
+                                if (degeneracies_bool == true) {
+                                    p0 = p0 - Vector(0.01, 0.01, 0.01);
+                                    p1 = p1 - Vector(0.01, -0.01, 0.01);
+                                }
+
+                                // Construct the polyhedron and get its volume
+                                Polyhedron CH;
+                                CH.make_tetrahedron(
+                                    p0, i_points[0], i_points[1], p1);
+                                CH.make_tetrahedron(
+                                    p1, i_points[0], i_points[1], i_points[2]);
+                                CH.make_tetrahedron(
+                                    p1, i_points[1], i_points[2], i_points[3]);
+                                border_poly.push_back(CH);
+                                // Add the volume of this polyhedron
+                                volume = volume +
+                                    std::abs(CGAL::to_double(CGAL::volume(
+                                        p0, i_points[0], i_points[1], p1)));
+                                volume = volume +
+                                    std::abs(CGAL::to_double(
+                                        CGAL::volume(p1, i_points[0],
+                                            i_points[1], i_points[2])));
+                                volume = volume +
+                                    std::abs(CGAL::to_double(
+                                        CGAL::volume(p1, i_points[1],
+                                            i_points[2], i_points[3])));
+
+                                // Substract the volume of the sphere sector
+                                volume = volume -
+                                    sphere_sector_vol(p0, i_points[0],
+                                        i_points[1], p1, VdW_radius_0);
+                                volume = volume -
+                                    sphere_sector_vol(p1, i_points[0],
+                                        i_points[1], i_points[2], VdW_radius_1);
+                                volume = volume -
+                                    sphere_sector_vol(p1, i_points[1],
+                                        i_points[2], i_points[3], VdW_radius_1);
                             }
-
-                            // Construct the polyhedron and get its volume
-                            Polyhedron CH;
-                            CH.make_tetrahedron(
-                                p0, i_points[0], i_points[1], p1);
-                            CH.make_tetrahedron(
-                                p1, i_points[0], i_points[1], i_points[2]);
-                            CH.make_tetrahedron(
-                                p1, i_points[1], i_points[2], i_points[3]);
-                            border_poly.push_back(CH);
-                            // Add the volume of this polyhedron
-                            volume = volume +
-                                     std::abs(CGAL::to_double(CGAL::volume(
-                                         p0, i_points[0], i_points[1], p1)));
-                            volume =
-                                volume +
-                                std::abs(CGAL::to_double(CGAL::volume(p1,
-                                    i_points[0], i_points[1], i_points[2])));
-                            volume =
-                                volume +
-                                std::abs(CGAL::to_double(CGAL::volume(p1,
-                                    i_points[1], i_points[2], i_points[3])));
-
-                            // Substract the volume of the sphere sector
-                            volume =
-                                volume - sphere_sector_vol(p0, i_points[0],
-                                             i_points[1], p1, VdW_radius_0);
-                            volume = volume - sphere_sector_vol(p1, i_points[0],
-                                                  i_points[1], i_points[2],
-                                                  VdW_radius_1);
-                            volume = volume - sphere_sector_vol(p1, i_points[1],
-                                                  i_points[2], i_points[3],
-                                                  VdW_radius_1);
                         }
                     }
                 }
+                break;
             }
-            break;
-        }
-        case 1: {
-            for (unsigned int i = 0; i < 4; i++) {
-                if (!intersecting_bool[each][i]) {
-                    for (unsigned int j = i + 1; j < 4; j++) {
-                        if (!intersecting_bool[each][j]) {
-                            for (unsigned int k = j + 1; k < 4; k++) {
-                                if (!intersecting_bool[each][k]) {
-                                    // 3 vertices inside the included area
-                                    std::vector<Point> i_points;
-                                    // Get the points of the vtces of the
-                                    // intersecting cell
-                                    Point p0(
-                                        in_intersecting_coords[each][i].first);
-                                    Point p1(
-                                        in_intersecting_coords[each][j].first);
-                                    Point p2(
-                                        in_intersecting_coords[each][k].first);
-                                    // p0 p1 p3 are the points inside the
-                                    // included area
-                                    double const VdW_radius_0 = double(
-                                        in_intersecting_coords[each][i].second);
-                                    double const VdW_radius_1 = double(
-                                        in_intersecting_coords[each][j].second);
-                                    double const VdW_radius_2 = double(
-                                        in_intersecting_coords[each][k].second);
-                                    std::vector<unsigned int> query_vec = {
-                                        i, j, k};
-                                    Point p3(in_intersecting_coords
-                                                 [each][get_i_not_equal(
-                                                            v, query_vec, 1)]
+            case 1: {
+                for (unsigned int i = 0; i < 4; i++) {
+                    if (!intersecting_bool[each][i]) {
+                        for (unsigned int j = i + 1; j < 4; j++) {
+                            if (!intersecting_bool[each][j]) {
+                                for (unsigned int k = j + 1; k < 4; k++) {
+                                    if (!intersecting_bool[each][k]) {
+                                        // 3 vertices inside the included area
+                                        std::vector<Point> i_points;
+                                        // Get the points of the vtces of the
+                                        // intersecting cell
+                                        Point p0(in_intersecting_coords[each][i]
                                                      .first);
+                                        Point p1(in_intersecting_coords[each][j]
+                                                     .first);
+                                        Point p2(in_intersecting_coords[each][k]
+                                                     .first);
+                                        // p0 p1 p3 are the points inside the
+                                        // included area
+                                        double const VdW_radius_0 = double(
+                                            in_intersecting_coords[each][i]
+                                                .second);
+                                        double const VdW_radius_1 = double(
+                                            in_intersecting_coords[each][j]
+                                                .second);
+                                        double const VdW_radius_2 = double(
+                                            in_intersecting_coords[each][k]
+                                                .second);
+                                        std::vector<unsigned int> query_vec = {
+                                            i, j, k};
+                                        Point p3(in_intersecting_coords
+                                                     [each][get_i_not_equal(v,
+                                                                query_vec, 1)]
+                                                         .first);
 
-                                    // Get the intersecting segments
-                                    std::vector<Segment> segments = {
-                                        Segment(p0, p3), Segment(p1, p3),
-                                        Segment(p2, p3)};
+                                        // Get the intersecting segments
+                                        std::vector<Segment> segments = {
+                                            Segment(p0, p3), Segment(p1, p3),
+                                            Segment(p2, p3)};
 
-                                    // Get the intersections
-                                    for (const auto &s : segments) {
-                                        for (const auto &t : CH_triangs) {
-                                            Object inter_obj =
-                                                CGAL::intersection(s, t);
-                                            if (Point const *inter_point =
-                                                    CGAL::object_cast<Point>(
-                                                        &inter_obj)) {
-                                                i_points.push_back(
-                                                    *inter_point);
-                                                break;
+                                        // Get the intersections
+                                        for (const auto &s : segments) {
+                                            for (const auto &t : CH_triangs) {
+                                                Object inter_obj =
+                                                    CGAL::intersection(s, t);
+                                                if (Point const *inter_point =
+                                                        CGAL::object_cast<
+                                                            Point>(
+                                                            &inter_obj)) {
+                                                    i_points.push_back(
+                                                        *inter_point);
+                                                    break;
+                                                }
                                             }
                                         }
-                                    }
 
-                                    // Check if included area and intersecting
-                                    // cell are sharing
-                                    // vertices, creating degeneracies.
-                                    bool degeneracies_bool = false;
-                                    for (unsigned int i = 0;
-                                         i < i_points.size() - 1; i++) {
-                                        for (unsigned int k = i + 1;
-                                             k < i_points.size(); k++) {
-                                            if (i_points[k] == i_points[k]) {
-                                                i_points[k] =
-                                                    i_points[k] +
-                                                    Vector(0.01, 0.01, 0.01);
-                                                degeneracies_bool = true;
+                                        // Check if included area and
+                                        // intersecting cell are sharing
+                                        // vertices, creating degeneracies.
+                                        bool degeneracies_bool = false;
+                                        for (unsigned int i = 0;
+                                             i < i_points.size() - 1; i++) {
+                                            for (unsigned int k = i + 1;
+                                                 k < i_points.size(); k++) {
+                                                if (i_points[k] ==
+                                                    i_points[k]) {
+                                                    i_points[k] = i_points[k] +
+                                                        Vector(
+                                                            0.01, 0.01, 0.01);
+                                                    degeneracies_bool = true;
+                                                }
                                             }
                                         }
-                                    }
-                                    if (degeneracies_bool == true) {
-                                        p0 = p0 - Vector(0.01, 0.01, 0.01);
-                                        p1 = p1 - Vector(0.01, -0.01, 0.01);
-                                        p2 = p2 - Vector(0.01, -0.01, -0.01);
-                                    }
+                                        if (degeneracies_bool == true) {
+                                            p0 = p0 - Vector(0.01, 0.01, 0.01);
+                                            p1 = p1 - Vector(0.01, -0.01, 0.01);
+                                            p2 =
+                                                p2 - Vector(0.01, -0.01, -0.01);
+                                        }
 
-                                    // Construct the polyhedron and get its
-                                    // volume
-                                    Polyhedron CH;
-                                    CH.make_tetrahedron(
-                                        p0, p1, p2, i_points[0]);
-                                    CH.make_tetrahedron(
-                                        p0, p2, i_points[0], i_points[1]);
-                                    CH.make_tetrahedron(p2, i_points[0],
-                                        i_points[1], i_points[2]);
-                                    border_poly.push_back(CH);
-                                    // Add the volume of this polyhedron
-                                    volume =
-                                        volume +
-                                        std::abs(CGAL::to_double(CGAL::volume(
-                                            p0, p1, p2, i_points[0])));
-                                    volume =
-                                        volume +
-                                        std::abs(CGAL::to_double(CGAL::volume(
-                                            p0, p2, i_points[0], i_points[1])));
-                                    volume =
-                                        volume +
-                                        std::abs(CGAL::to_double(
-                                            CGAL::volume(p2, i_points[0],
-                                                i_points[1], i_points[2])));
+                                        // Construct the polyhedron and get its
+                                        // volume
+                                        Polyhedron CH;
+                                        CH.make_tetrahedron(
+                                            p0, p1, p2, i_points[0]);
+                                        CH.make_tetrahedron(
+                                            p0, p2, i_points[0], i_points[1]);
+                                        CH.make_tetrahedron(p2, i_points[0],
+                                            i_points[1], i_points[2]);
+                                        border_poly.push_back(CH);
+                                        // Add the volume of this polyhedron
+                                        volume = volume +
+                                            std::abs(
+                                                CGAL::to_double(CGAL::volume(
+                                                    p0, p1, p2, i_points[0])));
+                                        volume = volume +
+                                            std::abs(CGAL::to_double(
+                                                CGAL::volume(p0, p2,
+                                                    i_points[0], i_points[1])));
+                                        volume = volume +
+                                            std::abs(CGAL::to_double(
+                                                CGAL::volume(p2, i_points[0],
+                                                    i_points[1], i_points[2])));
 
-                                    // Substract the volume of the sphere sector
-                                    // 1st tetra
-                                    volume =
-                                        volume - sphere_sector_vol(p0, p1, p2,
-                                                     i_points[0], VdW_radius_0);
-                                    volume =
-                                        volume - sphere_sector_vol(p1, p2, p0,
-                                                     i_points[0], VdW_radius_1);
-                                    volume =
-                                        volume - sphere_sector_vol(p2, p0, p1,
-                                                     i_points[0], VdW_radius_2);
-                                    // 2nd tetra
-                                    volume =
-                                        volume - sphere_sector_vol(p0, p2,
-                                                     i_points[0], i_points[1],
-                                                     VdW_radius_0);
-                                    volume =
-                                        volume - sphere_sector_vol(p2, p0,
-                                                     i_points[0], i_points[1],
-                                                     VdW_radius_2);
-                                    // 3rd tetra
-                                    volume =
-                                        volume - sphere_sector_vol(p2,
-                                                     i_points[0], i_points[1],
-                                                     i_points[2], VdW_radius_2);
+                                        // Substract the volume of the sphere
+                                        // sector 1st tetra
+                                        volume = volume -
+                                            sphere_sector_vol(p0, p1, p2,
+                                                i_points[0], VdW_radius_0);
+                                        volume = volume -
+                                            sphere_sector_vol(p1, p2, p0,
+                                                i_points[0], VdW_radius_1);
+                                        volume = volume -
+                                            sphere_sector_vol(p2, p0, p1,
+                                                i_points[0], VdW_radius_2);
+                                        // 2nd tetra
+                                        volume = volume -
+                                            sphere_sector_vol(p0, p2,
+                                                i_points[0], i_points[1],
+                                                VdW_radius_0);
+                                        volume = volume -
+                                            sphere_sector_vol(p2, p0,
+                                                i_points[0], i_points[1],
+                                                VdW_radius_2);
+                                        // 3rd tetra
+                                        volume = volume -
+                                            sphere_sector_vol(p2, i_points[0],
+                                                i_points[1], i_points[2],
+                                                VdW_radius_2);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                break;
             }
-            break;
+            }
         }
-        }
+
+        return volume;
     }
 
-    return volume;
-}
 } // namespace NDD
 } // namespace ANA

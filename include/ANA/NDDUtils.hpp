@@ -1,14 +1,30 @@
-#ifndef ANA_UTILS_H
-#define ANA_UTILS_H
+#ifndef ANA_NDD_UTILS_H
+#define ANA_NDD_UTILS_H
 
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+using std::size_t;
 namespace ANA {
 namespace NDD {
 
-    struct Matrix {
+    class Modes {
+    public:
+        Modes(std::string const &filename);
 
-        std::vector<std::vector<float>> data;
-    }
+        std::vector<std::vector<float>> evectors;
+        std::vector<float> evals;
+        size_t i, j;
+    };
 
 } // namespace NDD
 } // namespace ANA
+
 #endif // _H

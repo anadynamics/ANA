@@ -2,30 +2,29 @@
     "configurations": [
         {
             "name": "Linux",
-            "browse": {
-                "path": [
-                    "${workspaceFolder}",
-                    "${workspaceFolder}/include",
-                    "${workspaceRoot}/include",
-                    "${workspaceFolder}/chemfiles/install/include",
-                    "/usr/include",
-                    "/usr/local/include"
-                ],
-                "limitSymbolsToIncludedHeaders": true
-            },
             "includePath": [
-                "${workspaceFolder}",
+                "${workspaceFolder}/**",
+                "/home/pbarletta/labo/ANA/include",
+                "/usr/local/fmt-5.2.1/include",
                 "${workspaceFolder}/include",
-                "${workspaceRoot}/include",
-                "${workspaceFolder}/chemfiles/install/include",
-                "/usr/include",
-                "/usr/local/include"
+                "/usr/lib",
+                "/usr/local/lib",
+                "/usr/lib/x86_64-linux-gnu",
+                "/usr/include/x86_64-linux-gnu"
             ],
             "defines": [],
-            "compilerPath": "/home/german/cling_2017-10-14_ubuntu16/bin/clang",
+            "compilerPath": "/usr/local/clang+llvm_7.0.0/bin/clang++",
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "configurationProvider": "vector-of-bool.cmake-tools"
         }
     ],
     "version": 4

@@ -1,7 +1,8 @@
-#ifndef ANAWRITE
-#define ANAWRITE
-#include <ANA/ANAincludes.hpp>
-#include <ANA/ANAutils.hpp>
+#ifndef ANA_WRITE_H
+#define ANA_WRITE_H
+
+#include <ANA/Includes.hpp>
+#include <ANA/Utils.hpp>
 
 namespace ANA {
 extern std::ofstream out_vol_stream;
@@ -190,6 +191,7 @@ namespace NDD {
             throw std::runtime_error("Unable to open output file for NDD");
         return;
     }
+
 } // namespace NDD
 } // namespace ANA
-#endif
+#endif // _H
