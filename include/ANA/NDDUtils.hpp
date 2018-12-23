@@ -19,6 +19,8 @@ namespace NDD {
     public:
         Modes(std::string const &filename);
 
+        void get_modes_from_raw(std::string_view const texto);
+
         std::vector<std::vector<float>> evectors;
         std::vector<float> evals;
         size_t i, j;
