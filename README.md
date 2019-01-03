@@ -1,5 +1,6 @@
 # Analysis of Null Areas 
-> ANA input.pdb -c config_file.cfg -d trajectory.nc -o output.pdb 
+
+        ANA input.pdb -c config_file.cfg -d trajectory.nc -o output.pdb 
 
 
 Precise cavity definition. Flexible tracking. Fast performance.
@@ -20,7 +21,23 @@ Check the quickstart example.
 ## Release History
 
 * 1.0.0
-    * Initial release. 
+    * Initial release.
+
+* 1.0.1
+    * Volume output can be redirected to a file.
+
+* Road to 2.0.0
+    * Major refactoring.
+    * Switched to C++ 17.
+    * Deprecated Pymol CGO output.
+    * Deprecations for NDD:
+        * No wall residues/atoms output.
+        * included area is now mandatory.
+        * Fixed to high precision mode.
+        * No cavity output.
+
+    * Deprecations for MD:
+    * Deprecations for Static:
 
 ### Contact info
 [@gpbarletta](https://twitter.com/gpbarletta) - pbarletta@gmail.com

@@ -14,12 +14,12 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     std::string &list_wall_separator, std::string &clusters_method,
     std::string &only_side_ASA, std::string &ASA_method,
     std::string &exclude_ca_for_ASA, std::string &modes_ndd_filename,
-    std::string &pdbs_list_ndd_filename, std::string &out_CH_filename,
-    std::string &out_ndd_filename, std::string &out_filename,
-    std::string &out_vol, std::string &output_type, std::string &tool_check_CH,
-    std::string &tool_pdb_to_ch, std::string &sphere_proto,
-    std::string &cylinder_proto, std::string &prism_proto,
-    std::string &tool_pdb_norm, std::string &tool_aa_to_ca) {
+    std::string &pdbs_list_ndd_filename, std::string &out_ndd_filename,
+    std::string &out_filename, std::string &out_vol, std::string &output_type,
+    std::string &tool_check_CH, std::string &tool_pdb_to_ch,
+    std::string &sphere_proto, std::string &cylinder_proto,
+    std::string &prism_proto, std::string &tool_pdb_norm,
+    std::string &tool_aa_to_ca) {
     // clang-format off
   try {
     std::string config_filename;
@@ -195,8 +195,7 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
       return 1;
     }
     if (vm.count("ver")) {
-      cout << "ANA v0.6"
-           << "\n";
+      cout << "ANA v0.6" << "\n";
       return 1;
     }
 
@@ -237,7 +236,8 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
   (include_CH_aa_proto == "none" && include_CH_atom_proto == "none" &&
   input_md_filename != "none") ) {
     std::cerr << "WARNING: You are running ANA MD/NDD without an inclusion "
-    "area. This is not recommended. Check ANA's manual." << "\n";
+    "area. Check ANA's manual." << "\n";
+    return 1;
   }
 
   if (pdbs_list_ndd_filename == "none" && out_ndd_filename == "none") {

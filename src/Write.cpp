@@ -105,7 +105,7 @@ void draw_raw_polyhedrons(std::ofstream &pymol_script,
     pymol_script << "\tLINEWIDTH, 1.0," << '\n';
     pymol_script << "\tBEGIN, LINES," << '\n';
 
-    for (const auto &CH : CH_vec) {
+    for (auto const &CH : CH_vec) {
         P_Facet_const_iterator fc_ite, fc_ite_end = CH.facets_end();
         pymol_script << "# new polyhedron" << '\n';
 
@@ -188,16 +188,16 @@ void draw_grid_cgo(std::ofstream &pymol_script, NA_Vector const &cells_to_draw,
     unsigned int n = sphere_count;
     unsigned int const corner = (int)(sphere_count / 3);
 
-    for (const auto &ac_ite : cells_to_draw) {
+    for (auto const &ac_ite : cells_to_draw) {
         Point p0 = ac_ite->vertex(0)->point();
         Point p1 = ac_ite->vertex(1)->point();
         Point p2 = ac_ite->vertex(2)->point();
         Point p3 = ac_ite->vertex(3)->point();
 
-        double const VdW_0 = ac_ite->vertex(0)->info().GetRadii();
-        double const VdW_1 = ac_ite->vertex(1)->info().GetRadii();
-        double const VdW_2 = ac_ite->vertex(2)->info().GetRadii();
-        double const VdW_3 = ac_ite->vertex(3)->info().GetRadii();
+        double const VdW_0 = ac_ite->vertex(0)->info()._radius;
+        double const VdW_1 = ac_ite->vertex(1)->info()._radius;
+        double const VdW_2 = ac_ite->vertex(2)->info()._radius;
+        double const VdW_3 = ac_ite->vertex(3)->info()._radius;
 
         std::array<double, 3> p0_ = {CGAL::to_double(p0.x()),
             CGAL::to_double(p0.y()), CGAL::to_double(p0.z())};
@@ -225,29 +225,29 @@ void draw_grid_cgo(std::ofstream &pymol_script, NA_Vector const &cells_to_draw,
                         // Check if any sphere is in conflict with a vtx
                         double const dist0 =
                             std::sqrt(pow((point[0] - p0_[0]), 2.0) +
-                                      pow((point[1] - p0_[1]), 2.0) +
-                                      pow((point[2] - p0_[2]), 2.0));
+                                pow((point[1] - p0_[1]), 2.0) +
+                                pow((point[2] - p0_[2]), 2.0));
                         if (dist0 < VdW_0 + sphere_size) {
                             continue;
                         }
                         double const dist1 =
                             std::sqrt(pow((point[0] - p1_[0]), 2.0) +
-                                      pow((point[1] - p1_[1]), 2.0) +
-                                      pow((point[2] - p1_[2]), 2.0));
+                                pow((point[1] - p1_[1]), 2.0) +
+                                pow((point[2] - p1_[2]), 2.0));
                         if (dist1 < VdW_1 + sphere_size) {
                             continue;
                         }
                         double const dist2 =
                             std::sqrt(pow((point[0] - p2_[0]), 2.0) +
-                                      pow((point[1] - p2_[1]), 2.0) +
-                                      pow((point[2] - p2_[2]), 2.0));
+                                pow((point[1] - p2_[1]), 2.0) +
+                                pow((point[2] - p2_[2]), 2.0));
                         if (dist2 < VdW_2 + sphere_size) {
                             continue;
                         }
                         double const dist3 =
                             std::sqrt(pow((point[0] - p3_[0]), 2.0) +
-                                      pow((point[1] - p3_[1]), 2.0) +
-                                      pow((point[2] - p3_[2]), 2.0));
+                                pow((point[1] - p3_[1]), 2.0) +
+                                pow((point[2] - p3_[2]), 2.0));
                         if (dist3 < VdW_3 + sphere_size) {
                             continue;
                         }
@@ -315,20 +315,20 @@ void draw_grid_cgo_polyhedrons(std::ofstream &pymol_script,
 
                         point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                        l * p3_[0]) /
-                                   n;
+                            n;
                         point[1] = (i * p0_[1] + j * p1_[1] + k * p2_[1] +
                                        l * p3_[1]) /
-                                   n;
+                            n;
                         point[2] = (i * p0_[2] + j * p1_[2] + k * p2_[2] +
                                        l * p3_[2]) /
-                                   n;
+                            n;
 
                         if (i <= corner || j <= corner || k <= corner) {
                             // Check if any sphere is in conflict with a vtx
                             double const dist0 =
                                 std::sqrt(pow((point[0] - p0_[0]), 2.0) +
-                                          pow((point[1] - p0_[1]), 2.0) +
-                                          pow((point[2] - p0_[2]), 2.0));
+                                    pow((point[1] - p0_[1]), 2.0) +
+                                    pow((point[2] - p0_[2]), 2.0));
                             if (dist0 < in_vtces_radii[ii][0] + sphere_size) {
                                 continue;
                             }
@@ -373,13 +373,13 @@ void draw_grid_cgo_polyhedrons(std::ofstream &pymol_script,
 
                             point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                            l * p3_[0]) /
-                                       n;
+                                n;
                             point[1] = (i * p0_[1] + j * p1_[1] + k * p2_[1] +
                                            l * p3_[1]) /
-                                       n;
+                                n;
                             point[2] = (i * p0_[2] + j * p1_[2] + k * p2_[2] +
                                            l * p3_[2]) /
-                                       n;
+                                n;
 
                             if (i <= corner || j <= corner || k <= corner) {
                                 // Check if any sphere is in conflict with a vtx
@@ -415,6 +415,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream &pymol_script,
                                         in_vtces_radii[ii][1] + sphere_size) {
                                         continue;
                                     }
+                                    [[fallthrough]];
                                 }
                                 case 2: {
                                     // 1st vtx corresponds to an atom
@@ -471,13 +472,13 @@ void draw_grid_cgo_polyhedrons(std::ofstream &pymol_script,
 
                             point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                            l * p3_[0]) /
-                                       n;
+                                n;
                             point[1] = (i * p0_[1] + j * p1_[1] + k * p2_[1] +
                                            l * p3_[1]) /
-                                       n;
+                                n;
                             point[2] = (i * p0_[2] + j * p1_[2] + k * p2_[2] +
                                            l * p3_[2]) /
-                                       n;
+                                n;
 
                             if (i <= corner || j <= corner || k <= corner) {
                                 // Check if any sphere is in conflict with a vtx
@@ -608,7 +609,7 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
     // Now, the polyhedron of the intersecting cells, if there are any.
     unsigned int res_cnt = atom_cnt * 0.25;
     atom_cnt -= 4;
-    for (const auto &polyhedron : polys) {
+    for (auto const &polyhedron : polys) {
         P_Facet_const_iterator fc_end = polyhedron.facets_end();
         unsigned int first_atom = atom_cnt;
 
@@ -643,85 +644,85 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
     return;
 }
 
-// Draw pockets in .PDB format. MD version
-void draw_raw_PDB(NA_Vector const &pocket, const Poly_Vector &polys,
-    std::string out_filename, unsigned int const frame_nbr) {
+// // Draw pockets in .PDB format. MD version
+// void draw_raw_PDB(NA_Vector const &pocket, const Poly_Vector &polys,
+//     std::string out_filename) {
 
-    unsigned int atom_cnt = 4;
-    // Write PDB header
-    chemfiles::Topology ana_void_top;
-    chemfiles::Frame ana_void_frame;
-    auto out_traj = chemfiles::Trajectory(out_filename, 'a');
+//     unsigned int atom_cnt = 4;
+//     // Write PDB header
+//     chemfiles::Topology ana_void_top;
+//     chemfiles::Frame ana_void_frame;
+//     auto out_traj = chemfiles::Trajectory(out_filename, 'a');
 
-    for (Finite_cells_iterator const &cell : pocket) {
-        // Add the 4 vertices to the topology and their cords to the frame
-        ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
-        ana_void_frame.add_atom(chemfiles::Atom("N"),
-            chemfiles::Vector3D(CGAL::to_double(cell->vertex(0)->point().x()),
-                CGAL::to_double(cell->vertex(0)->point().y()),
-                CGAL::to_double(cell->vertex(0)->point().z())));
+//     for (Finite_cells_iterator const &cell : pocket) {
+//         // Add the 4 vertices to the topology and their cords to the frame
+//         ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
+//         ana_void_frame.add_atom(chemfiles::Atom("N"),
+//             chemfiles::Vector3D(CGAL::to_double(cell->vertex(0)->point().x()),
+//                 CGAL::to_double(cell->vertex(0)->point().y()),
+//                 CGAL::to_double(cell->vertex(0)->point().z())));
 
-        ana_void_top.add_atom(chemfiles::Atom("N", "N1"));
-        ana_void_frame.add_atom(chemfiles::Atom("N"),
-            chemfiles::Vector3D(CGAL::to_double(cell->vertex(1)->point().x()),
-                CGAL::to_double(cell->vertex(1)->point().y()),
-                CGAL::to_double(cell->vertex(1)->point().z())));
+//         ana_void_top.add_atom(chemfiles::Atom("N", "N1"));
+//         ana_void_frame.add_atom(chemfiles::Atom("N"),
+//             chemfiles::Vector3D(CGAL::to_double(cell->vertex(1)->point().x()),
+//                 CGAL::to_double(cell->vertex(1)->point().y()),
+//                 CGAL::to_double(cell->vertex(1)->point().z())));
 
-        ana_void_top.add_atom(chemfiles::Atom("N", "N2"));
-        ana_void_frame.add_atom(chemfiles::Atom("N"),
-            chemfiles::Vector3D(CGAL::to_double(cell->vertex(2)->point().x()),
-                CGAL::to_double(cell->vertex(2)->point().y()),
-                CGAL::to_double(cell->vertex(2)->point().z())));
+//         ana_void_top.add_atom(chemfiles::Atom("N", "N2"));
+//         ana_void_frame.add_atom(chemfiles::Atom("N"),
+//             chemfiles::Vector3D(CGAL::to_double(cell->vertex(2)->point().x()),
+//                 CGAL::to_double(cell->vertex(2)->point().y()),
+//                 CGAL::to_double(cell->vertex(2)->point().z())));
 
-        ana_void_top.add_atom(chemfiles::Atom("N", "N3"));
-        ana_void_frame.add_atom(chemfiles::Atom("N"),
-            chemfiles::Vector3D(CGAL::to_double(cell->vertex(3)->point().x()),
-                CGAL::to_double(cell->vertex(3)->point().y()),
-                CGAL::to_double(cell->vertex(3)->point().z())));
+//         ana_void_top.add_atom(chemfiles::Atom("N", "N3"));
+//         ana_void_frame.add_atom(chemfiles::Atom("N"),
+//             chemfiles::Vector3D(CGAL::to_double(cell->vertex(3)->point().x()),
+//                 CGAL::to_double(cell->vertex(3)->point().y()),
+//                 CGAL::to_double(cell->vertex(3)->point().z())));
 
-        // Connect the vertices
-        connect_cell_residue(ana_void_top, atom_cnt);
-        ana_void_top.add_residue(make_cell_residue(atom_cnt * 0.25, atom_cnt));
-        atom_cnt += 4;
-    }
+//         // Connect the vertices
+//         connect_cell_residue(ana_void_top, atom_cnt);
+//         ana_void_top.add_residue(make_cell_residue(atom_cnt * 0.25,
+//         atom_cnt)); atom_cnt += 4;
+//     }
 
-    // Now, the polyhedron of the intersecting cells.
-    unsigned int res_cnt = atom_cnt * 0.25;
-    atom_cnt -= 4;
-    for (const auto &polyhedron : polys) {
-        P_Facet_const_iterator fc_end = polyhedron.facets_end();
-        unsigned int first_atom = atom_cnt;
+//     // Now, the polyhedron of the intersecting cells.
+//     unsigned int res_cnt = atom_cnt * 0.25;
+//     atom_cnt -= 4;
+//     for (auto const &polyhedron : polys) {
+//         P_Facet_const_iterator fc_end = polyhedron.facets_end();
+//         unsigned int first_atom = atom_cnt;
 
-        for (P_Facet_const_iterator fc_ite = polyhedron.facets_begin();
-             fc_ite != fc_end; ++fc_ite) {
-            P_Halfedge_around_facet_const_circulator he_circ =
-                fc_ite->facet_begin();
-            do {
-                // Add the 3 vertices of each polyhedron.
-                ana_void_top.add_atom(chemfiles::Atom("N", "NB"));
-                ana_void_frame.add_atom(chemfiles::Atom("N"),
-                    chemfiles::Vector3D(
-                        CGAL::to_double(he_circ->vertex()->point().x()),
-                        CGAL::to_double(he_circ->vertex()->point().y()),
-                        CGAL::to_double(he_circ->vertex()->point().z())));
-            } while (++he_circ != fc_ite->facet_begin());
+//         for (P_Facet_const_iterator fc_ite = polyhedron.facets_begin();
+//              fc_ite != fc_end; ++fc_ite) {
+//             P_Halfedge_around_facet_const_circulator he_circ =
+//                 fc_ite->facet_begin();
+//             do {
+//                 // Add the 3 vertices of each polyhedron.
+//                 ana_void_top.add_atom(chemfiles::Atom("N", "NB"));
+//                 ana_void_frame.add_atom(chemfiles::Atom("N"),
+//                     chemfiles::Vector3D(
+//                         CGAL::to_double(he_circ->vertex()->point().x()),
+//                         CGAL::to_double(he_circ->vertex()->point().y()),
+//                         CGAL::to_double(he_circ->vertex()->point().z())));
+//             } while (++he_circ != fc_ite->facet_begin());
 
-            // Connect the vertices.
-            connect_facet(ana_void_top, atom_cnt);
-            atom_cnt += 3;
-        }
-        // Show the polyhedron as a residue
-        ana_void_top.add_residue(
-            make_polyhedron_residue(res_cnt, first_atom, atom_cnt));
-        ++res_cnt;
-    }
+//             // Connect the vertices.
+//             connect_facet(ana_void_top, atom_cnt);
+//             atom_cnt += 3;
+//         }
+//         // Show the polyhedron as a residue
+//         ana_void_top.add_residue(
+//             make_polyhedron_residue(res_cnt, first_atom, atom_cnt));
+//         ++res_cnt;
+//     }
 
-    // Applying the topology to the frame will set the atom names and bonds
-    ana_void_frame.set_topology(ana_void_top);
-    // Write
-    out_traj.write(ana_void_frame);
-    return;
-}
+//     // Applying the topology to the frame will set the atom names and bonds
+//     ana_void_frame.set_topology(ana_void_top);
+//     // Write
+//     out_traj.write(ana_void_frame);
+//     return;
+// }
 
 // Draw pockets in .PDB format. MD version, whole trajectory.
 void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
@@ -737,7 +738,7 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
         chemfiles::Topology ana_void_top;
         chemfiles::Frame ana_void_frame;
 
-        for (const auto &cell : list_of_pockets[i]) {
+        for (auto const &cell : list_of_pockets[i]) {
             // Add the 4 vertices to the topology and their cords to the frame
             ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
 
@@ -776,7 +777,7 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
         if (list_of_polys.size() != 0) {
             atom_cnt -= 4;
             // Now, the polyhedron of the intersecting cells, if there are any.
-            for (const auto &polyhedron : list_of_polys[i]) {
+            for (auto const &polyhedron : list_of_polys[i]) {
                 P_Vertex_const_iterator v_end = polyhedron.vertices_end();
                 P_Vertex_const_iterator v_beg = polyhedron.vertices_begin();
                 unsigned int first_atom = atom_cnt;
@@ -921,7 +922,7 @@ unsigned int make_grid_pdb(NDD_Vector const &cells_to_draw,
     unsigned int n = sphere_count, atom_cnt_old, atom_cnt = 0;
     unsigned int const corner = (int)(sphere_count / 3);
 
-    for (const auto &cell : cells_to_draw) {
+    for (auto const &cell : cells_to_draw) {
         atom_cnt_old = atom_cnt;
         ++res_cnt;
         Point p0 = cell[0].first;
@@ -960,29 +961,29 @@ unsigned int make_grid_pdb(NDD_Vector const &cells_to_draw,
                         // Check if any sphere is in conflict with a vtx
                         double const dist0 =
                             std::sqrt(pow((point[0] - p0_[0]), 2.0) +
-                                      pow((point[1] - p0_[1]), 2.0) +
-                                      pow((point[2] - p0_[2]), 2.0));
+                                pow((point[1] - p0_[1]), 2.0) +
+                                pow((point[2] - p0_[2]), 2.0));
                         if (dist0 < VdW_0) {
                             continue;
                         }
                         double const dist1 =
                             std::sqrt(pow((point[0] - p1_[0]), 2.0) +
-                                      pow((point[1] - p1_[1]), 2.0) +
-                                      pow((point[2] - p1_[2]), 2.0));
+                                pow((point[1] - p1_[1]), 2.0) +
+                                pow((point[2] - p1_[2]), 2.0));
                         if (dist1 < VdW_1) {
                             continue;
                         }
                         double const dist2 =
                             std::sqrt(pow((point[0] - p2_[0]), 2.0) +
-                                      pow((point[1] - p2_[1]), 2.0) +
-                                      pow((point[2] - p2_[2]), 2.0));
+                                pow((point[1] - p2_[1]), 2.0) +
+                                pow((point[2] - p2_[2]), 2.0));
                         if (dist2 < VdW_2) {
                             continue;
                         }
                         double const dist3 =
                             std::sqrt(pow((point[0] - p3_[0]), 2.0) +
-                                      pow((point[1] - p3_[1]), 2.0) +
-                                      pow((point[2] - p3_[2]), 2.0));
+                                pow((point[1] - p3_[1]), 2.0) +
+                                pow((point[2] - p3_[2]), 2.0));
                         if (dist3 < VdW_3) {
                             continue;
                         }
@@ -1047,20 +1048,20 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
 
                         point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                        l * p3_[0]) /
-                                   n;
+                            n;
                         point[1] = (i * p0_[1] + j * p1_[1] + k * p2_[1] +
                                        l * p3_[1]) /
-                                   n;
+                            n;
                         point[2] = (i * p0_[2] + j * p1_[2] + k * p2_[2] +
                                        l * p3_[2]) /
-                                   n;
+                            n;
 
                         if (i <= corner || j <= corner || k <= corner) {
                             // Check if any sphere is in conflict with a vtx
                             double const dist0 =
                                 std::sqrt(pow((point[0] - p0_[0]), 2.0) +
-                                          pow((point[1] - p0_[1]), 2.0) +
-                                          pow((point[2] - p0_[2]), 2.0));
+                                    pow((point[1] - p0_[1]), 2.0) +
+                                    pow((point[2] - p0_[2]), 2.0));
                             if (dist0 < in_vtces_radii[ii][0]) {
                                 continue;
                             }
@@ -1104,13 +1105,13 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
 
                             point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                            l * p3_[0]) /
-                                       n;
+                                n;
                             point[1] = (i * p0_[1] + j * p1_[1] + k * p2_[1] +
                                            l * p3_[1]) /
-                                       n;
+                                n;
                             point[2] = (i * p0_[2] + j * p1_[2] + k * p2_[2] +
                                            l * p3_[2]) /
-                                       n;
+                                n;
 
                             if (i <= corner || j <= corner || k <= corner) {
                                 // Check if any sphere is in conflict with a vtx
@@ -1143,6 +1144,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
                                     if (dist0 < in_vtces_radii[ii][1]) {
                                         continue;
                                     }
+                                    [[fallthrough]];
                                 }
                                 case 2: {
                                     // 1st vtx corresponds to an atom
@@ -1199,13 +1201,13 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
 
                             point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                            l * p3_[0]) /
-                                       n;
+                                n;
                             point[1] = (i * p0_[1] + j * p1_[1] + k * p2_[1] +
                                            l * p3_[1]) /
-                                       n;
+                                n;
                             point[2] = (i * p0_[2] + j * p1_[2] + k * p2_[2] +
                                            l * p3_[2]) /
-                                       n;
+                                n;
 
                             if (i <= corner || j <= corner || k <= corner) {
                                 // Check if any sphere is in conflict with a vtx
@@ -1326,7 +1328,7 @@ unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
     unsigned int n = sphere_count, atom_cnt_old, atom_cnt = 0;
     unsigned int const corner = (int)(sphere_count / 3);
 
-    for (const auto &ac_ite : cells_to_draw) {
+    for (auto const &ac_ite : cells_to_draw) {
         atom_cnt_old = atom_cnt;
         ++res_cnt;
         Point p0 = ac_ite->vertex(0)->point();
@@ -1334,10 +1336,10 @@ unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
         Point p2 = ac_ite->vertex(2)->point();
         Point p3 = ac_ite->vertex(3)->point();
 
-        double const VdW_0 = ac_ite->vertex(0)->info().GetRadii();
-        double const VdW_1 = ac_ite->vertex(1)->info().GetRadii();
-        double const VdW_2 = ac_ite->vertex(2)->info().GetRadii();
-        double const VdW_3 = ac_ite->vertex(3)->info().GetRadii();
+        double const VdW_0 = ac_ite->vertex(0)->info()._radius;
+        double const VdW_1 = ac_ite->vertex(1)->info()._radius;
+        double const VdW_2 = ac_ite->vertex(2)->info()._radius;
+        double const VdW_3 = ac_ite->vertex(3)->info()._radius;
 
         std::array<double, 3> p0_ = {CGAL::to_double(p0.x()),
             CGAL::to_double(p0.y()), CGAL::to_double(p0.z())};
@@ -1365,29 +1367,29 @@ unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
                         // Check if any sphere is in conflict with a vtx
                         double const dist0 =
                             std::sqrt(pow((point[0] - p0_[0]), 2.0) +
-                                      pow((point[1] - p0_[1]), 2.0) +
-                                      pow((point[2] - p0_[2]), 2.0));
+                                pow((point[1] - p0_[1]), 2.0) +
+                                pow((point[2] - p0_[2]), 2.0));
                         if (dist0 < VdW_0) {
                             continue;
                         }
                         double const dist1 =
                             std::sqrt(pow((point[0] - p1_[0]), 2.0) +
-                                      pow((point[1] - p1_[1]), 2.0) +
-                                      pow((point[2] - p1_[2]), 2.0));
+                                pow((point[1] - p1_[1]), 2.0) +
+                                pow((point[2] - p1_[2]), 2.0));
                         if (dist1 < VdW_1) {
                             continue;
                         }
                         double const dist2 =
                             std::sqrt(pow((point[0] - p2_[0]), 2.0) +
-                                      pow((point[1] - p2_[1]), 2.0) +
-                                      pow((point[2] - p2_[2]), 2.0));
+                                pow((point[1] - p2_[1]), 2.0) +
+                                pow((point[2] - p2_[2]), 2.0));
                         if (dist2 < VdW_2) {
                             continue;
                         }
                         double const dist3 =
                             std::sqrt(pow((point[0] - p3_[0]), 2.0) +
-                                      pow((point[1] - p3_[1]), 2.0) +
-                                      pow((point[2] - p3_[2]), 2.0));
+                                pow((point[1] - p3_[1]), 2.0) +
+                                pow((point[2] - p3_[2]), 2.0));
                         if (dist3 < VdW_3) {
                             continue;
                         }
@@ -1426,6 +1428,8 @@ inline void header_script_pymol(
 // Write .PDB header
 inline void header_PDB(
     const std::string &out_pdb_filename, const std::string &in_pdb_filename) {
+    [[maybe_unused]] auto borrame = out_pdb_filename.end();
+    [[maybe_unused]] auto borrame1 = in_pdb_filename.end();
     return;
 }
 
@@ -1723,16 +1727,16 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
             // Get Info data structure
             v_info = cell->vertex(i)->info();
             // Get Atom Index
-            atom_idx = v_info.GetIndex();
+            atom_idx = v_info._index;
             // Get position of the new index
             a_idx = std::lower_bound(
                 wall_atom_idx.begin(), wall_atom_idx.end(), atom_idx);
 
             if (a_idx == wall_atom_idx.end()) {
                 // Store new atom (with largest index) info
-                wall_atom_idx.push_back(v_info.GetIndex());
-                wall_aa_idx.push_back(v_info.GetResn());
-                wall_aa_id.push_back(v_info.GetAa());
+                wall_atom_idx.push_back(v_info._index);
+                wall_aa_idx.push_back(v_info._resn);
+                wall_aa_id.push_back(v_info._resi);
                 continue;
             } else if (atom_idx == *a_idx || atom_idx == *(++a_idx)) {
                 // This atom is already present
@@ -1741,9 +1745,9 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
 
             a = (--a_idx) - wall_atom_idx.begin();
             // Store new atom info
-            wall_atom_idx.insert(a_idx, v_info.GetIndex());
-            wall_aa_idx.insert(wall_aa_idx.begin() + a, v_info.GetResn());
-            wall_aa_id.insert(wall_aa_id.begin() + a, v_info.GetAa());
+            wall_atom_idx.insert(a_idx, v_info._index);
+            wall_aa_idx.insert(wall_aa_idx.begin() + a, v_info._resn);
+            wall_aa_id.insert(wall_aa_id.begin() + a, v_info._resi);
         }
     }
 
@@ -1771,16 +1775,16 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
             // Get Info data structure
             v_info = cell->vertex(i)->info();
             // Get Atom Index
-            atom_idx = v_info.GetIndex();
+            atom_idx = v_info._index;
             // Get position of the new index
             a_idx = std::lower_bound(
                 wall_atom_idx.begin(), wall_atom_idx.end(), atom_idx);
 
             if (a_idx == wall_atom_idx.end()) {
                 // Store new atom (with largest index) info
-                wall_atom_idx.push_back(v_info.GetIndex());
-                wall_aa_idx.push_back(v_info.GetResn());
-                wall_aa_id.push_back(v_info.GetAa());
+                wall_atom_idx.push_back(v_info._index);
+                wall_aa_idx.push_back(v_info._resn);
+                wall_aa_id.push_back(v_info._resi);
                 continue;
             } else if (atom_idx == *a_idx || atom_idx == *(++a_idx)) {
                 // This atom is already present
@@ -1789,9 +1793,9 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
 
             a = (--a_idx) - wall_atom_idx.begin();
             // Store new atom info
-            wall_atom_idx.insert(a_idx, v_info.GetIndex());
-            wall_aa_idx.insert(wall_aa_idx.begin() + a, v_info.GetResn());
-            wall_aa_id.insert(wall_aa_id.begin() + a, v_info.GetAa());
+            wall_atom_idx.insert(a_idx, v_info._index);
+            wall_aa_idx.insert(wall_aa_idx.begin() + a, v_info._resn);
+            wall_aa_id.insert(wall_aa_id.begin() + a, v_info._resi);
         }
         ++ii;
     }
@@ -1813,7 +1817,7 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
             // Get Info data structure
             v_info = cell->vertex(i)->info();
             // Get residue Index
-            res_idx = v_info.GetResn();
+            res_idx = v_info._resn;
             // Get position of the new index
             r_idx = std::lower_bound(
                 wall_aa_idx.begin(), wall_aa_idx.end(), res_idx);
@@ -1821,7 +1825,7 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
             if (r_idx == wall_aa_idx.end()) {
                 // Store new residue (with largest index) info
                 wall_aa_idx.push_back(res_idx);
-                wall_aa_id.push_back(v_info.GetAa());
+                wall_aa_id.push_back(v_info._resi);
             } else if (res_idx == *r_idx || res_idx == *(++r_idx)) {
                 // This residue is already present
                 continue;
@@ -1829,7 +1833,7 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
                 // Store new residue info
                 r = (--r_idx) - wall_aa_idx.begin();
                 wall_aa_idx.insert(r_idx, res_idx);
-                wall_aa_id.insert(wall_aa_id.begin() + r, v_info.GetAa());
+                wall_aa_id.insert(wall_aa_id.begin() + r, v_info._resi);
             }
         }
     }
@@ -1856,7 +1860,7 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
             // Get Info data structure
             v_info = cell->vertex(i)->info();
             // Get residue Index
-            res_idx = v_info.GetResn();
+            res_idx = v_info._resn;
             // Get position of the new index
             r_idx = std::lower_bound(
                 wall_aa_idx.begin(), wall_aa_idx.end(), res_idx);
@@ -1864,7 +1868,7 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
             if (r_idx == wall_aa_idx.end()) {
                 // Store new residue (with largest index) info
                 wall_aa_idx.push_back(res_idx);
-                wall_aa_id.push_back(v_info.GetAa());
+                wall_aa_id.push_back(v_info._resi);
                 continue;
             } else if (res_idx == *r_idx || res_idx == *(++r_idx)) {
                 // This residue is already present
@@ -1874,7 +1878,7 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
             r = (--r_idx) - wall_aa_idx.begin();
             // Store new residue info
             wall_aa_idx.insert(r_idx, res_idx);
-            wall_aa_id.insert(wall_aa_id.begin() + r, v_info.GetAa());
+            wall_aa_id.insert(wall_aa_id.begin() + r, v_info._resi);
         }
         ++ii;
     }
@@ -1969,8 +1973,7 @@ void open_vol_file(std::string const &out_vol) {
     return;
 }
 // Final function to output volume. NA_Matrix (static) version.
-void write_output_volume(NA_Matrix const &null_areas_vt_mt, double poly_vol,
-    const std::string &out_vol) {
+void write_output_volume(NA_Matrix const &null_areas_vt_mt, double poly_vol) {
 
     unsigned int pock_cnt = 1;
     if (out_vol_stream.is_open()) {
@@ -1991,8 +1994,8 @@ void write_output_volume(NA_Matrix const &null_areas_vt_mt, double poly_vol,
 }
 
 // Final function to output volume. NA_Vector (NDD) version.
-void write_output_volume(NA_Vector const &null_areas_vtor,
-    double const poly_vol, const std::string &out_vol) {
+void write_output_volume(
+    NA_Vector const &null_areas_vtor, double const poly_vol) {
 
     double const volume = ANA::get_void_volume(null_areas_vtor);
     if (out_vol_stream.is_open()) {

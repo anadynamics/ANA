@@ -10,10 +10,9 @@ int MD_ANA(const std::string &in_filename, const std::string &in_md_filename,
     std::string &include_CH_atom_proto, std::string &sphere_proto,
     std::string &cylinder_proto, std::string &prism_proto,
     const std::string &include_CH_filename, std::string &out_filename,
-    const std::string &out_vol, const std::string &out_type,
-    bool const triangulate_only_included_aas, bool const atom_only,
-    double const minVR, double const maxSR, double const max_probe,
-    double const max_probe_length, double const sphere_size,
+    const std::string &out_type, bool const triangulate_only_included_aas,
+    bool const atom_only, double const minVR, double const maxSR,
+    double const max_probe, double const max_probe_length,
     unsigned int const &sphere_count,
     unsigned int const nbr_of_vertices_to_include, unsigned int const precision,
     unsigned int const &md_start, unsigned int const &md_step,
@@ -30,8 +29,8 @@ int MD_ANA(const std::string &in_filename, const std::string &in_md_filename,
     double poly_vol = 0;
     unsigned int frame_cnt = 1;
     unsigned int max_atom_cnt = 0;
-    const auto nbr_of_frames =
-        ceil((md_end - md_start + 1) / static_cast<float>(md_step));
+    auto const nbr_of_frames =
+        ceil((md_end - md_start + 1) / static_cast<double>(md_step));
 
     std::vector<unsigned int> atom_cnt_md(nbr_of_frames);
     std::vector<unsigned int> CA_indices, AA_indices, include_CH_atoms;

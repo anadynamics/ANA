@@ -9,7 +9,7 @@ int static_ANA(const std::string &in_filename, std::string &AA_indices_proto,
     std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
     std::string &sphere_proto, std::string &cylinder_proto,
     std::string &prism_proto, const std::string &include_CH_filename,
-    std::string &out_filename, const std::string &out_vol,
+    std::string &out_filename,
     const std::string &out_type, bool const triangulate_only_included_aas,
     bool const atom_only, double const minVR, double const maxSR,
     double const max_probe, double const max_probe_length,
@@ -157,7 +157,7 @@ int static_ANA(const std::string &in_filename, std::string &AA_indices_proto,
         }
     }
 
-    ANA::write_output_volume(null_areas_mtx, poly_vol, out_vol);
+    ANA::write_output_volume(null_areas_mtx, poly_vol);
 
     return 0;
 }

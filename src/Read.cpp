@@ -1,127 +1,6 @@
 #include <ANA/Read.hpp>
 
 namespace ANA {
-namespace NDD {
-
-// NDD Specific function for PDB input
-void ndd_read_PDB_get_cells(const std::string &filename,
-    NDD_IVector const &in_void_cells_indices, NDD_Vector &output_cells) {
-
-    // Read molecule
-    chemfiles::Trajectory in_traj(filename);
-    chemfiles::Frame in_frame = in_traj.read();
-    auto in_xyz = in_frame.positions();
-    chemfiles::Topology in_top = in_frame.topology();
-    Vtx_info vi1;
-    NDD_Element temp_cell_coords;
-
-    for (NDD_IElement const &idx : in_void_cells_indices) {
-        // Iterate over each cell of the current pocket
-        for (unsigned int i = 0; i < 4; ++i) {
-            // Iterate over each vertex of the current cell
-            Point const p0 =
-                Point(in_xyz[idx[i]][0], in_xyz[idx[i]][1], in_xyz[idx[i]][2]);
-            temp_cell_coords[i] =
-                std::make_pair(p0, in_top[idx[i]].vdw_radius().value_or(1.5));
-        }
-        output_cells.push_back(temp_cell_coords);
-    }
-
-    return;
-}
-
-// NDD Specific function for PDB input. Hi precision method
-void ndd_read_PDB_get_cells(const std::string &filename,
-    NDD_IVector const &in_void_cells_indices,
-    const std::vector<unsigned int> &include_CH_atoms, NDD_Vector &output_cells,
-    Triang_Vector &CH_triangs) {
-
-    // Read molecule
-    chemfiles::Trajectory in_traj(filename);
-    chemfiles::Frame in_frame = in_traj.read();
-    auto in_xyz = in_frame.positions();
-    chemfiles::Topology in_top = in_frame.topology();
-    Vtx_info vi1;
-    NDD_Element temp_cell_coords;
-    std::vector<Point> incl_area_points;
-
-    for (NDD_IElement const &idx : in_void_cells_indices) {
-        // Iterate over each cell of the current pocket
-        for (unsigned int i = 0; i < 4; ++i) {
-            // Iterate over each vertex of the current cell
-            Point const p0 =
-                Point(in_xyz[idx[i]][0], in_xyz[idx[i]][1], in_xyz[idx[i]][2]);
-            temp_cell_coords[i] =
-                std::make_pair(p0, in_top[idx[i]].vdw_radius().value_or(1.5));
-        }
-        output_cells.push_back(temp_cell_coords);
-    }
-
-    // Actualize convex hull of the include area.
-    for (auto const &each : include_CH_atoms) {
-        incl_area_points.push_back(
-            Point(in_xyz[each][0], in_xyz[each][1], in_xyz[each][2]));
-    }
-
-    Polyhedron CH;
-    CGAL::convex_hull_3(incl_area_points.begin(), incl_area_points.end(), CH);
-    P_Facet_const_iterator f_end = CH.facets_end();
-    for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
-         ++f_ite) {
-        // Fix around the weirdest CGAL bug.
-        P_Halfedge_around_facet_const_circulator he_ite = f_ite->facet_begin();
-        const auto he_ite_0 = he_ite++;
-        const auto he_ite_1 = he_ite++;
-        const auto he_ite_2 = he_ite;
-
-        CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
-            he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
-    }
-
-    return;
-}
-
-} // namespace NDD
-
-// Refine the provided list of amino acids. If its not present, then return an
-// array of two '0' elements.
-template <class tipo>
-bool adapt_aa_list(std::string &aa_list_proto, std::vector<tipo> &aa_list) {
-    unsigned int aa;
-
-    if (aa_list_proto == "none") {
-        aa_list.push_back(0);
-        aa_list.push_back(0);
-        return false;
-    } else {
-        // borro el caracter ' pq me caga todo
-        std::replace(aa_list_proto.begin(), aa_list_proto.end(), '\'', ' ');
-        std::stringstream stream_aa(aa_list_proto);
-        std::string temp_aa;
-        while (!stream_aa.eof()) {
-            stream_aa >> temp_aa;
-            try {
-                aa = std::stoi(temp_aa);
-            } catch (const std::invalid_argument &ia) {
-                // some character present. Doesn't matter, skip it and keep
-                // reading.
-                continue;
-            } catch (const std::out_of_range oor) {
-                // int is too large to be represented by int
-                std::cerr << "Invalid residue number." << '\n';
-                std::exit(1);
-            } catch (...) {
-                // some other exception. Doesn't matter, skip it and keep
-                // reading.
-                continue;
-            }
-            aa_list.push_back(aa);
-        }
-        // sort list of included amino acids
-        std::sort(aa_list.begin(), aa_list.end());
-        return true;
-    }
-}
 
 // Read coordinates in pdb format using chemfiles.
 bool read_static(const std::string &filename,
@@ -153,20 +32,20 @@ bool read_static(const std::string &filename,
     unsigned int const natoms = input_pdb_top.natoms();
     cm = getCM(in_xyz, natoms);
     // Turn list of aminoacids and atoms from strings to vectors of ints.
-    bool const listed_included_aa = adapt_aa_list(aa_list_proto, aa_list);
-    const auto AA_end = aa_list.end();
+    bool const listed_included_aa = adapt_AA_list(aa_list_proto, aa_list);
+    auto const AA_end = aa_list.end();
     bool const listed_excluded_ASA =
-        adapt_aa_list(exclude_ca_for_ASA_proto, exclude_ca_for_ASA);
-    const auto CA_ASA_end = exclude_ca_for_ASA.end();
+        adapt_AA_list(exclude_ca_for_ASA_proto, exclude_ca_for_ASA);
+    auto const CA_ASA_end = exclude_ca_for_ASA.end();
     // Residue selection takes precedence over atom selection, for included
     // area.
     bool const listed_incl_res_CH =
-        ANA::adapt_aa_list(include_CH_aa_proto, include_CH_aa);
-    const auto CH_aa_end = include_CH_aa.end();
+        ANA::adapt_AA_list(include_CH_aa_proto, include_CH_aa);
+    auto const CH_AA_end = include_CH_aa.end();
     bool listed_incl_atom_CH = false;
     if (!listed_incl_res_CH) {
         listed_incl_atom_CH =
-            ANA::adapt_aa_list(include_CH_atom_proto, include_CH_atoms);
+            ANA::adapt_AA_list(include_CH_atom_proto, include_CH_atoms);
     }
     bool listed_incl_CH = false;
 
@@ -197,16 +76,17 @@ bool read_static(const std::string &filename,
                 "Not possible to triangulate less than 4 points.");
         }
 
-        for (const auto &residuo : input_pdb_top.residues()) {
+        for (auto const &residuo : input_pdb_top.residues()) {
             auto resid = residuo.id().value();
             if (std::lower_bound(aa_list.begin(), AA_end, resid) != AA_end) {
                 // The current residue was specified
                 auto res_name = residuo.name();
-                for (const auto &i : residuo) {
-                    if (atom_only && input_pdb_top[i]
-                                         .get("is_hetatm")
-                                         .value_or(false)
-                                         .as_bool()) {
+                for (auto const &i : residuo) {
+                    if (atom_only &&
+                        input_pdb_top[i]
+                            .get("is_hetatm")
+                            .value_or(false)
+                            .as_bool()) {
                         hetatm_atoms.push_back(i);
                         continue;
                     }
@@ -214,19 +94,19 @@ bool read_static(const std::string &filename,
                     // coords
                     // GetVdwRad or GetCovalentRad?
                     Vtx_info vi1;
-                    vi1.AssignAa(res_name);
-                    vi1.AssignIndex(i);
-                    vi1.AssignResn(resid);
+                    vi1._resi = res_name;
+                    vi1._index = i;
+                    vi1._resn = resid;
                     // For later sorting
                     atom_indices_to_sort.push_back(i);
                     auto vdw = input_pdb_top[i].vdw_radius();
                     if (vdw) {
-                        vi1.AssignRadii(vdw.value());
+                        vi1._radius = vdw.value();
                     } else {
-                        vi1.AssignRadii(1.5);
+                        vi1._radius = 1.5;
                         std::cerr << "Element from atom " << i + 1
                                   << " not available. "
-                                  << " Using covalent radii of 1.5." << '\n';
+                                  << " Using covalent radius of 1.5." << '\n';
                     }
                     Point p1(in_xyz[i][0], in_xyz[i][1], in_xyz[i][2]);
                     molecule_points.push_back(std::make_pair(p1, vi1));
@@ -242,7 +122,7 @@ bool read_static(const std::string &filename,
                         // Use it to draw the included convex hull, if requested
                         if (listed_incl_res_CH) {
                             if (std::binary_search(
-                                    include_CH_aa.begin(), CH_aa_end, resid)) {
+                                    include_CH_aa.begin(), CH_AA_end, resid)) {
                                 // The current residue was specified
                                 incl_area_points.push_back(p1);
                                 include_CH_atoms.push_back(i);
@@ -252,11 +132,12 @@ bool read_static(const std::string &filename,
                 }
             } else {
                 // The current residue was not specified
-                for (const auto &i : residuo) {
-                    if (atom_only && input_pdb_top[i]
-                                         .get("is_hetatm")
-                                         .value_or(false)
-                                         .as_bool()) {
+                for (auto const &i : residuo) {
+                    if (atom_only &&
+                        input_pdb_top[i]
+                            .get("is_hetatm")
+                            .value_or(false)
+                            .as_bool()) {
                         hetatm_atoms.push_back(i);
                         continue;
                     }
@@ -276,7 +157,7 @@ bool read_static(const std::string &filename,
                         if (listed_incl_res_CH) {
 
                             if (std::binary_search(
-                                    include_CH_aa.begin(), CH_aa_end, resid)) {
+                                    include_CH_aa.begin(), CH_AA_end, resid)) {
                                 // The current residue was specified
                                 incl_area_points.push_back(p1);
                                 include_CH_atoms.push_back(i);
@@ -287,13 +168,14 @@ bool read_static(const std::string &filename,
             }
         }
     } else { // triangulate the whole molecule
-        for (const auto &residuo : input_pdb_top.residues()) {
+        for (auto const &residuo : input_pdb_top.residues()) {
             auto res_name = residuo.name();
-            for (const auto &i : residuo) {
-                if (atom_only && input_pdb_top[i]
-                                     .get("is_hetatm")
-                                     .value_or(false)
-                                     .as_bool()) {
+            for (auto const &i : residuo) {
+                if (atom_only &&
+                    input_pdb_top[i]
+                        .get("is_hetatm")
+                        .value_or(false)
+                        .as_bool()) {
                     // Save the HEATM indices to discard them during MD and NDD
                     // runs.
                     hetatm_atoms.push_back(i);
@@ -303,22 +185,21 @@ bool read_static(const std::string &filename,
                 // coords
                 // GetVdwRad or GetCovalentRad?
                 Vtx_info vi1;
-                vi1.AssignAa(res_name);
-                vi1.AssignIndex(i);
+                vi1._resi = res_name;
+                vi1._index = i;
                 // For later sorting
                 atom_indices_to_sort.push_back(i);
                 auto vdw = input_pdb_top[i].vdw_radius();
                 if (vdw) {
-                    vi1.AssignRadii(vdw.value());
+                    vi1._radius = vdw.value();
                 } else {
-                    vi1.AssignRadii(1.5);
+                    vi1._radius = .5;
                     std::cerr << "Element from atom " << i + 1
                               << " not available. "
                               << "Using Van Der Walls radii of 1.5." << '\n';
                 }
-
                 auto resid = residuo.id().value();
-                vi1.AssignResn(resid);
+                vi1._resi = resid;
                 Point p1(in_xyz[i][0], in_xyz[i][1], in_xyz[i][2]);
                 molecule_points.push_back(std::make_pair(p1, vi1));
 
@@ -333,7 +214,7 @@ bool read_static(const std::string &filename,
                     // Use it to draw the included convex hull, if requested
                     if (listed_incl_res_CH) {
                         if (std::binary_search(
-                                include_CH_aa.begin(), CH_aa_end, resid)) {
+                                include_CH_aa.begin(), CH_AA_end, resid)) {
                             // The current residue was specified
                             incl_area_points.push_back(p1);
                             include_CH_atoms.push_back(i);
@@ -362,9 +243,9 @@ bool read_static(const std::string &filename,
             // Fix around the weirdest CGAL bug.
             P_Halfedge_around_facet_const_circulator he_ite =
                 f_ite->facet_begin();
-            const auto he_ite_0 = he_ite++;
-            const auto he_ite_1 = he_ite++;
-            const auto he_ite_2 = he_ite;
+            auto const he_ite_0 = he_ite++;
+            auto const he_ite_1 = he_ite++;
+            auto const he_ite_2 = he_ite;
 
             CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
                 he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
@@ -372,7 +253,7 @@ bool read_static(const std::string &filename,
         requested_CH = true;
 
     } else if (!(listed_incl_CH || listed_incl_res_CH) &&
-               sphere_proto != "none") {
+        sphere_proto != "none") {
         std::stringstream stream_sphere(sphere_proto);
         double x = ANA::parse_double(stream_sphere);
         double y = ANA::parse_double(stream_sphere);
@@ -431,9 +312,9 @@ bool read_static(const std::string &filename,
             // Fix around the weirdest CGAL bug.
             P_Halfedge_around_facet_const_circulator he_ite =
                 f_ite->facet_begin();
-            const auto he_ite_0 = he_ite++;
-            const auto he_ite_1 = he_ite++;
-            const auto he_ite_2 = he_ite;
+            auto const he_ite_0 = he_ite++;
+            auto const he_ite_1 = he_ite++;
+            auto const he_ite_2 = he_ite;
 
             CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
                 he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
@@ -441,7 +322,7 @@ bool read_static(const std::string &filename,
         requested_CH = true;
 
     } else if (!(listed_incl_CH || listed_incl_res_CH) &&
-               cylinder_proto != "none") {
+        cylinder_proto != "none") {
         std::stringstream stream_cylinder(cylinder_proto);
 
         double x1 = ANA::parse_double(stream_cylinder);
@@ -516,9 +397,9 @@ bool read_static(const std::string &filename,
             // Fix around the weirdest CGAL bug.
             P_Halfedge_around_facet_const_circulator he_ite =
                 f_ite->facet_begin();
-            const auto he_ite_0 = he_ite++;
-            const auto he_ite_1 = he_ite++;
-            const auto he_ite_2 = he_ite;
+            auto const he_ite_0 = he_ite++;
+            auto const he_ite_1 = he_ite++;
+            auto const he_ite_2 = he_ite;
 
             CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
                 he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
@@ -526,7 +407,7 @@ bool read_static(const std::string &filename,
         requested_CH = true;
 
     } else if (!(listed_incl_CH || listed_incl_res_CH) &&
-               prism_proto != "none") {
+        prism_proto != "none") {
         std::stringstream stream_prism(prism_proto);
         double x1 = ANA::parse_double(stream_prism);
         double y1 = ANA::parse_double(stream_prism);
@@ -566,9 +447,9 @@ bool read_static(const std::string &filename,
             // Fix around the weirdest CGAL bug.
             P_Halfedge_around_facet_const_circulator he_ite =
                 f_ite->facet_begin();
-            const auto he_ite_0 = he_ite++;
-            const auto he_ite_1 = he_ite++;
-            const auto he_ite_2 = he_ite;
+            auto const he_ite_0 = he_ite++;
+            auto const he_ite_1 = he_ite++;
+            auto const he_ite_2 = he_ite;
 
             CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
                 he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
@@ -591,9 +472,9 @@ bool read_static(const std::string &filename,
             // Fix around the weirdest CGAL bug.
             P_Halfedge_around_facet_const_circulator he_ite =
                 f_ite->facet_begin();
-            const auto he_ite_0 = he_ite++;
-            const auto he_ite_1 = he_ite++;
-            const auto he_ite_2 = he_ite;
+            auto const he_ite_0 = he_ite++;
+            auto const he_ite_1 = he_ite++;
+            auto const he_ite_2 = he_ite;
 
             CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
                 he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
@@ -644,7 +525,7 @@ void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
         Polyhedron CH;
         std::vector<Point> incl_area_points;
 
-        for (const auto &idx : include_CH_atoms) {
+        for (auto const &idx : include_CH_atoms) {
             incl_area_points.push_back(
                 Point(in_xyz[idx][0], in_xyz[idx][1], in_xyz[idx][2]));
         }
@@ -657,9 +538,9 @@ void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
             // Fix around the weirdest CGAL bug.
             P_Halfedge_around_facet_const_circulator he_ite =
                 f_ite->facet_begin();
-            const auto he_ite_0 = he_ite++;
-            const auto he_ite_1 = he_ite++;
-            const auto he_ite_2 = he_ite;
+            auto const he_ite_0 = he_ite++;
+            auto const he_ite_1 = he_ite++;
+            auto const he_ite_2 = he_ite;
 
             CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
                 he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
@@ -671,7 +552,7 @@ void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
         if (ASA_method == "dot_pdt") {
             // Get CAs positions
             i = 0;
-            for (const auto &CA_index : CA_indices) {
+            for (auto const &CA_index : CA_indices) {
                 CAs_points[i] = Point(in_xyz[CA_index][0], in_xyz[CA_index][1],
                     in_xyz[CA_index][2]);
                 ++i;
@@ -690,9 +571,9 @@ inline Point getCM(const chemfiles::span<chemfiles::Vector3D> &in_xyz,
     double z_cm = 0;
 
     for (unsigned int i = 0; i < natoms; ++i) {
-        x_cm = x_cm + in_xyz[i][0];
-        y_cm = y_cm + in_xyz[i][1];
-        z_cm = z_cm + in_xyz[i][2];
+        x_cm += in_xyz[i][0];
+        y_cm += in_xyz[i][1];
+        z_cm += in_xyz[i][2];
     }
     return Point(x_cm / natoms, y_cm = y_cm / natoms, z_cm = z_cm / natoms);
 }
@@ -748,16 +629,14 @@ double parse_double(std::stringstream &in_stream) {
 
     in_stream >> temp;
     try {
-        coord = std::stod(temp);
+        coord = std::stof(temp);
     } catch (const std::invalid_argument &ia) {
         // some character present
-        throw std::runtime_error("Can't parse pseudosphere/pseudocylinder/ "
-                                 "prism input. There may be non-numerical "
-                                 "characters. Aborting.");
+        throw std::runtime_error("Can't parse input. There may be "
+                                 "non-numerical characters. Aborting.");
     } catch (...) {
         // some other exception.
-        throw std::runtime_error("Can't parse pseudosphere/pseudocylinder/ "
-                                 "prism input. Aborting.");
+        throw std::runtime_error("Can't parse input. Aborting.");
     }
 
     return coord;

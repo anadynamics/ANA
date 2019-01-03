@@ -4,21 +4,62 @@
 #include <ANA/Includes.hpp>
 
 namespace ANA {
-namespace NDD {
-    // NDD Specific function for PDB input
-    void ndd_read_PDB_get_cells(std::string const &filename,
-        NDD_IVector const &in_cells_indices, NDD_Vector &output_cells);
-
-    // NDD Specific function for PDB input. Hi precision method
-    void ndd_read_PDB_get_cells(std::string const &filename,
-        NDD_IVector const &in_void_cells_indices,
-        const std::vector<unsigned int> &include_CH_atoms,
-        NDD_Vector &output_cells, Triang_Vector &CH_triangs);
-}
 // Refine the provided list of amino acids. If its not present, then return an
-// array of one 0 element.
-template <class tipo>
-bool adapt_aa_list(std::string &aa_list_proto, std::vector<tipo> &aa_list);
+// array of two '0' elements.
+template <class T>
+bool adapt_AA_list(
+    std::string &aa_list_proto, std::vector<T> &aa_list, unsigned int top = 0) {
+    unsigned int aa;
+
+    if (aa_list_proto == "none") {
+        aa_list.push_back(0);
+        aa_list.push_back(0);
+        return false;
+
+    } else {
+        // borro el caracter ' pq me caga todo
+        std::replace(aa_list_proto.begin(), aa_list_proto.end(), '\'', ' ');
+        std::stringstream stream_aa(aa_list_proto);
+        std::string temp_aa;
+
+        while (!stream_aa.eof()) {
+            stream_aa >> temp_aa;
+            try {
+                aa = std::stoi(temp_aa);
+            } catch (std::invalid_argument const &ia) {
+                // some character present. Doesn't matter, skip it and keep
+                // reading.
+                continue;
+            } catch (std::out_of_range const oor) {
+                // int is too large to be represented by int
+                std::cerr << "Invalid residue number: " << temp_aa << '\n';
+                std::exit(1);
+            } catch (...) {
+                // some other exception. Doesn't matter, skip it and keep
+                // reading.
+                std::cerr << "Invalid residue number: " << temp_aa
+                          << ". Will keep reading." << '\n';
+                continue;
+            }
+            aa_list.push_back(aa);
+        }
+        // sort list of included amino acids
+        std::sort(aa_list.begin(), aa_list.end());
+
+        if (top != 0) {
+            if (aa_list[aa_list.size() - 1] > top) {
+                std::cerr
+                    << "Atom / residue list goes out of bounds. Check this "
+                       "input list and your input PDB atom count. Quiting now."
+                    << '\n';
+                exit(0);
+            }
+        }
+
+        return true;
+    }
+}
+
 // Read coordinates in pdb format using chemfiles.
 bool read_static(std::string const &filename,
     bool const triangulate_only_included_aas, bool const atom_only,
@@ -30,6 +71,7 @@ bool read_static(std::string const &filename,
     std::vector<unsigned int> &aa_list, std::vector<unsigned int> &CA_indices,
     std::vector<Point> &CAs_Points, std::vector<unsigned int> &include_CH_aa,
     Triang_Vector &CH_triangs, std::vector<unsigned int> &hetatm_atoms);
+
 // Read coordinates in netcdf format.
 void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
     std::string const &sphere_proto, std::string const &cylinder_proto,
@@ -39,13 +81,17 @@ void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
     std::string const &include_CH_filename, Triang_Vector &CH_triangs,
     std::string const &ASA_method, const std::vector<unsigned int> &CA_indices,
     std::vector<Point> &CAs_points, ANA_molecule &molecule_points);
+
 // Get the center of mass from a chemfiles molecule.
 Point getCM(const chemfiles::span<chemfiles::Vector3D> &in_xyz,
     unsigned int const natoms);
+
 // Read PDB to draw included area for MD
 void read_included_area(
     std::string const &filename, std::vector<Point> &area_points);
+
 // Tool for parsing a double from input file stringstream
 double parse_double(std::stringstream &in_stream);
+
 }
 #endif // _H

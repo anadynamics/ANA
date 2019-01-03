@@ -8,7 +8,9 @@
 namespace ANA {
 
 namespace PO = boost::program_options;
+
 using namespace std;
+
 std::string const help_header = "\t\t\t----- ANA -----";
 
 int get_parameters(int ac, char *av[], std::string &input_struct_filename,
@@ -23,12 +25,12 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     std::string &list_wall_separator, std::string &clusters_method,
     std::string &only_side_ASA, std::string &ASA_method,
     std::string &exclude_ca_for_ASA, std::string &modes_ndd_filename,
-    std::string &pdbs_list_ndd_filename, std::string &out_CH_filename,
-    std::string &out_ndd_filename, std::string &out_filename,
-    std::string &out_vol, std::string &output_type, std::string &tool_check_CH,
-    std::string &tool_pdb_to_ch, std::string &sphere_proto,
-    std::string &cylinder_proto, std::string &prism_proto,
-    std::string &tool_pdb_norm, std::string &tool_aa_to_ca);
+    std::string &pdbs_list_ndd_filename, std::string &out_ndd_filename,
+    std::string &out_filename, std::string &out_vol, std::string &output_type,
+    std::string &tool_check_CH, std::string &tool_pdb_to_ch,
+    std::string &sphere_proto, std::string &cylinder_proto,
+    std::string &prism_proto, std::string &tool_pdb_norm,
+    std::string &tool_aa_to_ca);
 
 } // namespace ANA
 
