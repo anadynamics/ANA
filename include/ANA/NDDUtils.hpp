@@ -3,6 +3,7 @@
 
 #include <ANA/Includes.hpp>
 #include <ANA/Modes.hpp>
+#include <ANA/Options.hpp>
 #include <ANA/Read.hpp>
 #include <ANA/Utils.hpp>
 #include <chemfiles.hpp>
@@ -23,10 +24,10 @@ namespace NDD {
     std::vector<unsigned int> adapt_AA_list(
         std::string &aa_list_proto, unsigned int const top = 0);
 
-    void read(const std::string &filename, bool const atom_only,
+    void read(std::string const &filename, bool const atom_only,
         std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
         std::string &sphere_proto, std::string &cylinder_proto,
-        std::string &prism_proto, const std::string &include_CH_filename,
+        std::string &prism_proto, std::string const &include_CH_filename,
         ANA_molecule &molecule_points,
         std::vector<unsigned int> &include_CH_atoms, Triang_Vector &CH_triangs,
         std::vector<unsigned int> &hetatm_atoms);
@@ -42,8 +43,7 @@ namespace NDD {
         NDD_Vector &output_cells, Triang_Vector &CH_triangs);
 
     // Analytical NDD
-    void ndd(NA_Vector const &cavity_void_cells,
-        std::string const &modes_ndd_filename, std::string const &out_file);
+    void ndd(NA_Vector const &cavity_void_cells, NDDOptions const &NDD_opts);
 
     // Perform Non Delaunay Dynamics.
     void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,

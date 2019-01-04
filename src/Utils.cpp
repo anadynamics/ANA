@@ -280,7 +280,7 @@ void keep_included_aa_cells(NA_Vector const &input_cells,
 // Discard exposed cells.
 void discard_ASA_dot_pdt_cm(Point const &cm,
     std::vector<Point> const &Calpha_xyz, double const min_dot,
-    double const max_length, const std::string only_side_ASA,
+    double const max_length, std::string const only_side_ASA,
     NA_Vector const &input_cells, NA_Vector &output_cells) {
 
     if (only_side_ASA == "inside") {
@@ -347,7 +347,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
 
 // Discard exposed cells. Calpha convex hull method
 void discard_ASA_CACH(std::vector<Point> const &Calpha_xyz,
-    const std::string only_side_ASA, NA_Vector const &input_cells,
+    std::string const only_side_ASA, NA_Vector const &input_cells,
     NA_Vector &output_cells) {
 
     Polyhedron CH;
@@ -411,7 +411,7 @@ void discard_ASA_CACH(std::vector<Point> const &Calpha_xyz,
 // Discard exposed cells. axes method
 void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
     double const min_dot, double const max_length,
-    const std::string only_side_ASA, NA_Vector const &input_cells,
+    std::string const only_side_ASA, NA_Vector const &input_cells,
     NA_Vector &output_cells) {
 
     double DP_xy = 0, DP_xz = 0, DP_yz = 0;
@@ -618,10 +618,10 @@ void partition_triangulation(
 }
 // Calc volume and get the proper cells
 double get_all_voids(Delaunay const &T, NA_Vector &big_cells,
-    double const min_vol_radius, double const max_area_radius) {
+    CellFilteringOptions const cell_opts) {
 
-    double const min_cell_vol = (4 / 3) * M_PI * pow(min_vol_radius, 3);
-    double const max_facet_area = M_PI * pow(max_area_radius, 2);
+    double const min_cell_vol = (4 / 3) * M_PI * pow(cell_opts._minVR, 3);
+    double const max_facet_area = M_PI * pow(cell_opts._maxSR, 2);
     double volume = 0;
     double current_cell_vol;
     Finite_cells_iterator fc_ite, fc_ite_end = T.finite_cells_end();
@@ -1207,7 +1207,7 @@ void na_vector_into_ndd_vector(
 
 // Tool for reading PDB to draw included area.
 void tool_PDB_to_CH(
-    const std::string &in_filename, const std::string &out_filename) {
+    std::string const &in_filename, std::string const &out_filename) {
 
     // Read molecule
     chemfiles::Trajectory in_traj(in_filename);
@@ -1241,7 +1241,7 @@ void tool_PDB_to_CH(
 
 // Tool for normalizing PDB, by renumbering its atoms and residues.
 void tool_PDB_norm(
-    const std::string &in_filename, const std::string &tool_pdb_norm) {
+    std::string const &in_filename, std::string const &tool_pdb_norm) {
 
     std::vector<chemfiles::Residue> res_vec;
     std::vector<unsigned int> resid_vec;
@@ -1284,147 +1284,4 @@ void tool_PDB_norm(
     return;
 }
 
-// Helper function for inserting elements in ordered vectors.
-template <class Vector, class T_to_insert>
-void insert_into_ord_vtor(Vector &v, const T_to_insert &to_insert) {
-    typename Vector::iterator i =
-        std::lower_bound(v.begin(), v.end(), to_insert);
-    if (i == v.end() || to_insert < *i) {
-        v.insert(i, to_insert);
-    }
-    return;
-}
-
-// Helper function for getting the indices that sort a vector.
-template <typename T>
-std::vector<unsigned int> sort_indices(const std::vector<T> &v) {
-
-    // initialize original index locations
-    std::vector<unsigned int> idx(v.size());
-    std::iota(idx.begin(), idx.end(), 0);
-
-    // sort indices based on comparing values in v
-    sort(idx.begin(), idx.end(),
-        [&v](unsigned int i1, unsigned int i2) { return v[i1] < v[i2]; });
-
-    return idx;
-}
-
-// Helper function to use binary search to find the lowest bound of a query in
-// a sorted vector in ascending order. It returns true if a match is found,
-// and
-// stores the index of the element that satisfies the lower bound condition in
-// the variable "first".
-template <typename v_type>
-bool lb(const std::vector<v_type> &v1, const v_type q1, unsigned int &first) {
-
-    unsigned int count = v1.size(), step, current;
-    first = 0;
-
-    while (count > 0) {
-        step = count / 2;
-        current = first;
-        current += step;
-
-        if (v1[current] < q1) {
-            first = ++current;
-            count -= (step + 1);
-        } else
-            count = step;
-    }
-
-    // Did the query match?
-    if (first == v1.size()) {
-        return false;
-    } else
-        return true;
-}
-
-// Helper function to use binary search to find the lowest bound of a query in
-// an unsorted vector and vector of indices that sorts it in ascending order.
-// It
-// returns true if a match is found, and stores the index of the
-// element that satisfies the lower bound condition in the variable "first".
-// This variable also serves as a starting point in the search, to start
-// searching in an arbitrary position and forward.
-template <typename v_type>
-bool lb_with_indices(const std::vector<v_type> &v1,
-    const std::vector<unsigned int> &indices, const v_type q1,
-    unsigned int &first) {
-
-    unsigned int count = v1.size(), step, current;
-    first = 0;
-
-    while (count > 0) {
-        step = count / 2;
-        current = first;
-        current += step;
-
-        if (v1[indices[current]] < q1) {
-            first = ++current;
-            count -= (step + 1);
-        } else
-            count = step;
-    }
-
-    // Is the query larger?
-    if (first == v1.size()) {
-        return false;
-    } else
-        return true;
-}
-
-// Helper function for taking the "i" number in the 'in_vec'' that doesn't
-// match the query
-template <class query_type>
-query_type get_i_not_equal(const std::vector<query_type> &in_vec,
-    const query_type &query, unsigned int const i) {
-    if (in_vec.size() < i) {
-        throw std::invalid_argument(
-            "get_i_not_equal(): specified \"i\" position "
-            "larger than input vector");
-    }
-
-    unsigned int cont = 0;
-    for (auto const &each : in_vec) {
-        if (each != query) {
-            ++cont;
-            if (cont >= i) {
-                return each;
-            }
-        }
-    }
-
-    // Fail
-    return i;
-}
-
-// Helper function for taking the "i" number in the 'in_vec'' that doesn't
-// match the query vector
-template <class query_type>
-query_type get_i_not_equal(const std::vector<query_type> &in_vec,
-    const std::vector<query_type> &query_vec, unsigned int const i) {
-    if (in_vec.size() < i) {
-        throw std::invalid_argument(
-            "get_i_not_equal(): specified \"i\" position "
-            "larger than input vector");
-    }
-
-    unsigned int cont = 0;
-    for (auto const &each : in_vec) {
-        bool each_bool = true;
-        for (auto const &query : query_vec) {
-            each_bool = each_bool && (each != query);
-        }
-        if (each_bool) {
-            ++cont;
-            if (cont >= i) {
-                return each;
-            }
-        }
-    }
-
-    // Fail
-    return i;
-}
 } // namespace ANA

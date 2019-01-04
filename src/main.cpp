@@ -7,37 +7,36 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <ANA/MD.hpp>
 #include <ANA/NDD.hpp>
+#include <ANA/Options.hpp>
 #include <ANA/ProgramOptions.hpp>
 #include <ANA/Static.hpp>
 
 int main(int argc, char *argv[]) {
+    ANA::IncludedAreaOptions IA_opts;
+    ANA::NDDOptions NDD_opts;
+    ANA::CellFilteringOptions cell_opts;
+
     std::string in_filename, AA_indices_proto, exclude_ca_for_ASA_indices_proto,
-        in_md_filename, out_type, modes_ndd_filename, pdbs_list_ndd_filename,
-        out_ndd_filename, include_CH_filename,
-        include_CH_aa_proto = "none", include_CH_atom_proto = "none",
-        out_filename, out_vol, clusters_method = "facets",
-        ASA_method = "dot_pdt", only_side_ASA, list_wall, list_wall_separator,
-        tool_check_CH, tool_pdb_to_ch, sphere_proto, cylinder_proto,
-        prism_proto, tool_pdb_norm, tool_aa_to_ca;
+        in_md_filename, out_type, out_filename, out_vol,
+        clusters_method = "facets", ASA_method = "dot_pdt", only_side_ASA,
+        list_wall, list_wall_separator, tool_check_CH, tool_pdb_to_ch,
+        tool_pdb_norm, tool_aa_to_ca;
 
     bool triangulate_only_included_aas = false, atom_only = true;
 
     unsigned int nbr_of_vertices_to_include = 2, min_cells_cluster = 2,
                  estado = 1, md_start, md_step, md_end, precision, sphere_count;
     std::vector<unsigned int> include_CH_aa, hetatm_atoms;
-    double minVR, maxSR, max_probe, max_probe_length, sphere_size;
+    double max_probe, max_probe_length, sphere_size;
 
     estado = ANA::get_parameters(argc, argv, in_filename, in_md_filename,
-        include_CH_filename, include_CH_aa_proto, include_CH_atom_proto,
-        AA_indices_proto, triangulate_only_included_aas, atom_only, precision,
-        min_cells_cluster, nbr_of_vertices_to_include, md_start, md_step,
-        md_end, minVR, maxSR, max_probe, max_probe_length, sphere_size,
+        IA_opts, AA_indices_proto, triangulate_only_included_aas, atom_only,
+        precision, min_cells_cluster, nbr_of_vertices_to_include, md_start,
+        md_step, md_end, cell_opts, max_probe, max_probe_length, sphere_size,
         sphere_count, list_wall, list_wall_separator, clusters_method,
-        only_side_ASA, ASA_method, exclude_ca_for_ASA_indices_proto,
-        modes_ndd_filename, pdbs_list_ndd_filename, out_ndd_filename,
+        only_side_ASA, ASA_method, exclude_ca_for_ASA_indices_proto, NDD_opts,
         out_filename, out_vol, out_type, tool_check_CH, tool_pdb_to_ch,
-        sphere_proto, cylinder_proto, prism_proto, tool_pdb_norm,
-        tool_aa_to_ca);
+        tool_pdb_norm, tool_aa_to_ca);
     if (estado == 1) {
         // Some error was found. Terminating execution.
         return 0;
@@ -58,10 +57,11 @@ int main(int argc, char *argv[]) {
         // Read input file
         bool const requested_CH = ANA::read_static(in_filename,
             triangulate_only_included_aas, atom_only, AA_indices_proto,
-            exclude_ca_for_ASA_indices_proto, include_CH_aa_proto,
-            include_CH_atom_proto, sphere_proto, cylinder_proto, prism_proto,
-            include_CH_filename, molecule_points, cm, AA_indices, CA_indices,
-            CAs_Points, include_CH_atoms, CH_triangs, hetatm_atoms);
+            exclude_ca_for_ASA_indices_proto, IA_opts._include_CH_resn_proto,
+            IA_opts._include_CH_atom_proto, IA_opts._sphere_proto,
+            IA_opts._cylinder_proto, IA_opts._prism_proto,
+            IA_opts._include_CH_filename, molecule_points, cm, AA_indices,
+            CA_indices, CAs_Points, include_CH_atoms, CH_triangs, hetatm_atoms);
 
         if (!requested_CH) {
             std::cerr << "No valid input for triangulation of included area. "
@@ -97,10 +97,10 @@ int main(int argc, char *argv[]) {
                 // Read next frame.
                 chemfiles::Frame in_frame = in_traj.read_step(current_step);
                 // Update CH
-                ANA::read_MD(in_frame, requested_CH, sphere_proto,
-                    cylinder_proto, prism_proto, hetatm_atoms, include_CH_atoms,
-                    include_CH_filename, CH_triangs, ASA_method, CA_indices,
-                    CAs_Points, molecule_points);
+                ANA::read_MD(in_frame, requested_CH, IA_opts._sphere_proto,
+                    IA_opts._cylinder_proto, IA_opts._prism_proto, hetatm_atoms,
+                    include_CH_atoms, IA_opts._include_CH_filename, CH_triangs,
+                    ASA_method, CA_indices, CAs_Points, molecule_points);
                 // New CH model.
                 ANA::draw_CH(CH_triangs, out_traj);
                 ++frame_cnt;
@@ -135,8 +135,9 @@ int main(int argc, char *argv[]) {
         // Read input file
         ANA::read_static(in_filename, triangulate_only_included_aas, atom_only,
             AA_indices_proto, exclude_ca_for_ASA_indices_proto,
-            include_CH_aa_proto, include_CH_atom_proto, sphere_proto,
-            cylinder_proto, prism_proto, include_CH_filename, molecule_points,
+            IA_opts._include_CH_resn_proto, IA_opts._include_CH_atom_proto,
+            IA_opts._sphere_proto, IA_opts._cylinder_proto,
+            IA_opts._prism_proto, IA_opts._include_CH_filename, molecule_points,
             cm, AA_indices, CA_indices, CAs_Points, include_CH_atoms,
             CH_triangs, hetatm_atoms);
         std::sort(include_CH_atoms.begin(), include_CH_atoms.end());
@@ -161,28 +162,28 @@ int main(int argc, char *argv[]) {
 
         ANA::MD_ANA(in_filename, in_md_filename, AA_indices_proto, ASA_method,
             only_side_ASA, exclude_ca_for_ASA_indices_proto, list_wall,
-            list_wall_separator, include_CH_aa_proto, include_CH_atom_proto,
-            sphere_proto, cylinder_proto, prism_proto, include_CH_filename,
-            out_filename, out_type, triangulate_only_included_aas, atom_only,
-            minVR, maxSR, max_probe, max_probe_length, sphere_count,
-            nbr_of_vertices_to_include, precision, md_start, md_step, md_end);
-    } else if (pdbs_list_ndd_filename == "none" &&
-        modes_ndd_filename == "none") {
+            list_wall_separator, IA_opts._include_CH_resn_proto,
+            IA_opts._include_CH_atom_proto, IA_opts._sphere_proto,
+            IA_opts._cylinder_proto, IA_opts._prism_proto,
+            IA_opts._include_CH_filename, out_filename, out_type,
+            triangulate_only_included_aas, atom_only, cell_opts, max_probe,
+            max_probe_length, sphere_count, nbr_of_vertices_to_include,
+            precision, md_start, md_step, md_end);
+    } else if (NDD_opts._pdbs_list_ndd_filename != "none" ||
+        NDD_opts._modes_ndd_filename != "none") {
 
-        ANA::NDD_ANA(in_filename, include_CH_aa_proto, include_CH_atom_proto,
-            sphere_proto, cylinder_proto, prism_proto, include_CH_filename,
-            modes_ndd_filename, pdbs_list_ndd_filename, out_ndd_filename,
-            atom_only, minVR, maxSR);
+        ANA::NDD_ANA(in_filename, IA_opts, NDD_opts, cell_opts, atom_only);
 
     } else {
 
         ANA::static_ANA(in_filename, AA_indices_proto, ASA_method,
             only_side_ASA, exclude_ca_for_ASA_indices_proto, list_wall,
-            list_wall_separator, clusters_method, include_CH_aa_proto,
-            include_CH_atom_proto, sphere_proto, cylinder_proto, prism_proto,
-            include_CH_filename, out_filename, out_type,
-            triangulate_only_included_aas, atom_only, minVR, maxSR, max_probe,
-            max_probe_length, sphere_size, sphere_count,
+            list_wall_separator, clusters_method,
+            IA_opts._include_CH_resn_proto, IA_opts._include_CH_atom_proto,
+            IA_opts._sphere_proto, IA_opts._cylinder_proto,
+            IA_opts._prism_proto, IA_opts._include_CH_filename, out_filename,
+            out_type, triangulate_only_included_aas, atom_only, cell_opts,
+            max_probe, max_probe_length, sphere_size, sphere_count,
             nbr_of_vertices_to_include, min_cells_cluster, precision);
     }
 

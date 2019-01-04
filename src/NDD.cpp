@@ -2,18 +2,13 @@
 
 namespace ANA {
 
-int NDD_ANA(std::string const &in_filename, std::string &include_CH_aa_proto,
-    std::string &include_CH_atom_proto, std::string &sphere_proto,
-    std::string &cylinder_proto, std::string &prism_proto,
-    std::string const &include_CH_filename,
-    std::string const &modes_ndd_filename,
-    std::string const &pdbs_list_ndd_filename,
-    std::string const &out_ndd_filename, bool const atom_only,
-    double const minVR, double const maxSR) {
+int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
+    NDDOptions const &NDD_opts, CellFilteringOptions const cell_opts,
+    bool const atom_only) {
 
     // atom_cnt_poly is for MD only.
     unsigned int atom_cnt_poly = 0;
-    double poly_vol = 0;
+    double poly_vol = 0.;
     std::vector<Point> CAs_Points;
     ANA_molecule molecule_points;
     std::vector<unsigned int> CA_indices, include_CH_atoms;
@@ -30,14 +25,15 @@ int NDD_ANA(std::string const &in_filename, std::string &include_CH_aa_proto,
     std::vector<std::array<double, 3>> in_vtces_radii;
 
     // Read original file
-    ANA::NDD::read(in_filename, atom_only, include_CH_aa_proto,
-        include_CH_atom_proto, sphere_proto, cylinder_proto, prism_proto,
-        include_CH_filename, molecule_points, include_CH_atoms, CH_triangs,
-        hetatm_atoms);
+    ANA::NDD::read(in_filename, atom_only, IA_opts._include_CH_resn_proto,
+        IA_opts._include_CH_atom_proto, IA_opts._sphere_proto,
+        IA_opts._cylinder_proto, IA_opts._prism_proto,
+        IA_opts._include_CH_filename, molecule_points, include_CH_atoms,
+        CH_triangs, hetatm_atoms);
 
     Delaunay T = ANA::triangulate(molecule_points);
 
-    ANA::get_all_voids(T, cavity_cells, minVR, maxSR);
+    ANA::get_all_voids(T, cavity_cells, cell_opts);
 
     discard_CH_0(cavity_cells, CH_triangs, cavity_void_cells,
         cavity_intersecting_cells, intersecting_bool, intersecting_total);
@@ -58,9 +54,7 @@ int NDD_ANA(std::string const &in_filename, std::string &include_CH_aa_proto,
     //     pdbs_list_ndd_filename, precision, include_CH_atoms,
     //     out_ndd_filename);
 
-    ANA::NDD::ndd(cavity_joint_cells, modes_ndd_filename, out_ndd_filename);
-
-    [[maybe_unused]] auto borrame = pdbs_list_ndd_filename.end();
+    ANA::NDD::ndd(cavity_joint_cells, NDD_opts);
 
     ANA::write_output_volume(cavity_void_cells, poly_vol);
 

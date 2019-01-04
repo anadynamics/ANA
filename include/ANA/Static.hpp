@@ -2,6 +2,7 @@
 #define ANA_STATIC_H
 
 #include <ANA/Includes.hpp>
+#include <ANA/Options.hpp>
 #include <ANA/Read.hpp>
 #include <ANA/Utils.hpp>
 #include <ANA/Write.hpp>
@@ -18,7 +19,7 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
     std::string &prism_proto, std::string const &include_CH_filename,
     std::string &out_filename, std::string const &out_type,
     bool const triangulate_only_included_aas, bool const atom_only,
-    double const minVR, double const maxSR, double const max_probe,
+    CellFilteringOptions const cell_opts, double const max_probe,
     double const max_probe_length, double const sphere_size,
     unsigned int const sphere_count,
     unsigned int const nbr_of_vertices_to_include,

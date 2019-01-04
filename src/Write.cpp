@@ -5,7 +5,7 @@ namespace ANA {
 std::ofstream out_vol_stream;
 // Draw tetrahedrons in pymol CGO objects.
 void draw_raw_cgo(const NA_Matrix &list_of_pockets, const Poly_Vector &polys,
-    std::string &out_script_template, const std::string pdb_filename,
+    std::string &out_script_template, std::string const pdb_filename,
     unsigned int const precision) {
 
     unsigned int cont = 1;
@@ -95,7 +95,7 @@ void draw_raw_cgo(std::ofstream &pymol_script, NA_Vector const &cells_to_draw) {
 
 // Draw a vector of polyhedrons as CGO pymol tetrahedrons
 void draw_raw_polyhedrons(std::ofstream &pymol_script,
-    const Poly_Vector &CH_vec, const std::string &model_template) {
+    const Poly_Vector &CH_vec, std::string const &model_template) {
 
     std::string model_name = model_template;
     model_name.append("_border_1");
@@ -140,7 +140,7 @@ void draw_grid_cgo(const NA_Matrix &list_of_pockets,
     const std::vector<std::array<double, 3>> &in_vtces_radii,
     const std::vector<unsigned int> &intersecting_total,
     const Poly_Vector &polys, std::string &out_script_template,
-    const std::string pdb_filename, double const sphere_size,
+    std::string const pdb_filename, double const sphere_size,
     unsigned int const sphere_count, unsigned int const precision) {
 
     unsigned int cont = 1;
@@ -566,7 +566,7 @@ void draw_grid_cgo_polyhedrons(std::ofstream &pymol_script,
 
 // Draw pockets in .PDB format. Static version
 void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
-    const std::string &out_filename) {
+    std::string const &out_filename) {
 
     unsigned int atom_cnt = 4;
     // Write PDB header.
@@ -1416,7 +1416,7 @@ unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
 
 // Write pymol script header
 inline void header_script_pymol(
-    std::ofstream &pymol_script, const std::string pdb_filename) {
+    std::ofstream &pymol_script, std::string const pdb_filename) {
     pymol_script << "from pymol.cgo import *" << '\n';
     pymol_script << "from pymol import cmd\n" << '\n';
     pymol_script << "cmd.load(\"" << pdb_filename << "\")" << '\n';
@@ -1427,7 +1427,7 @@ inline void header_script_pymol(
 
 // Write .PDB header
 inline void header_PDB(
-    const std::string &out_pdb_filename, const std::string &in_pdb_filename) {
+    std::string const &out_pdb_filename, std::string const &in_pdb_filename) {
     [[maybe_unused]] auto borrame = out_pdb_filename.end();
     [[maybe_unused]] auto borrame1 = in_pdb_filename.end();
     return;
@@ -1664,7 +1664,7 @@ void wall_atom_output(std::ofstream &wall_out, NA_Vector const &in_cells,
     const std::vector<std::array<bool, 4>> intersecting_bool,
     bool const requested_CH, unsigned int const precision,
     unsigned int const pock_cnt, unsigned int const frame_cnt,
-    const std::string &list_wall_separator) {
+    std::string const &list_wall_separator) {
 
     std::vector<unsigned int> wall_aa_idx, wall_atom_idx;
     std::vector<std::string> wall_aa_id;
@@ -1691,7 +1691,7 @@ void wall_aa_output(std::ofstream &wall_out, NA_Vector const &in_cells,
     const std::vector<std::array<bool, 4>> intersecting_bool,
     bool const requested_CH, unsigned int const precision,
     unsigned int const pock_cnt, unsigned int const frame_cnt,
-    const std::string &list_wall_separator) {
+    std::string const &list_wall_separator) {
 
     std::vector<unsigned int> wall_aa_idx;
     std::vector<std::string> wall_aa_id;
@@ -1720,7 +1720,7 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
 
     std::vector<unsigned int>::iterator a_idx;
     unsigned int atom_idx, a;
-    Vtx_info v_info;
+    VertexInfo v_info;
 
     for (auto const &cell : null_areas_vtor) {
         for (unsigned int i = 0; i < 3; i++) {
@@ -1764,7 +1764,7 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
 
     std::vector<unsigned int>::iterator a_idx;
     unsigned int atom_idx, a, ii = 0;
-    Vtx_info v_info;
+    VertexInfo v_info;
 
     for (auto const &cell : cavity_intersecting_cells) {
         for (unsigned int i = 0; i < 3; i++) {
@@ -1810,7 +1810,7 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
 
     std::vector<unsigned int>::iterator r_idx;
     unsigned int res_idx, r;
-    Vtx_info v_info;
+    VertexInfo v_info;
 
     for (auto const &cell : null_areas_vtor) {
         for (unsigned int i = 0; i < 3; i++) {
@@ -1849,7 +1849,7 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
 
     std::vector<unsigned int>::iterator r_idx;
     unsigned int res_idx, r, ii = 0;
-    Vtx_info v_info;
+    VertexInfo v_info;
 
     for (auto const &cell : cavity_intersecting_cells) {
         for (unsigned int i = 0; i < 3; i++) {
@@ -1888,11 +1888,11 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
 
 // Write wall amino acids and atoms
 void write_wall_file(std::ofstream &pock_out_file,
-    const std::string &pock_out_filename,
+    std::string const &pock_out_filename,
     const std::vector<unsigned int> &wall_aa_idx,
     const std::vector<std::string> &wall_aa_id,
     const std::vector<unsigned int> &wall_atom_idx,
-    unsigned int const frame_cnt, const std::string &list_wall_separator) {
+    unsigned int const frame_cnt, std::string const &list_wall_separator) {
 
     unsigned int atom_length = wall_atom_idx.size();
 
@@ -1927,10 +1927,10 @@ void write_wall_file(std::ofstream &pock_out_file,
 
 // Write wall amino acids
 void write_wall_file(std::ofstream &pock_out_file,
-    const std::string &pock_out_filename,
+    std::string const &pock_out_filename,
     const std::vector<unsigned int> &wall_aa_idx,
     const std::vector<std::string> &wall_aa_id, unsigned int const frame_cnt,
-    const std::string &list_wall_separator) {
+    std::string const &list_wall_separator) {
 
     unsigned int resi_length = wall_aa_idx.size();
 

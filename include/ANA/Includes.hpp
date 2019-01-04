@@ -26,7 +26,7 @@
 #include <CGAL/box_intersection_d.h>
 #include <CGAL/convex_hull_3.h>
 
-struct Vtx_info {
+struct VertexInfo {
 public:
     unsigned int _index;
     double _radius;
@@ -37,7 +37,7 @@ public:
 };
 
 // Colours for pymol CGO objects
-unsigned int const col_nbr = 16;
+unsigned int constexpr col_nbr = 16;
 
 const std::array<double, col_nbr> red = {1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.4,
     0.4, 0.0, 0.75, 0.75, 0.0, 0.875, 0.875, 0.0};
@@ -49,7 +49,7 @@ const std::array<double, col_nbr> blue = {1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0,
 // clang-format off
 // Basic definitions
 using EPIC = CGAL::Exact_predicates_inexact_constructions_kernel;
-using Vb = CGAL::Triangulation_vertex_base_with_info_3<Vtx_info, EPIC>;
+using Vb = CGAL::Triangulation_vertex_base_with_info_3<VertexInfo, EPIC>;
 using Tds = CGAL::Triangulation_data_structure_3<Vb>;
 using Delaunay = CGAL::Delaunay_triangulation_3<EPIC, Tds>;
 
@@ -76,8 +76,10 @@ using P_Facet_iterator = Polyhedron::Facet_iterator;
 using P_Facet_const_iterator = Polyhedron::Facet_const_iterator;
 using P_Edge_iterator = Polyhedron::Edge_iterator;
 using P_Edge_const_iterator = Polyhedron::Edge_const_iterator;
-using P_Halfedge_around_facet_circulator = Polyhedron::Halfedge_around_facet_circulator;
-using P_Halfedge_around_facet_const_circulator = Polyhedron::Halfedge_around_facet_const_circulator;
+using P_Halfedge_around_facet_circulator =
+    Polyhedron::Halfedge_around_facet_circulator;
+using P_Halfedge_around_facet_const_circulator =
+    Polyhedron::Halfedge_around_facet_const_circulator;
 using P_Vertex_iterator = Polyhedron::Vertex_iterator;
 using P_Vertex_const_iterator = Polyhedron::Vertex_const_iterator;
 
@@ -108,7 +110,7 @@ using Poly_Vector = std::vector<Polyhedron>;
 // Pocket border cells
 using Poly_Matrix = std::vector<Poly_Vector>;
 // All null areas border cells
-using ANA_molecule = std::vector<std::pair<Point, Vtx_info>>;
+using ANA_molecule = std::vector<std::pair<Point, VertexInfo>>;
 
 // Miscellaneous definitions
 using Object = CGAL::Object;
@@ -117,6 +119,7 @@ using Triang_Vector = std::vector<Triangle>;
 using Segment = EPIC::Segment_3;
 using Tetrahedron = CGAL::Tetrahedron_3<EPIC>;
 using Tetra_Vector = std::vector<Tetrahedron>;
-using Box = CGAL::Box_intersection_d::Box_with_handle_d<double, 3, Finite_cells_iterator>;
+using Box =
+    CGAL::Box_intersection_d::Box_with_handle_d<double, 3, Finite_cells_iterator>;
 
 #endif

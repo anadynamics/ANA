@@ -2,6 +2,7 @@
 #define ANA_UTILS_H
 
 #include <ANA/Includes.hpp>
+#include <ANA/Options.hpp>
 #include <ANA/Read.hpp>
 #include <ANA/Write.hpp>
 
@@ -144,7 +145,7 @@ void partition_triangulation(
 
 // Calc volume and get the proper cells
 double get_all_voids(Delaunay const &T, NA_Vector &big_cells,
-    double const min_vol_radius, double const max_area_radius);
+    CellFilteringOptions const cell_opts);
 
 // Discard cells without a vertex inside the specified convex hull. Lo
 // precision.
@@ -184,40 +185,149 @@ void tool_PDB_to_CH(
 void tool_PDB_norm(
     std::string const &in_filename, std::string const &tool_pdb_norm);
 
-// Helper function for inserting new elements in ordered vectors.
-template <class Vector, class T_to_insert>
-void insert_into_ord_vtor(Vector &v, const T_to_insert &to_insert);
+// Helper function for inserting elements in ordered vectors.
+template <class Vector, class T>
+void insert_into_ord_vtor(Vector &v, const T &to_insert) {
+    typename Vector::iterator i =
+        std::lower_bound(v.begin(), v.end(), to_insert);
+    if (i == v.end() || to_insert < *i) {
+        v.insert(i, to_insert);
+    }
+    return;
+}
 
 // Helper function for getting the indices that sort a vector.
 template <typename T>
-std::vector<unsigned int> sort_indices(const std::vector<T> &v);
+std::vector<unsigned int> sort_indices(const std::vector<T> &v) {
+
+    // initialize original index locations
+    std::vector<unsigned int> idx(v.size());
+    std::iota(idx.begin(), idx.end(), 0);
+
+    // sort indices based on comparing values in v
+    sort(idx.begin(), idx.end(),
+        [&v](unsigned int i1, unsigned int i2) { return v[i1] < v[i2]; });
+
+    return idx;
+}
 
 // Helper function to use binary search to find the lowest bound of a query in
-// an unsorted vector and vector of indices that sorts it in ascending order. It
-// returns the index of the element that satisfies the lower bound condition.
-template <typename v_type>
-bool lb_with_indices(const std::vector<v_type> &v1,
-    const std::vector<unsigned int> &indices, const v_type q1,
-    unsigned int &first);
-
-// Helper function to use binary search to find the lowest bound of a query in
-// a sorted vector in ascending order. It returns true if a match is found, and
+// a sorted vector in ascending order. It returns true if a match is found,
+// and
 // stores the index of the element that satisfies the lower bound condition in
 // the variable "first".
-template <typename v_type>
-bool lb(const std::vector<v_type> &v1, const v_type q1, unsigned int &first);
+template <typename T>
+bool lb(const std::vector<T> &v1, const T q1, unsigned int &first) {
 
-// Helper function for taking the "i" number in the vector that doesn't match
-// the query
-template <class query_type>
-query_type get_i_not_equal(const std::vector<query_type> &in_vec,
-    const query_type &query, unsigned int const i);
+    unsigned int count = v1.size(), step, current;
+    first = 0;
+
+    while (count > 0) {
+        step = count / 2;
+        current = first;
+        current += step;
+
+        if (v1[current] < q1) {
+            first = ++current;
+            count -= (step + 1);
+        } else
+            count = step;
+    }
+
+    // Did the query match?
+    if (first == v1.size()) {
+        return false;
+    } else
+        return true;
+}
+
+// Helper function to use binary search to find the lowest bound of a query in
+// an unsorted vector and vector of indices that sorts it in ascending order.
+// It returns true if a match is found, and stores the index of the
+// element that satisfies the lower bound condition in the variable "first".
+// This variable also serves as a starting point in the search, to start
+// searching in an arbitrary position and forward.
+template <typename T>
+bool lb_with_indices(const std::vector<T> &v1,
+    const std::vector<unsigned int> &indices, const T q1, unsigned int &first) {
+
+    unsigned int count = v1.size(), step, current;
+    first = 0;
+
+    while (count > 0) {
+        step = count / 2;
+        current = first;
+        current += step;
+
+        if (v1[indices[current]] < q1) {
+            first = ++current;
+            count -= (step + 1);
+        } else
+            count = step;
+    }
+
+    // Is the query larger?
+    if (first == v1.size()) {
+        return false;
+    } else
+        return true;
+}
 
 // Helper function for taking the "i" number in the 'in_vec'' that doesn't
-// match the query vector
-template <class query_type>
-query_type get_i_not_equal(const std::vector<query_type> &in_vec,
-    const std::vector<query_type> &query_vec, unsigned int const i);
+// match the query
+template <class T>
+T get_i_not_equal(const std::vector<T> &in_vec,
+    const T &query, unsigned int const i) {
+    if (in_vec.size() < i) {
+        throw std::invalid_argument(
+            "get_i_not_equal(): specified \"i\" position "
+            "larger than input vector");
+    }
+
+    unsigned int cont = 0;
+    for (auto const &each : in_vec) {
+        if (each != query) {
+            ++cont;
+            if (cont >= i) {
+                return each;
+            }
+        }
+    }
+
+    // Fail
+    return i;
+}
+
+// Helper function for taking the "i" number in the 'in_vec'' that doesn't
+// match the query vector.
+template <class T>
+T get_i_not_equal(const std::vector<T> &in_vec, const std::vector<T> &query_vec,
+    unsigned int const i) {
+    if (in_vec.size() < i) {
+        throw std::invalid_argument(
+            "get_i_not_equal(): specified \"i\" position "
+            "larger than input vector");
+    }
+
+    unsigned int cont = 0;
+    for (auto const &each : in_vec) {
+        bool each_bool = true;
+        for (auto const &query : query_vec) {
+            each_bool = each_bool && (each != query);
+        }
+        if (each_bool) {
+            ++cont;
+            if (cont >= i) {
+                return each;
+            }
+        }
+    }
+
+    // Fail
+    return i;
+}
+
+
 
 } // namespace ANA
 #endif // _H

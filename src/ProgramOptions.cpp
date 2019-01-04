@@ -3,22 +3,19 @@
 namespace ANA {
 
 int get_parameters(int ac, char *av[], std::string &input_struct_filename,
-    std::string &input_md_filename, std::string &include_CH_filename,
-    std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
+    std::string &input_md_filename, IncludedAreaOptions &IA_opts,
     std::string &AA_indices_proto, bool &triangulate_only_included_aas,
     bool &atom_only, unsigned int &precision, unsigned int &clusters_min_size,
     unsigned int &nbr_of_vertices_to_include, unsigned int &md_start,
-    unsigned int &md_step, unsigned int &md_end, double &minVR, double &maxSR,
-    double &max_probe, double &max_probe_length, double &sphere_size,
-    unsigned int &sphere_count, std::string &list_wall,
-    std::string &list_wall_separator, std::string &clusters_method,
-    std::string &only_side_ASA, std::string &ASA_method,
-    std::string &exclude_ca_for_ASA, std::string &modes_ndd_filename,
-    std::string &pdbs_list_ndd_filename, std::string &out_ndd_filename,
-    std::string &out_filename, std::string &out_vol, std::string &output_type,
-    std::string &tool_check_CH, std::string &tool_pdb_to_ch,
-    std::string &sphere_proto, std::string &cylinder_proto,
-    std::string &prism_proto, std::string &tool_pdb_norm,
+    unsigned int &md_step, unsigned int &md_end,
+    CellFilteringOptions &cell_opts, double &max_probe,
+    double &max_probe_length, double &sphere_size, unsigned int &sphere_count,
+    std::string &list_wall, std::string &list_wall_separator,
+    std::string &clusters_method, std::string &only_side_ASA,
+    std::string &ASA_method, std::string &exclude_ca_for_ASA,
+    NDDOptions &NDD_opts, std::string &out_filename, std::string &out_vol,
+    std::string &output_type, std::string &tool_check_CH,
+    std::string &tool_pdb_to_ch, std::string &tool_pdb_norm,
     std::string &tool_aa_to_ca) {
     // clang-format off
   try {
@@ -31,9 +28,9 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
 	  ->default_value("none"), "Input structure (pdb). Positional argument.\n")
     ("input_md,d", PO::value<std::string>(&input_md_filename)
     ->default_value("none"), "Input file with MD simulation.\n")
-	  ("NDD_input,I", PO::value<std::string>(&pdbs_list_ndd_filename)
+	  ("NDD_input,I", PO::value<std::string>(&NDD_opts._pdbs_list_ndd_filename)
     ->default_value("none")->composing(), "File with the list of input PDBs for non Delaunay dynamics.\n")
-    ("NDD_modes,M", PO::value<std::string>(&modes_ndd_filename)
+    ("NDD_modes,M", PO::value<std::string>(&NDD_opts._modes_ndd_filename)
     ->default_value("none")->composing(), "Input vectors for non Delaunay dynamics.\n")
     ("config_file,c", PO::value<std::string>(&config_filename)
     ->default_value("ANA.cfg"), "Filename of the configuration file. Default: \"ANA.cfg\".\n")
@@ -41,10 +38,10 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     ->default_value("none")->composing(),"Output filename.\n")
     ("out_vol,V", PO::value<std::string>(&out_vol)
     ->default_value("none")->composing(),"Volume output filename.\n")
-    ("NDD_output,O", PO::value<std::string>(&out_ndd_filename)
+    ("NDD_output,O", PO::value<std::string>(&NDD_opts._out_ndd_filename)
     ->default_value("ANA_NDD.out")->composing(),
     "Name of the non Delaunay dynamics output file. Default: \"ANA_NDD.out\".\n")
-	("include,f", PO::value<std::string>(&include_CH_filename)
+	("include,f", PO::value<std::string>(&IA_opts._include_CH_filename)
     ->default_value("none")->composing(),
     "Coordinates of the included area in PDB format.\n")
 
@@ -74,11 +71,11 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     PO::value<std::string>(&AA_indices_proto)->default_value("none"),
     "Amino acids that are part of a cell.\n")
 
-    ("included_area_residues", PO::value<std::string>(&include_CH_aa_proto)
+    ("included_area_residues", PO::value<std::string>(&IA_opts._include_CH_resn_proto)
     ->default_value("none"), "Amino acids that delimit the convex hull of the"
     " included area.\n")
 
-    ("included_area_atoms", PO::value<std::string>(&include_CH_atom_proto)
+    ("included_area_atoms", PO::value<std::string>(&IA_opts._include_CH_atom_proto)
     ->default_value("none"), "Atoms that delimit the convex hull of the"
     " included area.\n")
 
@@ -87,13 +84,13 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     " area. 1: only keep null areas that are within the included area. "
     "Default: 0.\n")
 
-    ("sphere", PO::value<std::string>(&sphere_proto)->default_value("none")
+    ("sphere", PO::value<std::string>(&IA_opts._sphere_proto)->default_value("none")
     ->composing(), "Read the input coordinates and write 'include_sphere.ANA' "
     "file with the requested pseudo sphere.\n")
-    ("cylinder", PO::value<std::string>(&cylinder_proto)->default_value("none")
+    ("cylinder", PO::value<std::string>(&IA_opts._cylinder_proto)->default_value("none")
     ->composing(), "Read the input coordinates and write 'include_cylinder.ANA' "
     "file with the requested pseudo cylinder.\n")
-    ("prism", PO::value<std::string>(&prism_proto)->default_value("none")
+    ("prism", PO::value<std::string>(&IA_opts._prism_proto)->default_value("none")
     ->composing(), "Read the input coordinates and write 'include_prism.ANA' "
     "file with the requested prism.\n")
 
@@ -162,11 +159,11 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     ("stop", PO::value<unsigned int>(&md_end)->default_value(0),
     "Frame to stop reading. If set to 0, read all. Default: 0.\n")
 
-    ("min_vol_radius", PO::value<double>(&minVR)->default_value(1.4)
+    ("min_vol_radius", PO::value<double>(&cell_opts._minVR)->default_value(1.4)
     ->composing(), "Radius of the sphere with the minimum volume to be taken "
     "into account. Default: 1.4.\n")
 
-    ("max_area_radius", PO::value<double>(&maxSR)->default_value(99)
+    ("max_area_radius", PO::value<double>(&cell_opts._maxSR)->default_value(99)
     ->composing(), "Radius of the sphere with the maximum surface to be taken "
     "into account. Default: 99.\n")
 
@@ -225,27 +222,27 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
       "'included_amino_acids' was not set." << "\n";
       return 1;
   }
-  if (include_CH_aa_proto != "none" && include_CH_atom_proto != "none") {
-    include_CH_atom_proto = "none";
+  if (IA_opts._include_CH_resn_proto != "none" && IA_opts._include_CH_atom_proto != "none") {
+    IA_opts._include_CH_atom_proto = "none";
     std::cerr << "WARNING: Both 'included_area_residues' and "
     "'included_area_atoms' were set. Using the former. " << "\n";
   }
 
-  if ( (include_CH_aa_proto == "none" && include_CH_atom_proto == "none" &&
-  pdbs_list_ndd_filename != "none") ||
-  (include_CH_aa_proto == "none" && include_CH_atom_proto == "none" &&
+  if ( (IA_opts._include_CH_resn_proto == "none" && IA_opts._include_CH_atom_proto == "none" &&
+  NDD_opts._pdbs_list_ndd_filename != "none") ||
+  (IA_opts._include_CH_resn_proto == "none" && IA_opts._include_CH_atom_proto == "none" &&
   input_md_filename != "none") ) {
     std::cerr << "WARNING: You are running ANA MD/NDD without an inclusion "
     "area. Check ANA's manual." << "\n";
     return 1;
   }
 
-  if (pdbs_list_ndd_filename == "none" && out_ndd_filename == "none") {
+  if (NDD_opts._pdbs_list_ndd_filename == "none" && NDD_opts._out_ndd_filename == "none") {
     std::cerr << "ERROR: NDD_input/NDD_output filename was not set." << "\n";
     return 1;
   }
 
-  if (pdbs_list_ndd_filename != "none" && modes_ndd_filename != "none") {
+  if (NDD_opts._pdbs_list_ndd_filename != "none" && NDD_opts._modes_ndd_filename != "none") {
     std::cerr << "ERROR: NDD_input and NDD_modes were both set." << "\n";
     return 1;
   }

@@ -3,12 +3,12 @@
 namespace ANA {
 
 // Read coordinates in pdb format using chemfiles.
-bool read_static(const std::string &filename,
+bool read_static(std::string const &filename,
     bool const triangulate_only_included_aas, bool const atom_only,
     std::string &aa_list_proto, std::string &exclude_ca_for_ASA_proto,
     std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
     std::string &sphere_proto, std::string &cylinder_proto,
-    std::string &prism_proto, const std::string &include_CH_filename,
+    std::string &prism_proto, std::string const &include_CH_filename,
     ANA_molecule &molecule_points, Point &cm,
     std::vector<unsigned int> &aa_list, std::vector<unsigned int> &CA_indices,
     std::vector<Point> &CAs_Points, std::vector<unsigned int> &include_CH_atoms,
@@ -93,7 +93,7 @@ bool read_static(const std::string &filename,
                     // Iterate over each atom, construct the vertex info and get
                     // coords
                     // GetVdwRad or GetCovalentRad?
-                    Vtx_info vi1;
+                    VertexInfo vi1;
                     vi1._resi = res_name;
                     vi1._index = i;
                     vi1._resn = resid;
@@ -184,7 +184,7 @@ bool read_static(const std::string &filename,
                 // Iterate over each atom, construct the vertex info and get
                 // coords
                 // GetVdwRad or GetCovalentRad?
-                Vtx_info vi1;
+                VertexInfo vi1;
                 vi1._resi = res_name;
                 vi1._index = i;
                 // For later sorting
@@ -486,12 +486,12 @@ bool read_static(const std::string &filename,
 
 // Read coordinates in netcdf format.
 void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
-    const std::string &sphere_proto, const std::string &cylinder_proto,
-    const std::string &prism_proto,
+    std::string const &sphere_proto, std::string const &cylinder_proto,
+    std::string const &prism_proto,
     const std::vector<unsigned int> &hetatm_atoms,
     std::vector<unsigned int> &include_CH_atoms,
-    const std::string &include_CH_filename, Triang_Vector &CH_triangs,
-    const std::string &ASA_method, const std::vector<unsigned int> &CA_indices,
+    std::string const &include_CH_filename, Triang_Vector &CH_triangs,
+    std::string const &ASA_method, const std::vector<unsigned int> &CA_indices,
     std::vector<Point> &CAs_points, ANA_molecule &molecule_points) {
     unsigned int i;
     Point p1;
@@ -579,7 +579,7 @@ inline Point getCM(const chemfiles::span<chemfiles::Vector3D> &in_xyz,
 }
 // Read file with included area coordinates
 inline void read_included_area(
-    const std::string &filename, std::vector<Point> &area_points) {
+    std::string const &filename, std::vector<Point> &area_points) {
 
     std::string linea, xs, ys, zs;
     std::ifstream infile(filename);
