@@ -108,13 +108,6 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
                     null_areas_vtor, border_poly, pock_out_filename);
                 ++pock_cnt;
             }
-        } else if (out_type == "raw_cgo") {
-            ANA::draw_raw_cgo(null_areas_mtx, border_poly, out_filename,
-                in_filename, precision);
-        } else if (out_type == "grid_cgo") {
-            ANA::draw_grid_cgo(null_areas_mtx, in_vtces_radii,
-                intersecting_total, border_poly, out_filename, in_filename,
-                sphere_size, sphere_count, precision);
         } else if (out_type == "grid_pdb") {
             unsigned int pock_cnt = 1;
             for (NA_Vector const &null_areas_vtor : null_areas_mtx) {

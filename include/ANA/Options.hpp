@@ -7,12 +7,18 @@ namespace ANA {
 
 struct IncludedAreaOptions {
 public:
+    // Would like to have only 1 string, but that won't play nicely with Boost
+    // Program Options. Hopefully I'll fix it someday. TODO
+    // TODO remove "include_CH_" from the member variables names. It's
+    // redundant.
     std::string _include_CH_resn_proto = "none";
     std::string _include_CH_atom_proto = "none";
-    std::string _sphere_proto;
-    std::string _cylinder_proto;
-    std::string _prism_proto;
-    std::string _include_CH_filename;
+    std::string _sphere_proto = "none";
+    std::string _cylinder_proto = "none";
+    std::string _prism_proto = "none";
+    std::string _include_CH_filename = "none";
+    enum IAOption { none, residue, atom, sphere, cylinder, prism, file };
+    IAOption _opt = IAOption::none;
 };
 
 struct NDDOptions {

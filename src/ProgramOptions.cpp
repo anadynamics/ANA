@@ -3,7 +3,7 @@
 namespace ANA {
 
 int get_parameters(int ac, char *av[], std::string &input_struct_filename,
-    std::string &input_md_filename, IncludedAreaOptions &IA_opts,
+    std::string &input_md_filename, ANA::IncludedAreaOptions &IA_opts,
     std::string &AA_indices_proto, bool &triangulate_only_included_aas,
     bool &atom_only, unsigned int &precision, unsigned int &clusters_min_size,
     unsigned int &nbr_of_vertices_to_include, unsigned int &md_start,
@@ -41,7 +41,7 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     ("NDD_output,O", PO::value<std::string>(&NDD_opts._out_ndd_filename)
     ->default_value("ANA_NDD.out")->composing(),
     "Name of the non Delaunay dynamics output file. Default: \"ANA_NDD.out\".\n")
-	("include,f", PO::value<std::string>(&IA_opts._include_CH_filename)
+    ("include,f", PO::value<std::string>(&IA_opts._include_CH_filename)
     ->default_value("none")->composing(),
     "Coordinates of the included area in PDB format.\n")
 
@@ -222,16 +222,29 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
       "'included_amino_acids' was not set." << "\n";
       return 1;
   }
+
+  if (IA_opts._include_CH_resn_proto != "none") {
+    IA_opts._opt = IncludedAreaOptions::residue;
+  } else if (IA_opts._include_CH_atom_proto != "none") {
+    IA_opts._opt = IncludedAreaOptions::atom;
+  } else if (IA_opts._sphere_proto != "none") {
+    IA_opts._opt = IncludedAreaOptions::sphere;
+  } else if (IA_opts._cylinder_proto != "none") {
+    IA_opts._opt = IncludedAreaOptions::cylinder;
+  } else if (IA_opts._prism_proto != "none") {
+    IA_opts._opt = IncludedAreaOptions::prism;
+  } else if (IA_opts._include_CH_filename != "none") {
+    IA_opts._opt = IncludedAreaOptions::file;
+  } 
+
   if (IA_opts._include_CH_resn_proto != "none" && IA_opts._include_CH_atom_proto != "none") {
     IA_opts._include_CH_atom_proto = "none";
     std::cerr << "WARNING: Both 'included_area_residues' and "
     "'included_area_atoms' were set. Using the former. " << "\n";
   }
 
-  if ( (IA_opts._include_CH_resn_proto == "none" && IA_opts._include_CH_atom_proto == "none" &&
-  NDD_opts._pdbs_list_ndd_filename != "none") ||
-  (IA_opts._include_CH_resn_proto == "none" && IA_opts._include_CH_atom_proto == "none" &&
-  input_md_filename != "none") ) {
+  if (IA_opts._opt != IncludedAreaOptions::none && 
+  (NDD_opts._pdbs_list_ndd_filename != "none" || input_md_filename != "none") ) {
     std::cerr << "WARNING: You are running ANA MD/NDD without an inclusion "
     "area. Check ANA's manual." << "\n";
     return 1;

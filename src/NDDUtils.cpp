@@ -72,17 +72,14 @@ void read(std::string const &filename, bool const atom_only,
     auto in_xyz = input_pdb_frame.positions();
     chemfiles::Topology const input_pdb_top = input_pdb_frame.topology();
     unsigned int const natoms = input_pdb_top.natoms();
+
+    bool listed_incl_CH = false;
     // Residue selection takes precedence over atom selection.
     auto const include_CH_AA = adapt_AA_list(include_CH_AA_proto);
     auto const CH_AA_end = include_CH_AA.cend();
 
     if (include_CH_AA[0] == 0) {
         include_CH_atoms = adapt_AA_list(include_CH_atom_proto, natoms);
-    }
-    bool listed_incl_CH = false;
-
-    // If requested, use atoms indices to get included area.
-    if (include_CH_atoms[0] == 0) {
         for (auto &each : include_CH_atoms) {
             // 0-index normalization.
             each = each - 1;
@@ -91,12 +88,18 @@ void read(std::string const &filename, bool const atom_only,
             listed_incl_CH = true;
         }
     }
+
+    printf("uno\n");
+
     // Store the atoms points along with information in the variable
     // molecule_points.
     molecule_points.reserve(natoms);
     for (auto const &residuo : input_pdb_top.residues()) {
-        auto res_name = residuo.name();
+        auto const res_name = residuo.name();
         for (auto const &i : residuo) {
+
+            printf("ras\n");
+
             if (atom_only &&
                 input_pdb_top[i].get("is_hetatm").value_or(false).as_bool()) {
                 // Save the HETATM indices to discard them during MD and
@@ -119,16 +122,19 @@ void read(std::string const &filename, bool const atom_only,
                     static_cast<int>(i) + 1);
             }
 
-            auto resid = residuo.id().value();
-            vi1._resn = resid;
-            Point p1(in_xyz[i][0], in_xyz[i][1], in_xyz[i][2]);
+            auto const resn = residuo.id().value();
+
+            printf("resi: %i \n", resn);
+
+            vi1._resn = resn;
+            Point const p1(in_xyz[i][0], in_xyz[i][1], in_xyz[i][2]);
             molecule_points.push_back(std::make_pair(p1, vi1));
 
             if (input_pdb_top[i].name() == "CA") {
                 // Use it to draw the included convex hull, if requested.
                 if (include_CH_atoms[0] == 0) {
                     if (std::binary_search(
-                            include_CH_AA.begin(), CH_AA_end, resid)) {
+                            include_CH_AA.begin(), CH_AA_end, resn)) {
                         // The current residue was specified.
                         incl_area_points.push_back(p1);
                         include_CH_atoms.push_back(i);
@@ -137,6 +143,8 @@ void read(std::string const &filename, bool const atom_only,
             }
         }
     }
+
+    printf("2\n");
 
     // Get convex hull if requested.
     if (!(listed_incl_CH || include_CH_atoms[0] == 0) &&

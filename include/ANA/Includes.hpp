@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <typeinfo>
+#include <utility>
 #include <vector>
 
 #include <CGAL/Delaunay_triangulation_3.h>
@@ -35,16 +36,6 @@ public:
     // atom's residue number
     unsigned int _resn;
 };
-
-// Colours for pymol CGO objects
-unsigned int constexpr col_nbr = 16;
-
-const std::array<double, col_nbr> red = {1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.4,
-    0.4, 0.0, 0.75, 0.75, 0.0, 0.875, 0.875, 0.0};
-const std::array<double, col_nbr> green = {1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,
-    0.4, 0.0, 0.4, 0.75, 0.0, 0.75, 0.875, 0.0, 0.875};
-const std::array<double, col_nbr> blue = {1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0,
-    0.4, 0.4, 0.0, 0.75, 0.75, 0.0, 0.875, 0.875};
 
 // clang-format off
 // Basic definitions
@@ -82,35 +73,6 @@ using P_Halfedge_around_facet_const_circulator =
     Polyhedron::Halfedge_around_facet_const_circulator;
 using P_Vertex_iterator = Polyhedron::Vertex_iterator;
 using P_Vertex_const_iterator = Polyhedron::Vertex_const_iterator;
-
-// ANA definitions
-using MD_Element = std::array<Point, 4>;
-// Cell
-using MD_Vector = std::vector<MD_Element>;
-// Pocket
-using MD_Matrix = std::vector<MD_Vector>;
-// All voids
-using NDD_Element = std::array<std::pair<Point, double>, 4>;
-// Cell
-using NDD_Vector = std::vector<NDD_Element>;
-// Pocket
-using NDD_Matrix = std::vector<NDD_Vector>;
-// All voids
-using NDD_IElement = std::array<unsigned int, 4>;
-// Cell indices
-using NDD_IVector = std::vector<NDD_IElement>;
-// Pocket indices
-using NDD_IMatrix = std::vector<NDD_IVector>;
-// All voids indices
-using NA_Vector = std::vector<Finite_cells_iterator>;
-// Pocket
-using NA_Matrix = std::vector<NA_Vector>;
-// All voids
-using Poly_Vector = std::vector<Polyhedron>;
-// Pocket border cells
-using Poly_Matrix = std::vector<Poly_Vector>;
-// All null areas border cells
-using ANA_molecule = std::vector<std::pair<Point, VertexInfo>>;
 
 // Miscellaneous definitions
 using Object = CGAL::Object;

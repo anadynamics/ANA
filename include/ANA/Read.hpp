@@ -2,6 +2,7 @@
 #define ANA_READ_H
 
 #include <ANA/Includes.hpp>
+#include <ANA/Primitives.hpp>
 
 namespace ANA {
 // Refine the provided list of amino acids. If its not present, then return an

@@ -43,6 +43,8 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
 
     null_areas_mtx.push_back(cavity_void_cells);
 
+    printf("post discard \n");
+
     cavity_joint_cells.reserve(
         cavity_void_cells.size() + cavity_intersecting_cells.size());
     cavity_joint_cells.insert(cavity_joint_cells.end(),
@@ -50,11 +52,15 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
     cavity_joint_cells.insert(cavity_joint_cells.end(),
         cavity_intersecting_cells.begin(), cavity_intersecting_cells.end());
 
+    printf("post reserve\n");
+
     // ANA::NDD::ndd_nondelaunay_dynamics_old(cavity_joint_cells,
     //     pdbs_list_ndd_filename, precision, include_CH_atoms,
     //     out_ndd_filename);
 
     ANA::NDD::ndd(cavity_joint_cells, NDD_opts);
+
+    printf("post ndds\n");
 
     ANA::write_output_volume(cavity_void_cells, poly_vol);
 

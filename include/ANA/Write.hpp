@@ -7,36 +7,9 @@
 namespace ANA {
 extern std::ofstream out_vol_stream;
 
-// Draw pockets in pymol CGO objects
-void draw_raw_cgo(const NA_Matrix &list_of_pockets, const Poly_Vector &polys,
-    std::string &out_script_template, std::string const pdb_filename,
-    unsigned int const precision);
-
-// Draw 1 pocket in pymol CGO objects
-void draw_raw_cgo(std::ofstream &pymol_script, NA_Vector const &cells_to_draw);
-
 // Draw a vector of polyhedrons
 void draw_raw_polyhedrons(std::ofstream &pymol_script,
     const Poly_Vector &CH_vec, std::string const &model_template);
-
-// Draw pockets as points in pymol CGO objects
-void draw_grid_cgo(const NA_Matrix &list_of_pockets,
-    const std::vector<std::array<double, 3>> &in_vtces_radii,
-    const std::vector<unsigned int> &intersecting_total,
-    const Poly_Vector &polys, std::string &out_script_template,
-    std::string const pdb_filename, double const sphere_size,
-    unsigned int const sphere_count, unsigned int const precision);
-
-// Draw cells as points in pymol CGO objects
-void draw_grid_cgo(std::ofstream &pymol_script, NA_Vector const &cells_to_draw,
-    double const sphere_size, unsigned int const sphere_count);
-
-// Draw a vector of polyhedrons as CGO pymol spheres
-void draw_grid_cgo_polyhedrons(std::ofstream &pymol_script,
-    const std::vector<std::array<double, 3>> &in_vtces_radii,
-    const std::vector<unsigned int> &intersecting_total,
-    const Poly_Vector &CH_vec, double const sphere_size,
-    double const sphere_count);
 
 // Draw pockets in .PDB format. Static version
 void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,

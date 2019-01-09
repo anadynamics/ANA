@@ -15,7 +15,7 @@ using namespace std;
 std::string const help_header = "\t\t\t----- ANA -----";
 
 int get_parameters(int ac, char *av[], std::string &input_struct_filename,
-    std::string &input_md_filename, IncludedAreaOptions &IA_opts,
+    std::string &input_md_filename, ANA::IncludedAreaOptions &IA_opts,
     std::string &AA_indices_proto, bool &triangulate_only_included_aas,
     bool &atom_only, unsigned int &precision, unsigned int &clusters_min_size,
     unsigned int &nbr_of_vertices_to_include, unsigned int &md_start,
