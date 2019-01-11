@@ -41,7 +41,7 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     ("NDD_output,O", PO::value<std::string>(&NDD_opts._out_ndd_filename)
     ->default_value("ANA_NDD.out")->composing(),
     "Name of the non Delaunay dynamics output file. Default: \"ANA_NDD.out\".\n")
-    ("include,f", PO::value<std::string>(&IA_opts._include_CH_filename)
+    ("include,f", PO::value<std::string>(&IA_opts._filename)
     ->default_value("none")->composing(),
     "Coordinates of the included area in PDB format.\n")
 
@@ -71,11 +71,11 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     PO::value<std::string>(&AA_indices_proto)->default_value("none"),
     "Amino acids that are part of a cell.\n")
 
-    ("included_area_residues", PO::value<std::string>(&IA_opts._include_CH_resn_proto)
+    ("included_area_residues", PO::value<std::string>(&IA_opts._resn_proto)
     ->default_value("none"), "Amino acids that delimit the convex hull of the"
     " included area.\n")
 
-    ("included_area_atoms", PO::value<std::string>(&IA_opts._include_CH_atom_proto)
+    ("included_area_atoms", PO::value<std::string>(&IA_opts._atom_proto)
     ->default_value("none"), "Atoms that delimit the convex hull of the"
     " included area.\n")
 
@@ -223,9 +223,9 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
       return 1;
   }
 
-  if (IA_opts._include_CH_resn_proto != "none") {
+  if (IA_opts._resn_proto != "none") {
     IA_opts._opt = IncludedAreaOptions::residue;
-  } else if (IA_opts._include_CH_atom_proto != "none") {
+  } else if (IA_opts._atom_proto != "none") {
     IA_opts._opt = IncludedAreaOptions::atom;
   } else if (IA_opts._sphere_proto != "none") {
     IA_opts._opt = IncludedAreaOptions::sphere;
@@ -233,12 +233,12 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     IA_opts._opt = IncludedAreaOptions::cylinder;
   } else if (IA_opts._prism_proto != "none") {
     IA_opts._opt = IncludedAreaOptions::prism;
-  } else if (IA_opts._include_CH_filename != "none") {
+  } else if (IA_opts._filename != "none") {
     IA_opts._opt = IncludedAreaOptions::file;
   } 
 
-  if (IA_opts._include_CH_resn_proto != "none" && IA_opts._include_CH_atom_proto != "none") {
-    IA_opts._include_CH_atom_proto = "none";
+  if (IA_opts._resn_proto != "none" && IA_opts._atom_proto != "none") {
+    IA_opts._atom_proto = "none";
     std::cerr << "WARNING: Both 'included_area_residues' and "
     "'included_area_atoms' were set. Using the former. " << "\n";
   }

@@ -1,6 +1,7 @@
 #ifndef ANA_NDD_H
 #define ANA_NDD_H
 
+#include <ANA/ConvexHull.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/Modes.hpp>
 #include <ANA/NDDUtils.hpp>

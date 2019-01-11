@@ -11,12 +11,12 @@ public:
     // Program Options. Hopefully I'll fix it someday. TODO
     // TODO remove "include_CH_" from the member variables names. It's
     // redundant.
-    std::string _include_CH_resn_proto = "none";
-    std::string _include_CH_atom_proto = "none";
+    std::string _resn_proto = "none";
+    std::string _atom_proto = "none";
     std::string _sphere_proto = "none";
     std::string _cylinder_proto = "none";
     std::string _prism_proto = "none";
-    std::string _include_CH_filename = "none";
+    std::string _filename = "none";
     enum IAOption { none, residue, atom, sphere, cylinder, prism, file };
     IAOption _opt = IAOption::none;
 };

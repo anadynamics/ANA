@@ -2,402 +2,55 @@
 
 namespace ANA::NDD {
 
-// Refine the provided list of amino acids. If its not present, then return
-// an array of two '0' elements.
-std::vector<unsigned int> adapt_AA_list(
-    std::string &aa_list_proto, unsigned int const top) {
-    std::vector<unsigned int> aa_list;
-
-    if (aa_list_proto == "none") {
-        aa_list.push_back(0);
-        aa_list.push_back(0);
-        return aa_list;
-    } else {
-        // borro el caracter ' pq me caga todo
-        std::stringstream stream_aa(aa_list_proto);
-        std::string temp_aa;
-        while (!stream_aa.eof()) {
-            unsigned int aa;
-            stream_aa >> temp_aa;
-            try {
-                aa = std::stoi(temp_aa);
-            } catch (std::invalid_argument const &ia) {
-                // some character present. Doesn't matter, skip it and keep
-                // reading.
-                continue;
-            } catch (std::out_of_range const oor) {
-                // int is too large to be represented by int
-                std::cerr << "Invalid residue number: " << temp_aa << '\n';
-                std::exit(1);
-            } catch (...) {
-                // some other exception. Doesn't matter, skip it and keep
-                // reading.
-                std::cerr << "Invalid residue number: " << temp_aa
-                          << ". Will keep reading." << '\n';
-                continue;
-            }
-            aa_list.push_back(aa);
-        }
-        // sort list of included amino acids
-        std::sort(aa_list.begin(), aa_list.end());
-
-        if (top != 0) {
-            if (aa_list[aa_list.size() - 1] > top) {
-                std::cerr
-                    << "Atom / residue list goes out of bounds. Check this "
-                       "input list and your input PDB atom count. Quiting "
-                       "now."
-                    << '\n';
-                exit(0);
-            }
-        }
-
-        return aa_list;
-    }
-}
-
-// Read coordinates in pdb format using chemfiles.
-void read(std::string const &filename, bool const atom_only,
-    std::string &include_CH_AA_proto, std::string &include_CH_atom_proto,
-    std::string &sphere_proto, std::string &cylinder_proto,
-    std::string &prism_proto, std::string const &include_CH_filename,
-    ANA_molecule &molecule_points, std::vector<unsigned int> &include_CH_atoms,
-    Triang_Vector &CH_triangs, std::vector<unsigned int> &hetatm_atoms) {
-
-    std::vector<Point> incl_area_points;
+// New read!
+Molecule read(std::string const &filename, bool const atom_only) {
 
     // Read PDB
     chemfiles::Trajectory input_pdb_traj(filename);
-    chemfiles::Frame const input_pdb_frame = input_pdb_traj.read();
-    auto in_xyz = input_pdb_frame.positions();
-    chemfiles::Topology const input_pdb_top = input_pdb_frame.topology();
+    auto const input_pdb_frame = input_pdb_traj.read();
+    auto const in_xyz = input_pdb_frame.positions();
+    auto const input_pdb_top = input_pdb_frame.topology();
+
     unsigned int const natoms = input_pdb_top.natoms();
+    unsigned int const nres = input_pdb_top.residues().size();
 
-    bool listed_incl_CH = false;
-    // Residue selection takes precedence over atom selection.
-    auto const include_CH_AA = adapt_AA_list(include_CH_AA_proto);
-    auto const CH_AA_end = include_CH_AA.cend();
+    // printf("uno\n");
 
-    if (include_CH_AA[0] == 0) {
-        include_CH_atoms = adapt_AA_list(include_CH_atom_proto, natoms);
-        for (auto &each : include_CH_atoms) {
-            // 0-index normalization.
-            each = each - 1;
-            incl_area_points.push_back(
-                Point(in_xyz[each][0], in_xyz[each][1], in_xyz[each][2]));
-            listed_incl_CH = true;
-        }
-    }
+    Molecule protein(natoms, nres);
 
-    printf("uno\n");
-
-    // Store the atoms points along with information in the variable
-    // molecule_points.
-    molecule_points.reserve(natoms);
     for (auto const &residuo : input_pdb_top.residues()) {
         auto const res_name = residuo.name();
         for (auto const &i : residuo) {
-
-            printf("ras\n");
-
             if (atom_only &&
                 input_pdb_top[i].get("is_hetatm").value_or(false).as_bool()) {
                 // Save the HETATM indices to discard them during MD and
                 // NDD runs.
-                hetatm_atoms.push_back(i);
+                protein._hetatms.push_back(i);
                 continue;
             }
-            // Iterate over each atom, construct the vertex info and get
-            // coords.
-            VertexInfo vi1;
-            vi1._resi = res_name;
-            vi1._index = i;
-            auto const vdw = input_pdb_top[i].vdw_radius();
-            if (vdw) {
-                vi1._radius = vdw.value();
+
+            auto const vdw_opt = input_pdb_top[i].vdw_radius();
+            double vdw = 1.5;
+            if (vdw_opt) {
+                vdw = vdw_opt.value();
             } else {
-                vi1._radius = 1.5;
                 printf("Element for atom %i not available. Using Van Der Walls "
                        "radius of 1.5.\n",
                     static_cast<int>(i) + 1);
             }
 
-            auto const resn = residuo.id().value();
-
-            printf("resi: %i \n", resn);
-
-            vi1._resn = resn;
+            VertexInfo const vi1(i, vdw, residuo.id().value(), res_name);
             Point const p1(in_xyz[i][0], in_xyz[i][1], in_xyz[i][2]);
-            molecule_points.push_back(std::make_pair(p1, vi1));
+            protein._data.emplace_back(p1, vi1);
 
             if (input_pdb_top[i].name() == "CA") {
-                // Use it to draw the included convex hull, if requested.
-                if (include_CH_atoms[0] == 0) {
-                    if (std::binary_search(
-                            include_CH_AA.begin(), CH_AA_end, resn)) {
-                        // The current residue was specified.
-                        incl_area_points.push_back(p1);
-                        include_CH_atoms.push_back(i);
-                    }
-                }
+                // Will use to draw Convex Hull or whatever. It's always useful.
+                protein._alphaCarbons.push_back(i);
             }
         }
     }
 
-    printf("2\n");
-
-    // Get convex hull if requested.
-    if (!(listed_incl_CH || include_CH_atoms[0] == 0) &&
-        include_CH_filename != "none") {
-        ANA::read_included_area(include_CH_filename, incl_area_points);
-        if (incl_area_points.size() < 4) {
-            throw std::runtime_error(
-                "Not possible to triangulate less than 4 points.");
-        }
-
-        Polyhedron CH;
-        CGAL::convex_hull_3(
-            incl_area_points.begin(), incl_area_points.end(), CH);
-        P_Facet_const_iterator f_end = CH.facets_end();
-        for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
-             ++f_ite) {
-            // Fix around the weirdest CGAL bug.
-            P_Halfedge_around_facet_const_circulator he_ite =
-                f_ite->facet_begin();
-            auto const he_ite_0 = he_ite++;
-            auto const he_ite_1 = he_ite++;
-            auto const he_ite_2 = he_ite;
-
-            CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
-                he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
-        }
-
-    } else if (!(listed_incl_CH || (include_CH_atoms[0] == 0)) &&
-        sphere_proto != "none") {
-        std::stringstream stream_sphere(sphere_proto);
-        double const x = ANA::parse_double(stream_sphere);
-        double const y = ANA::parse_double(stream_sphere);
-        double const z = ANA::parse_double(stream_sphere);
-        double const r = ANA::parse_double(stream_sphere);
-        double constexpr cos_30 = 0.86602540378;
-        double constexpr sin_30 = 0.5;
-
-        Point const center(x, y, z);
-        incl_area_points.push_back(center + Vector(r, 0, 0));
-        incl_area_points.push_back(center + Vector(0, r, 0));
-        incl_area_points.push_back(center + Vector(0, 0, r));
-        incl_area_points.push_back(center + Vector(-r, 0, 0));
-        incl_area_points.push_back(center + Vector(0, -r, 0));
-        incl_area_points.push_back(center + Vector(0, 0, -r));
-        // X-Y plane
-        incl_area_points.push_back(center + Vector(r * cos_30, r * sin_30, 0));
-        incl_area_points.push_back(center + Vector(r * sin_30, r * cos_30, 0));
-        incl_area_points.push_back(center + Vector(r * cos_30, -r * sin_30, 0));
-        incl_area_points.push_back(center + Vector(r * sin_30, -r * cos_30, 0));
-        incl_area_points.push_back(center + Vector(-r * cos_30, r * sin_30, 0));
-        incl_area_points.push_back(center + Vector(-r * sin_30, r * cos_30, 0));
-        incl_area_points.push_back(
-            center + Vector(-r * cos_30, -r * sin_30, 0));
-        incl_area_points.push_back(
-            center + Vector(-r * sin_30, -r * cos_30, 0));
-        // X-Z plane
-        incl_area_points.push_back(center + Vector(r * cos_30, 0, r * sin_30));
-        incl_area_points.push_back(center + Vector(r * sin_30, 0, r * cos_30));
-        incl_area_points.push_back(center + Vector(r * cos_30, 0, -r * sin_30));
-        incl_area_points.push_back(center + Vector(r * sin_30, 0, -r * cos_30));
-        incl_area_points.push_back(center + Vector(-r * cos_30, 0, r * sin_30));
-        incl_area_points.push_back(center + Vector(-r * sin_30, 0, r * cos_30));
-        incl_area_points.push_back(
-            center + Vector(-r * cos_30, 0, -r * sin_30));
-        incl_area_points.push_back(
-            center + Vector(-r * sin_30, 0, -r * cos_30));
-        // Y-Z plane
-        incl_area_points.push_back(center + Vector(0, r * cos_30, r * sin_30));
-        incl_area_points.push_back(center + Vector(0, r * sin_30, r * cos_30));
-        incl_area_points.push_back(center + Vector(0, r * cos_30, -r * sin_30));
-        incl_area_points.push_back(center + Vector(0, r * sin_30, -r * cos_30));
-        incl_area_points.push_back(center + Vector(0, -r * cos_30, r * sin_30));
-        incl_area_points.push_back(center + Vector(0, -r * sin_30, r * cos_30));
-        incl_area_points.push_back(
-            center + Vector(0, -r * cos_30, -r * sin_30));
-        incl_area_points.push_back(
-            center + Vector(0, -r * sin_30, -r * cos_30));
-
-        Polyhedron CH;
-        CGAL::convex_hull_3(
-            incl_area_points.begin(), incl_area_points.end(), CH);
-        P_Facet_const_iterator f_end = CH.facets_end();
-        for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
-             ++f_ite) {
-            // Fix around the weirdest CGAL bug.
-            P_Halfedge_around_facet_const_circulator he_ite =
-                f_ite->facet_begin();
-            auto const he_ite_0 = he_ite++;
-            auto const he_ite_1 = he_ite++;
-            auto const he_ite_2 = he_ite;
-
-            CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
-                he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
-        }
-
-    } else if (!(listed_incl_CH || (include_CH_atoms[0] == 0)) &&
-        cylinder_proto != "none") {
-        std::stringstream stream_cylinder(cylinder_proto);
-
-        double x1 = ANA::parse_double(stream_cylinder);
-        double y1 = ANA::parse_double(stream_cylinder);
-        double z1 = ANA::parse_double(stream_cylinder);
-        double x2 = ANA::parse_double(stream_cylinder);
-        double y2 = ANA::parse_double(stream_cylinder);
-        double z2 = ANA::parse_double(stream_cylinder);
-        double r = ANA::parse_double(stream_cylinder);
-
-        double const cos_30 = sqrt(3) / 2;
-        double const sin_30 = 0.5;
-
-        Point center_1(x1, y1, z1);
-        Point center_2(x2, y2, z2);
-        Vector vdiff(center_2 - center_1);
-        Vector n1(-vdiff.y(), vdiff.x(), 0);
-        Vector n2 = CGAL::cross_product(vdiff, n1);
-        n1 = n1 / std::sqrt(CGAL::to_double(n1.squared_length()));
-        n2 = n2 / std::sqrt(CGAL::to_double(n2.squared_length()));
-
-        // tap 1
-        incl_area_points.push_back(center_1 + r * n1);
-        incl_area_points.push_back(center_1 + r * n2);
-        incl_area_points.push_back(center_1 - r * n1);
-        incl_area_points.push_back(center_1 - r * n2);
-        incl_area_points.push_back(
-            center_1 + r * cos_30 * n1 + r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_1 + r * sin_30 * n1 + r * cos_30 * n2);
-        incl_area_points.push_back(
-            center_1 + r * cos_30 * n1 - r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_1 + r * sin_30 * n1 - r * cos_30 * n2);
-        incl_area_points.push_back(
-            center_1 - r * cos_30 * n1 + r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_1 - r * sin_30 * n1 + r * cos_30 * n2);
-        incl_area_points.push_back(
-            center_1 - r * cos_30 * n1 - r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_1 - r * sin_30 * n1 - r * cos_30 * n2);
-
-        // tap 2
-        incl_area_points.push_back(center_2 + r * n1);
-        incl_area_points.push_back(center_2 + r * n2);
-        incl_area_points.push_back(center_2 - r * n1);
-        incl_area_points.push_back(center_2 - r * n2);
-        incl_area_points.push_back(
-            center_2 + r * cos_30 * n1 + r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_2 + r * sin_30 * n1 + r * cos_30 * n2);
-        incl_area_points.push_back(
-            center_2 + r * cos_30 * n1 - r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_2 + r * sin_30 * n1 - r * cos_30 * n2);
-        incl_area_points.push_back(
-            center_2 - r * cos_30 * n1 + r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_2 - r * sin_30 * n1 + r * cos_30 * n2);
-        incl_area_points.push_back(
-            center_2 - r * cos_30 * n1 - r * sin_30 * n2);
-        incl_area_points.push_back(
-            center_2 - r * sin_30 * n1 - r * cos_30 * n2);
-
-        Polyhedron CH;
-        CGAL::convex_hull_3(
-            incl_area_points.begin(), incl_area_points.end(), CH);
-        P_Facet_const_iterator f_end = CH.facets_end();
-        for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
-             ++f_ite) {
-            // Fix around the weirdest CGAL bug.
-            P_Halfedge_around_facet_const_circulator he_ite =
-                f_ite->facet_begin();
-            auto const he_ite_0 = he_ite++;
-            auto const he_ite_1 = he_ite++;
-            auto const he_ite_2 = he_ite;
-
-            CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
-                he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
-        }
-
-    } else if (!(listed_incl_CH || (include_CH_atoms[0] == 0)) &&
-        prism_proto != "none") {
-        std::stringstream stream_prism(prism_proto);
-        double x1 = ANA::parse_double(stream_prism);
-        double y1 = ANA::parse_double(stream_prism);
-        double z1 = ANA::parse_double(stream_prism);
-        double x2 = ANA::parse_double(stream_prism);
-        double y2 = ANA::parse_double(stream_prism);
-        double z2 = ANA::parse_double(stream_prism);
-        double width = ANA::parse_double(stream_prism) / 2;
-        double height = ANA::parse_double(stream_prism) / 2;
-
-        Point center_1(x1, y1, z1);
-        Point center_2(x2, y2, z2);
-        Vector vdiff(center_2 - center_1);
-        Vector n1(-vdiff.y(), vdiff.x(), 0);
-        Vector n2 = CGAL::cross_product(vdiff, n1);
-        n1 = n1 / std::sqrt(CGAL::to_double(n1.squared_length()));
-        n2 = n2 / std::sqrt(CGAL::to_double(n2.squared_length()));
-
-        // tap 1
-        incl_area_points.push_back(center_1 + width * n1 + height * n2);
-        incl_area_points.push_back(center_1 + width * n1 - height * n2);
-        incl_area_points.push_back(center_1 - width * n1 + height * n2);
-        incl_area_points.push_back(center_1 - width * n1 - height * n2);
-
-        // tap 2
-        incl_area_points.push_back(center_2 + width * n1 + height * n2);
-        incl_area_points.push_back(center_2 + width * n1 - height * n2);
-        incl_area_points.push_back(center_2 - width * n1 + height * n2);
-        incl_area_points.push_back(center_2 - width * n1 - height * n2);
-
-        Polyhedron CH;
-        CGAL::convex_hull_3(
-            incl_area_points.begin(), incl_area_points.end(), CH);
-        P_Facet_const_iterator f_end = CH.facets_end();
-        for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
-             ++f_ite) {
-            // Fix around the weirdest CGAL bug.
-            P_Halfedge_around_facet_const_circulator he_ite =
-                f_ite->facet_begin();
-            auto const he_ite_0 = he_ite++;
-            auto const he_ite_1 = he_ite++;
-            auto const he_ite_2 = he_ite;
-
-            CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
-                he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
-        }
-
-    } else if (listed_incl_CH || (include_CH_atoms[0] == 0)) {
-        if (incl_area_points.size() < 4) {
-            throw std::runtime_error(
-                "Not possible to triangulate less than 4 points.");
-        }
-
-        Polyhedron CH;
-        CGAL::convex_hull_3(
-            incl_area_points.begin(), incl_area_points.end(), CH);
-        P_Facet_const_iterator f_end = CH.facets_end();
-        for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
-             ++f_ite) {
-
-            // Fix around the weirdest CGAL bug.
-            P_Halfedge_around_facet_const_circulator he_ite =
-                f_ite->facet_begin();
-            auto const he_ite_0 = he_ite++;
-            auto const he_ite_1 = he_ite++;
-            auto const he_ite_2 = he_ite;
-
-            CH_triangs.push_back(Triangle(he_ite_0->vertex()->point(),
-                he_ite_1->vertex()->point(), he_ite_2->vertex()->point()));
-        }
-    }
-    return;
+    return protein;
 }
 
 // NDD Specific function for PDB input

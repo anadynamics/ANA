@@ -3,6 +3,7 @@
 
 #include "chemfiles.hpp"
 #include <algorithm>
+#include <array>
 #include <assert.h>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -12,6 +13,7 @@
 #include <numeric>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <typeinfo>
 #include <utility>
 #include <vector>
@@ -29,12 +31,19 @@
 
 struct VertexInfo {
 public:
+    VertexInfo() = default;
+
+    VertexInfo(unsigned int const index, double const radius,
+        unsigned int const resn, std::string_view const resi) :
+        _index(index),
+        _radius(_radius), _resn(resn), _resi(resi) {}
+
     unsigned int _index;
     double _radius;
-    // atom's residue name in 3 letter format
-    std::string _resi;
     // atom's residue number
     unsigned int _resn;
+    // atom's residue name in 3 letter format
+    std::string _resi;
 };
 
 // clang-format off

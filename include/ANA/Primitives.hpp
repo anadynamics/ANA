@@ -34,9 +34,42 @@ using ANA_molecule = std::vector<std::pair<Point, VertexInfo>>;
 
 namespace ANA {
 
-struct Molecule {
+// Tool for parsing a double from input file stringstream
+double parse_double(std::stringstream &in_stream) {
+    std::string temp;
+    double coord = 0;
+
+    in_stream >> temp;
+    try {
+        coord = std::stof(temp);
+    } catch (const std::invalid_argument &ia) {
+        // some character present
+        throw std::runtime_error("Can't parse input. There may be "
+                                 "non-numerical characters. Aborting.");
+    } catch (...) {
+        // some other exception.
+        throw std::runtime_error("Can't parse input. Aborting.");
+    }
+
+    return coord;
+}
+
+class Molecule {
 public:
-    std::vector<std::pair<Point, VertexInfo>> data;
+    Molecule() = default;
+
+    Molecule(unsigned int const natoms, unsigned int const nres) :
+        _natoms(natoms), _nres(nres) {
+        _data.reserve(natoms);
+        _alphaCarbons.reserve(nres);
+    }
+
+    unsigned int _natoms, _nres;
+    std::vector<std::pair<Point, VertexInfo>> _data;
+    // Alpha carbon indices
+    std::vector<unsigned int> _alphaCarbons;
+    // Hetero-atoms indices
+    std::vector<unsigned int> _hetatms;
 };
 
 }

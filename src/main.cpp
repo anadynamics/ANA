@@ -48,13 +48,13 @@ int main(int argc, char *argv[]) {
         Point cm;
 
         // Read input file
-        bool const requested_CH = ANA::read_static(in_filename,
-            triangulate_only_included_aas, atom_only, AA_indices_proto,
-            exclude_ca_for_ASA_indices_proto, IA_opts._include_CH_resn_proto,
-            IA_opts._include_CH_atom_proto, IA_opts._sphere_proto,
-            IA_opts._cylinder_proto, IA_opts._prism_proto,
-            IA_opts._include_CH_filename, molecule_points, cm, AA_indices,
-            CA_indices, CAs_Points, include_CH_atoms, CH_triangs, hetatm_atoms);
+        bool const requested_CH =
+            ANA::read_static(in_filename, triangulate_only_included_aas,
+                atom_only, AA_indices_proto, exclude_ca_for_ASA_indices_proto,
+                IA_opts._resn_proto, IA_opts._atom_proto, IA_opts._sphere_proto,
+                IA_opts._cylinder_proto, IA_opts._prism_proto,
+                IA_opts._filename, molecule_points, cm, AA_indices, CA_indices,
+                CAs_Points, include_CH_atoms, CH_triangs, hetatm_atoms);
 
         if (!requested_CH) {
             std::cerr << "No valid input for triangulation of included area. "
@@ -92,8 +92,8 @@ int main(int argc, char *argv[]) {
                 // Update CH
                 ANA::read_MD(in_frame, requested_CH, IA_opts._sphere_proto,
                     IA_opts._cylinder_proto, IA_opts._prism_proto, hetatm_atoms,
-                    include_CH_atoms, IA_opts._include_CH_filename, CH_triangs,
-                    ASA_method, CA_indices, CAs_Points, molecule_points);
+                    include_CH_atoms, IA_opts._filename, CH_triangs, ASA_method,
+                    CA_indices, CAs_Points, molecule_points);
                 // New CH model.
                 ANA::draw_CH(CH_triangs, out_traj);
                 ++frame_cnt;
@@ -128,11 +128,10 @@ int main(int argc, char *argv[]) {
         // Read input file
         ANA::read_static(in_filename, triangulate_only_included_aas, atom_only,
             AA_indices_proto, exclude_ca_for_ASA_indices_proto,
-            IA_opts._include_CH_resn_proto, IA_opts._include_CH_atom_proto,
-            IA_opts._sphere_proto, IA_opts._cylinder_proto,
-            IA_opts._prism_proto, IA_opts._include_CH_filename, molecule_points,
-            cm, AA_indices, CA_indices, CAs_Points, include_CH_atoms,
-            CH_triangs, hetatm_atoms);
+            IA_opts._resn_proto, IA_opts._atom_proto, IA_opts._sphere_proto,
+            IA_opts._cylinder_proto, IA_opts._prism_proto, IA_opts._filename,
+            molecule_points, cm, AA_indices, CA_indices, CAs_Points,
+            include_CH_atoms, CH_triangs, hetatm_atoms);
         std::sort(include_CH_atoms.begin(), include_CH_atoms.end());
 
         std::cout << "\t\t/// Calpha indices ///" << '\n';
@@ -155,10 +154,9 @@ int main(int argc, char *argv[]) {
 
         ANA::MD_ANA(in_filename, in_md_filename, AA_indices_proto, ASA_method,
             only_side_ASA, exclude_ca_for_ASA_indices_proto, list_wall,
-            list_wall_separator, IA_opts._include_CH_resn_proto,
-            IA_opts._include_CH_atom_proto, IA_opts._sphere_proto,
-            IA_opts._cylinder_proto, IA_opts._prism_proto,
-            IA_opts._include_CH_filename, out_filename, out_type,
+            list_wall_separator, IA_opts._resn_proto, IA_opts._atom_proto,
+            IA_opts._sphere_proto, IA_opts._cylinder_proto,
+            IA_opts._prism_proto, IA_opts._filename, out_filename, out_type,
             triangulate_only_included_aas, atom_only, cell_opts, max_probe,
             max_probe_length, sphere_count, nbr_of_vertices_to_include,
             precision, md_start, md_step, md_end);
@@ -171,12 +169,11 @@ int main(int argc, char *argv[]) {
 
         ANA::static_ANA(in_filename, AA_indices_proto, ASA_method,
             only_side_ASA, exclude_ca_for_ASA_indices_proto, list_wall,
-            list_wall_separator, clusters_method,
-            IA_opts._include_CH_resn_proto, IA_opts._include_CH_atom_proto,
-            IA_opts._sphere_proto, IA_opts._cylinder_proto,
-            IA_opts._prism_proto, IA_opts._include_CH_filename, out_filename,
-            out_type, triangulate_only_included_aas, atom_only, cell_opts,
-            max_probe, max_probe_length, sphere_size, sphere_count,
+            list_wall_separator, clusters_method, IA_opts._resn_proto,
+            IA_opts._atom_proto, IA_opts._sphere_proto, IA_opts._cylinder_proto,
+            IA_opts._prism_proto, IA_opts._filename, out_filename, out_type,
+            triangulate_only_included_aas, atom_only, cell_opts, max_probe,
+            max_probe_length, sphere_size, sphere_count,
             nbr_of_vertices_to_include, min_cells_cluster, precision);
     }
 

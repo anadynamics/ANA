@@ -24,12 +24,10 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
     std::vector<std::string> wall_aa_id;
     std::vector<std::array<double, 3>> in_vtces_radii;
 
-    // Read original file
-    ANA::NDD::read(in_filename, atom_only, IA_opts._include_CH_resn_proto,
-        IA_opts._include_CH_atom_proto, IA_opts._sphere_proto,
-        IA_opts._cylinder_proto, IA_opts._prism_proto,
-        IA_opts._include_CH_filename, molecule_points, include_CH_atoms,
-        CH_triangs, hetatm_atoms);
+    // Read original file and construct protein.
+    Molecule const protein = ANA::NDD::read(in_filename, atom_only);
+    // Get Convex Hull.
+    ANA::NDD::ConvexHull const CH(protein, IA_opts);
 
     Delaunay T = ANA::triangulate(molecule_points);
 

@@ -91,8 +91,5 @@ Point getCM(const chemfiles::span<chemfiles::Vector3D> &in_xyz,
 void read_included_area(
     std::string const &filename, std::vector<Point> &area_points);
 
-// Tool for parsing a double from input file stringstream
-double parse_double(std::stringstream &in_stream);
-
 }
 #endif // _H

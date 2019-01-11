@@ -622,24 +622,4 @@ inline void read_included_area(
     return;
 }
 
-// Tool for parsing a double from input file stringstream
-double parse_double(std::stringstream &in_stream) {
-    std::string temp;
-    double coord = 0;
-
-    in_stream >> temp;
-    try {
-        coord = std::stof(temp);
-    } catch (const std::invalid_argument &ia) {
-        // some character present
-        throw std::runtime_error("Can't parse input. There may be "
-                                 "non-numerical characters. Aborting.");
-    } catch (...) {
-        // some other exception.
-        throw std::runtime_error("Can't parse input. Aborting.");
-    }
-
-    return coord;
-}
-
 } // namespace ANA
