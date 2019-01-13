@@ -1,9 +1,8 @@
-#include <ANA/NDDUtils.hpp>
 #include <ANA/Utils.hpp>
 
 namespace ANA {
 
-// Cluster neighbouring cells. CGAL neighbouring method
+// Cluster neighbouring cells. CGAL neighbouring method.
 void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
     unsigned int const min_cells_cluster) {
 
@@ -597,8 +596,9 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
 
     return;
 }
+
 // Fill the 2 input vectors with iterators for the outer and inner cells
-// respectively
+// respectively.
 void partition_triangulation(
     Delaunay const &T, NA_Vector &outer_cells, NA_Vector &inner_cells) {
 
@@ -616,29 +616,27 @@ void partition_triangulation(
     }
     return;
 }
-// Calc volume and get the proper cells
+
+// Calc volume and get the proper cells.
 double get_all_voids(Delaunay const &T, NA_Vector &big_cells,
     CellFilteringOptions const cell_opts) {
 
-    double const min_cell_vol = (4 / 3) * M_PI * pow(cell_opts._minVR, 3);
-    double const max_facet_area = M_PI * pow(cell_opts._maxSR, 2);
     double volume = 0;
-    double current_cell_vol;
-    Finite_cells_iterator fc_ite, fc_ite_end = T.finite_cells_end();
+    Finite_cells_iterator fc_ite_end = T.finite_cells_end();
 
-    for (fc_ite = T.finite_cells_begin(); fc_ite != fc_ite_end; fc_ite++) {
-        current_cell_vol = cell_volume(fc_ite);
-        if (current_cell_vol > min_cell_vol &&
-            refine_cell_areas(fc_ite, max_facet_area) == 0) {
+    for (auto fc_ite = T.finite_cells_begin(); fc_ite != fc_ite_end; fc_ite++) {
+        double const cell_vol = cell_volume(fc_ite);
+
+        if (cell_vol > cell_opts._min_CV) {
             big_cells.push_back(fc_ite);
-            volume = volume + current_cell_vol;
+            volume = volume + cell_vol;
         }
     }
     return volume;
 }
 
 // Substract the volume filled with the 4 atoms from the total volume of the
-// corresponding cell
+// corresponding cell.
 double refine_cell_volume(
     double const entire_cell_vol, Finite_cells_iterator const &cell_iterator) {
     double const rdW_0 = double(cell_iterator->vertex(0)->info()._radius);
@@ -662,8 +660,7 @@ double refine_cell_volume(
         vertex_3_sphere_sector_vol);
 }
 // Get the volume ocuppied by the sector of the sphere inscribed in the
-// incident
-// cell
+// incident cell.
 double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
     Point const &p_3, double const radius) {
     // get 1st point of the mini tetrahedron

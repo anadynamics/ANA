@@ -45,46 +45,26 @@ ConvexHull::ConvexHull(
 
     switch (IA_opts._opt) {
     case IncludedAreaOptions::IAOption::residue:
-        try {
-            ConvexHull(protein, IA_opts._resn_proto, ResidueTag);
-        } catch (...) {
-            throw;
-        }
+        ConvexHull(protein, IA_opts._resn_proto, ResidueTag());
         break;
     case IncludedAreaOptions::IAOption::atom:
-        try {
-            ConvexHull(protein, IA_opts._atom_proto, AtomTag);
-        } catch (...) {
-            throw;
-        }
+        ConvexHull(protein, IA_opts._atom_proto, AtomTag());
         break;
     case IncludedAreaOptions::IAOption::sphere:
-        try {
-            ConvexHull(protein, IA_opts._sphere_proto, SphereTag);
-        } catch (...) {
-            throw;
-        }
+        ConvexHull(IA_opts._sphere_proto, SphereTag());
         break;
     case IncludedAreaOptions::IAOption::cylinder:
-        try {
-            ConvexHull(protein, IA_opts._cylinder_proto, CylinderTag);
-        } catch (...) {
-            throw;
-        }
+        ConvexHull(IA_opts._cylinder_proto, CylinderTag());
         break;
     case IncludedAreaOptions::IAOption::prism:
-        try {
-            ConvexHull(protein, IA_opts._prism_proto, PrismTag);
-        } catch (...) {
-            throw;
-        }
+        ConvexHull(IA_opts._prism_proto, PrismTag());
         break;
     case IncludedAreaOptions::IAOption::file:
-        try {
-            ConvexHull(protein, IA_opts._filename, FileTag);
-        } catch (...) {
-            throw;
-        }
+        ConvexHull(IA_opts._filename, FileTag());
+        break;
+    case IncludedAreaOptions::IAOption::none:
+        throw(std::logic_error(
+            "No Convex Hull input could be parsed. This shouldn't happen."));
         break;
     }
 }
@@ -94,7 +74,7 @@ ConvexHull::ConvexHull(
 
     auto const residues = string_to_list(resn_proto, protein._nres);
 
-    std::vector<unsigned int> incl_area_points;
+    std::vector<Point> incl_area_points;
     incl_area_points.reserve(residues.size());
 
     for (auto const i : residues) {
@@ -115,7 +95,7 @@ ConvexHull::ConvexHull(
 
     auto const atoms = string_to_list(atom_proto, protein._natoms);
 
-    std::vector<unsigned int> incl_area_points;
+    std::vector<Point> incl_area_points;
     incl_area_points.reserve(atoms.size());
 
     for (auto const i : atoms) {
@@ -143,8 +123,9 @@ ConvexHull::ConvexHull(std::string const &sphere_proto, SphereTag) {
     double constexpr sin_30 = 0.5;
 
     Point const center(x, y, z);
-    // Drawin a pseudo-sphere. The first 6 correspondon the XYZ axes, the next 8
-    // to the X-Y plane, then 8 more for the X-Z plane and 8 for the Y-Z plane.
+    // Drawin a pseudo-sphere. The first 6 correspondon the XYZ axes, the
+    // next 8 to the X-Y plane, then 8 more for the X-Z plane and 8 for the
+    // Y-Z plane.
     std::array<Point, 30> const incl_area_points{center + Vector(r, 0, 0),
         center + Vector(0, r, 0), center + Vector(0, 0, r),
         center + Vector(-r, 0, 0), center + Vector(0, -r, 0),
@@ -204,8 +185,8 @@ ConvexHull::ConvexHull(std::string const &cylinder_proto, CylinderTag) {
     n1 = n1 / std::sqrt(CGAL::to_double(n1.squared_length()));
     n2 = n2 / std::sqrt(CGAL::to_double(n2.squared_length()));
 
-    // The first 12 correspond to the first tap, the other half correspond to
-    // the 2nd tap.
+    // The first 12 correspond to the first tap, the other half correspond
+    // to the 2nd tap.
     std::array<Point, 24> incl_area_points{center_1 + r * n1, center_1 + r * n2,
         center_1 - r * n1, center_1 - r * n2,
         center_1 + r * cos_30 * n1 + r * sin_30 * n2,
@@ -273,35 +254,10 @@ ConvexHull::ConvexHull(std::string const &prism_proto, PrismTag) {
     }
 }
 
-ConvexHull::ConvexHull(
-    Molecule const &protein, std::string const &filename, FileTag) {
+ConvexHull::ConvexHull(std::string const &filename, FileTag) {
+    filename.end(); // just to avoid unused value warning.
     throw("Convex hull construction from input file not supported yet. "
           "Aborting.");
 }
 
-}
-
-// Run the actual Convex Hull algorithm with CGAL.
-void run_convex_hull(std::vector<unsigned int> const &points) {
-    if (points.size() < 4) {
-        throw std::runtime_error(
-            "Not possible to triangulate less than 4 points. Aborting.");
-    }
-
-    Polyhedron CH;
-    CGAL::convex_hull_3(points.begin(), points.end(), CH);
-    P_Facet_const_iterator f_end = CH.facets_end();
-    for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
-         ++f_ite) {
-        // Fix around the weirdest CGAL bug.
-        P_Halfedge_around_facet_const_circulator he_ite = f_ite->facet_begin();
-        auto const he_ite_0 = he_ite++;
-        auto const he_ite_1 = he_ite++;
-        auto const he_ite_2 = he_ite;
-
-        _data.emplace_back(he_ite_0->vertex()->point(),
-            he_ite_1->vertex()->point(), he_ite_2->vertex()->point());
-    }
-    return;
-}
-}
+} // namespace ANA

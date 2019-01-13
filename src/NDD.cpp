@@ -19,19 +19,14 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
     Poly_Vector border_poly;
     std::vector<std::array<bool, 4>> intersecting_bool;
     std::vector<unsigned int> intersecting_total;
-    std::vector<unsigned int> wall_aa_idx, wall_atom_idx;
-    std::vector<unsigned int> hetatm_atoms;
-    std::vector<std::string> wall_aa_id;
     std::vector<std::array<double, 3>> in_vtces_radii;
 
-    // Read original file and construct protein.
-    Molecule const protein = ANA::NDD::read(in_filename, atom_only);
-    // Get Convex Hull.
-    ANA::NDD::ConvexHull const CH(protein, IA_opts);
+    Molecule const protein = ANA::Molecule(in_filename, atom_only);
+    ANA::ConvexHull const CH(protein, IA_opts);
+    ANA::Cavity hueco(protein, cell_opts);
 
-    Delaunay T = ANA::triangulate(molecule_points);
-
-    ANA::get_all_voids(T, cavity_cells, cell_opts);
+    // Delaunay const T = ANA::triangulate(molecule_points);
+    // ANA::get_all_voids(T, cavity_cells, cell_opts);
 
     discard_CH_0(cavity_cells, CH_triangs, cavity_void_cells,
         cavity_intersecting_cells, intersecting_bool, intersecting_total);

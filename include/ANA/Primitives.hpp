@@ -2,67 +2,15 @@
 #define ANA_PRIMITIVES_H
 
 #include <ANA/Includes.hpp>
-
-// ANA definitions
-using MD_Element = std::array<Point, 4>;
-// Cell
-using MD_Vector = std::vector<MD_Element>;
-// Pocket
-using MD_Matrix = std::vector<MD_Vector>;
-// All voids
-using NDD_Element = std::array<std::pair<Point, double>, 4>;
-// Cell
-using NDD_Vector = std::vector<NDD_Element>;
-// Pocket
-using NDD_Matrix = std::vector<NDD_Vector>;
-// All voids
-using NDD_IElement = std::array<unsigned int, 4>;
-// Cell indices
-using NDD_IVector = std::vector<NDD_IElement>;
-// Pocket indices
-using NDD_IMatrix = std::vector<NDD_IVector>;
-// All voids indices
-using NA_Vector = std::vector<Finite_cells_iterator>;
-// Pocket
-using NA_Matrix = std::vector<NA_Vector>;
-// All voids
-using Poly_Vector = std::vector<Polyhedron>;
-// Pocket border cells
-using Poly_Matrix = std::vector<Poly_Vector>;
-// All null areas border cells
-using ANA_molecule = std::vector<std::pair<Point, VertexInfo>>;
+#include <ANA/Options.hpp>
 
 namespace ANA {
-
-// Tool for parsing a double from input file stringstream
-double parse_double(std::stringstream &in_stream) {
-    std::string temp;
-    double coord = 0;
-
-    in_stream >> temp;
-    try {
-        coord = std::stof(temp);
-    } catch (const std::invalid_argument &ia) {
-        // some character present
-        throw std::runtime_error("Can't parse input. There may be "
-                                 "non-numerical characters. Aborting.");
-    } catch (...) {
-        // some other exception.
-        throw std::runtime_error("Can't parse input. Aborting.");
-    }
-
-    return coord;
-}
 
 class Molecule {
 public:
     Molecule() = default;
 
-    Molecule(unsigned int const natoms, unsigned int const nres) :
-        _natoms(natoms), _nres(nres) {
-        _data.reserve(natoms);
-        _alphaCarbons.reserve(nres);
-    }
+    Molecule(std::string const &filename, bool const atom_only);
 
     unsigned int _natoms, _nres;
     std::vector<std::pair<Point, VertexInfo>> _data;
@@ -71,6 +19,63 @@ public:
     // Hetero-atoms indices
     std::vector<unsigned int> _hetatms;
 };
+
+class Cavity {
+public:
+    Cavity() = default;
+
+    Cavity(Delaunay T) noexcept : _triangulation(T) {}
+
+    Cavity(Delaunay &&T) noexcept : _triangulation(T) {}
+
+    Cavity(Molecule const &molecule, CellFilteringOptions const cell_opts);
+
+    Delaunay _triangulation;
+    // Cells.
+    std::vector<Finite_cells_iterator> _all, _included, _inner, _intersecting,
+        _joint;
+    double _volume = 0;
+};
+
+// Tool for parsing a double from input file stringstream
+double parse_double(std::stringstream &in_stream);
+
+// Calculate area of the cell's facets
+inline auto get_facets_areas(Finite_cells_iterator const &cell_iterator)
+    -> std::tuple<double, double, double, double> {
+
+    double const f0 = CGAL::to_double(CGAL::squared_area(
+        cell_iterator->vertex(1)->point(), cell_iterator->vertex(2)->point(),
+        cell_iterator->vertex(3)->point()));
+    double const f1 = CGAL::to_double(CGAL::squared_area(
+        cell_iterator->vertex(2)->point(), cell_iterator->vertex(3)->point(),
+        cell_iterator->vertex(0)->point()));
+    double const f2 = CGAL::to_double(CGAL::squared_area(
+        cell_iterator->vertex(0)->point(), cell_iterator->vertex(1)->point(),
+        cell_iterator->vertex(3)->point()));
+    double const f3 = CGAL::to_double(CGAL::squared_area(
+        cell_iterator->vertex(0)->point(), cell_iterator->vertex(1)->point(),
+        cell_iterator->vertex(2)->point()));
+
+    return {f0, f1, f2, f3};
+}
+// Determine if any of the facets of the given cells has area larger than the
+// criteria.
+inline bool refine_cell_areas(
+    Finite_cells_iterator const cell_iterator, double const top) {
+
+    auto const [f0, f1, f2, f3] = get_facets_areas(cell_iterator);
+    bool const larger = (f0 > top || f1 > top || f2 > top || f3 > top);
+
+    return larger;
+}
+
+// Just calculate volume of the cell.
+inline double cell_volume(Finite_cells_iterator const &cell_iterator) {
+    return CGAL::to_double(CGAL::volume(cell_iterator->vertex(0)->point(),
+        cell_iterator->vertex(1)->point(), cell_iterator->vertex(2)->point(),
+        cell_iterator->vertex(3)->point()));
+}
 
 }
 

@@ -20,16 +20,16 @@ int main(int argc, char *argv[]) {
     unsigned int nbr_of_vertices_to_include = 2, min_cells_cluster = 2,
                  estado = 1, md_start, md_step, md_end, precision, sphere_count;
     std::vector<unsigned int> include_CH_aa, hetatm_atoms;
-    double max_probe, max_probe_length, sphere_size;
+    double max_probe, max_probe_length;
 
     estado = ANA::get_parameters(argc, argv, in_filename, in_md_filename,
         IA_opts, AA_indices_proto, triangulate_only_included_aas, atom_only,
         precision, min_cells_cluster, nbr_of_vertices_to_include, md_start,
-        md_step, md_end, cell_opts, max_probe, max_probe_length, sphere_size,
-        sphere_count, list_wall, list_wall_separator, clusters_method,
-        only_side_ASA, ASA_method, exclude_ca_for_ASA_indices_proto, NDD_opts,
-        out_filename, out_vol, out_type, tool_check_CH, tool_pdb_to_ch,
-        tool_pdb_norm, tool_aa_to_ca);
+        md_step, md_end, cell_opts, max_probe, max_probe_length, sphere_count,
+        list_wall, list_wall_separator, clusters_method, only_side_ASA,
+        ASA_method, exclude_ca_for_ASA_indices_proto, NDD_opts, out_filename,
+        out_vol, out_type, tool_check_CH, tool_pdb_to_ch, tool_pdb_norm,
+        tool_aa_to_ca);
     if (estado == 1) {
         // Some error was found. Terminating execution.
         return 0;
@@ -173,8 +173,8 @@ int main(int argc, char *argv[]) {
             IA_opts._atom_proto, IA_opts._sphere_proto, IA_opts._cylinder_proto,
             IA_opts._prism_proto, IA_opts._filename, out_filename, out_type,
             triangulate_only_included_aas, atom_only, cell_opts, max_probe,
-            max_probe_length, sphere_size, sphere_count,
-            nbr_of_vertices_to_include, min_cells_cluster, precision);
+            max_probe_length, sphere_count, nbr_of_vertices_to_include,
+            min_cells_cluster, precision);
     }
 
     return 0;

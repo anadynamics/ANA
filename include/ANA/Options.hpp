@@ -9,8 +9,6 @@ struct IncludedAreaOptions {
 public:
     // Would like to have only 1 string, but that won't play nicely with Boost
     // Program Options. Hopefully I'll fix it someday. TODO
-    // TODO remove "include_CH_" from the member variables names. It's
-    // redundant.
     std::string _resn_proto = "none";
     std::string _atom_proto = "none";
     std::string _sphere_proto = "none";
@@ -28,12 +26,27 @@ public:
     std::string _out_ndd_filename;
 };
 
-struct CellFilteringOptions {
+class CellFilteringOptions {
 public:
-    double _minVR;
-    double _maxSR;
+    CellFilteringOptions() = default;
+
+    CellFilteringOptions(double const minVR, double const maxSR) :
+        _minVR(minVR), _maxSR(maxSR) {
+        _min_CV = (4 / 3) * M_PI * _minVR * _minVR * _minVR;
+        _max_FA = M_PI * _maxSR * _maxSR;
+    }
+
+    void update() {
+        _min_CV = (4 / 3) * M_PI * _minVR * _minVR * _minVR;
+        _max_FA = M_PI * _maxSR * _maxSR;
+    }
+
+    // min cell volume
+    double _minVR, _min_CV;
+    // max facet area.
+    double _maxSR, _max_FA;
 };
 
-}
+} // namespace ANA
 
 #endif // _H

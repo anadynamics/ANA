@@ -255,10 +255,10 @@ bool read_static(std::string const &filename,
     } else if (!(listed_incl_CH || listed_incl_res_CH) &&
         sphere_proto != "none") {
         std::stringstream stream_sphere(sphere_proto);
-        double x = ANA::parse_double(stream_sphere);
-        double y = ANA::parse_double(stream_sphere);
-        double z = ANA::parse_double(stream_sphere);
-        double r = ANA::parse_double(stream_sphere);
+        double x = parse_double(stream_sphere);
+        double y = parse_double(stream_sphere);
+        double z = parse_double(stream_sphere);
+        double r = parse_double(stream_sphere);
         double const cos_30 = sqrt(3) / 2;
         double const sin_30 = 0.5;
 
@@ -325,13 +325,13 @@ bool read_static(std::string const &filename,
         cylinder_proto != "none") {
         std::stringstream stream_cylinder(cylinder_proto);
 
-        double x1 = ANA::parse_double(stream_cylinder);
-        double y1 = ANA::parse_double(stream_cylinder);
-        double z1 = ANA::parse_double(stream_cylinder);
-        double x2 = ANA::parse_double(stream_cylinder);
-        double y2 = ANA::parse_double(stream_cylinder);
-        double z2 = ANA::parse_double(stream_cylinder);
-        double r = ANA::parse_double(stream_cylinder);
+        double x1 = parse_double(stream_cylinder);
+        double y1 = parse_double(stream_cylinder);
+        double z1 = parse_double(stream_cylinder);
+        double x2 = parse_double(stream_cylinder);
+        double y2 = parse_double(stream_cylinder);
+        double z2 = parse_double(stream_cylinder);
+        double r = parse_double(stream_cylinder);
 
         double const cos_30 = sqrt(3) / 2;
         double const sin_30 = 0.5;
@@ -409,14 +409,14 @@ bool read_static(std::string const &filename,
     } else if (!(listed_incl_CH || listed_incl_res_CH) &&
         prism_proto != "none") {
         std::stringstream stream_prism(prism_proto);
-        double x1 = ANA::parse_double(stream_prism);
-        double y1 = ANA::parse_double(stream_prism);
-        double z1 = ANA::parse_double(stream_prism);
-        double x2 = ANA::parse_double(stream_prism);
-        double y2 = ANA::parse_double(stream_prism);
-        double z2 = ANA::parse_double(stream_prism);
-        double width = ANA::parse_double(stream_prism) / 2;
-        double height = ANA::parse_double(stream_prism) / 2;
+        double x1 = parse_double(stream_prism);
+        double y1 = parse_double(stream_prism);
+        double z1 = parse_double(stream_prism);
+        double x2 = parse_double(stream_prism);
+        double y2 = parse_double(stream_prism);
+        double z2 = parse_double(stream_prism);
+        double width = parse_double(stream_prism) / 2;
+        double height = parse_double(stream_prism) / 2;
 
         Point center_1(x1, y1, z1);
         Point center_2(x2, y2, z2);

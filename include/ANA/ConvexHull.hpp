@@ -2,6 +2,8 @@
 #define ANA_CONVEX_HULL_H
 
 #include <ANA/Includes.hpp>
+#include <ANA/Options.hpp>
+#include <ANA/Primitives.hpp>
 
 namespace ANA {
 
@@ -38,7 +40,31 @@ public:
     ConvexHull(std::string const &filename, FileTag);
 
     // Run the actual Convex Hull algorithm with CGAL.
-    void run_convex_hull(std::vector<unsigned int> const &points);
+    // Should only work with containers. Will fix w/ c++20. TODO
+    template <class T>
+    void run_convex_hull(T const &points) {
+        if (points.size() < 4) {
+            throw std::runtime_error(
+                "Not possible to triangulate less than 4 points. Aborting.");
+        }
+
+        Polyhedron CH;
+        CGAL::convex_hull_3(points.begin(), points.end(), CH);
+        P_Facet_const_iterator f_end = CH.facets_end();
+        for (P_Facet_const_iterator f_ite = CH.facets_begin(); f_ite != f_end;
+             ++f_ite) {
+            // Fix around the weirdest CGAL bug.
+            P_Halfedge_around_facet_const_circulator he_ite =
+                f_ite->facet_begin();
+            auto const he_ite_0 = he_ite++;
+            auto const he_ite_1 = he_ite++;
+            auto const he_ite_2 = he_ite;
+
+            _data.emplace_back(he_ite_0->vertex()->point(),
+                he_ite_1->vertex()->point(), he_ite_2->vertex()->point());
+        }
+        return;
+    }
 
     std::vector<Triangle> _data;
 };

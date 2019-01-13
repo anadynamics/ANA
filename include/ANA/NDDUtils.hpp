@@ -19,9 +19,6 @@ using std::size_t;
 
 namespace ANA::NDD {
 
-// New read!
-Molecule read(std::string const &filename, bool const atom_only);
-
 // NDD Specific function for PDB input
 void ndd_read_PDB_get_cells(std::string const &filename,
     NDD_IVector const &in_cells_indices, NDD_Vector &output_cells);
@@ -43,6 +40,11 @@ void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
 
 // Get the indices of the atoms involved in the given cells
 NDD_IVector get_vertices(NA_Vector const &cavity_void_cells);
+
+// Get the volume occupied by the sector of the sphere inscribed in the
+// incident cell.
+double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
+    Point const &p_3, double const radius);
 
 // Calc volume of the input cells. Reedited for array container.
 double ndd_get_void_volume(NDD_Vector const &cavity_void_cells);

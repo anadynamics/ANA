@@ -9,7 +9,7 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     unsigned int &nbr_of_vertices_to_include, unsigned int &md_start,
     unsigned int &md_step, unsigned int &md_end,
     CellFilteringOptions &cell_opts, double &max_probe,
-    double &max_probe_length, double &sphere_size, unsigned int &sphere_count,
+    double &max_probe_length, unsigned int &sphere_count,
     std::string &list_wall, std::string &list_wall_separator,
     std::string &clusters_method, std::string &only_side_ASA,
     std::string &ASA_method, std::string &exclude_ca_for_ASA,
@@ -167,9 +167,6 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     ->composing(), "Radius of the sphere with the maximum surface to be taken "
     "into account. Default: 99.\n")
 
-    ("sphere_size", PO::value<double>(&sphere_size)->default_value(0.3)
-    ->composing(), "Sphere size for grid output. Default: 0.3.\n")
-
     ("sphere_count", PO::value<unsigned int>(&sphere_count)->default_value(5)
     ->composing(), "Sphere count for grid output. Default: 5.\n")
 
@@ -260,6 +257,9 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     return 1;
   }
 
+
+  cell_opts.update();
+  
   return 0;
 }
 

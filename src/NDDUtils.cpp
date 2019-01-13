@@ -2,57 +2,6 @@
 
 namespace ANA::NDD {
 
-// New read!
-Molecule read(std::string const &filename, bool const atom_only) {
-
-    // Read PDB
-    chemfiles::Trajectory input_pdb_traj(filename);
-    auto const input_pdb_frame = input_pdb_traj.read();
-    auto const in_xyz = input_pdb_frame.positions();
-    auto const input_pdb_top = input_pdb_frame.topology();
-
-    unsigned int const natoms = input_pdb_top.natoms();
-    unsigned int const nres = input_pdb_top.residues().size();
-
-    // printf("uno\n");
-
-    Molecule protein(natoms, nres);
-
-    for (auto const &residuo : input_pdb_top.residues()) {
-        auto const res_name = residuo.name();
-        for (auto const &i : residuo) {
-            if (atom_only &&
-                input_pdb_top[i].get("is_hetatm").value_or(false).as_bool()) {
-                // Save the HETATM indices to discard them during MD and
-                // NDD runs.
-                protein._hetatms.push_back(i);
-                continue;
-            }
-
-            auto const vdw_opt = input_pdb_top[i].vdw_radius();
-            double vdw = 1.5;
-            if (vdw_opt) {
-                vdw = vdw_opt.value();
-            } else {
-                printf("Element for atom %i not available. Using Van Der Walls "
-                       "radius of 1.5.\n",
-                    static_cast<int>(i) + 1);
-            }
-
-            VertexInfo const vi1(i, vdw, residuo.id().value(), res_name);
-            Point const p1(in_xyz[i][0], in_xyz[i][1], in_xyz[i][2]);
-            protein._data.emplace_back(p1, vi1);
-
-            if (input_pdb_top[i].name() == "CA") {
-                // Will use to draw Convex Hull or whatever. It's always useful.
-                protein._alphaCarbons.push_back(i);
-            }
-        }
-    }
-
-    return protein;
-}
-
 // NDD Specific function for PDB input
 void ndd_read_PDB_get_cells(std::string const &filename,
     NDD_IVector const &in_void_cells_indices, NDD_Vector &output_cells) {
@@ -226,6 +175,58 @@ NDD_IVector get_vertices(NA_Vector const &cavity_void_cells) {
     }
 
     return cells_indices;
+}
+
+// Get the volume ocuppied by the sector of the sphere inscribed in the
+// incident cell.
+double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
+    Point const &p_3, double const radius) {
+    // get 1st point of the mini tetrahedron
+    Vector vec_1 = p_1 - p_0;
+    vec_1 =
+        vec_1 / (std::sqrt(CGAL::to_double(vec_1.squared_length()))) * radius;
+    Point point_1 = p_0 + vec_1;
+    // get 2nd point of the mini tetrahedron
+    Vector vec_2 = p_2 - p_0;
+    vec_2 =
+        vec_2 / (std::sqrt(CGAL::to_double(vec_2.squared_length()))) * radius;
+    Point point_2 = p_0 + vec_2;
+    // get 3rd point of the mini tetrahedron
+    Vector vec_3 = p_3 - p_0;
+    vec_3 =
+        vec_3 / (std::sqrt(CGAL::to_double(vec_3.squared_length()))) * radius;
+    Point point_3 = p_0 + vec_3;
+
+    // Now, get the volume of the sphere slice
+    // get the normal vector
+    Vector plane_vec_1 = p_2 - p_1;
+    Vector plane_vec_2 = p_3 - p_2;
+    Vector plane_normal = CGAL::cross_product(plane_vec_1, plane_vec_2);
+    // normalize the normal vector
+    plane_normal = plane_normal /
+        (std::sqrt(CGAL::to_double(plane_normal.squared_length())));
+    // get the distance between the delaunay vertex and the plane formed by p_1,
+    // p_2 and p_3
+    double dist_to_plane = CGAL::to_double(plane_normal * vec_1);
+    double h = radius - dist_to_plane;
+    double spherical_cap_volume =
+        1 / 3 * M_PI * std::pow(h, 2) * (3 * radius - h);
+    double mini_tetrahedron_vol =
+        CGAL::to_double(CGAL::volume(p_0, point_1, point_2, point_3));
+
+    // Add the 2 volumes that represent the space occupied by the atom with
+    // coordinates p0
+    double volume =
+        std::abs(mini_tetrahedron_vol) + std::abs(spherical_cap_volume);
+    if (isnan(volume)) {
+        volume = 0;
+        //    std::cerr << "Warning: sphere_sector_vol gave NaN value. Void
+        //    calculation "
+        //                 "keeps going."
+        //              << '\n';
+    }
+
+    return volume;
 }
 
 // Calc volume of the input cells. Reedited for array container.

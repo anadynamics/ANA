@@ -1,5 +1,0 @@
-[
-  { "directory": "/home/pbarletta/labo/ANA/build",
-    "command": "/usr/local/clang+llvm_7.0.0/bin/clang++ -g -std=c++17 -Wall -Wextra -Wpedantic  -o main.o ../src/main.cpp -I/home/pbarletta/labo/ANA/chemfiles/build/install/include -I/home/pbarletta/labo/ANA/include /home/pbarletta/labo/ANA/chemfiles/build/install/lib/libchemfiles.a -lnetcdf -lCGAL -lboost_program_options -lmpfr -lgmp -lm",
-    "file": "../src/main.cpp" },
-]

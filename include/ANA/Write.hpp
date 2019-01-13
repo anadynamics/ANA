@@ -2,6 +2,7 @@
 #define ANA_WRITE_H
 
 #include <ANA/Includes.hpp>
+#include <ANA/Primitives.hpp>
 #include <ANA/Utils.hpp>
 
 namespace ANA {
@@ -14,10 +15,6 @@ void draw_raw_polyhedrons(std::ofstream &pymol_script,
 // Draw pockets in .PDB format. Static version
 void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
     std::string const &out_filename);
-
-// // Draw pockets in .PDB format. MD version
-// void draw_raw_PDB(NA_Vector const &pocket, const Poly_Vector &polys,
-//     std::string out_filename);
 
 // Draw pockets in .PDB format. MD version, whole trajectory.
 void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
@@ -61,10 +58,6 @@ unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
 //////////
 //
 /////////
-
-// Write pymol script header
-void header_script_pymol(
-    std::ofstream &pymol_script, std::string const pdb_filename);
 
 // Write .PDB header
 void header_PDB(

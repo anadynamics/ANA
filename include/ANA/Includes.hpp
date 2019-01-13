@@ -1,5 +1,5 @@
-#ifndef ANAINCLUDES
-#define ANAINCLUDES
+#ifndef ANA_INCLUDES_H
+#define ANA_INCLUDES_H
 
 #include "chemfiles.hpp"
 #include <algorithm>
@@ -14,6 +14,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <typeinfo>
 #include <utility>
 #include <vector>
@@ -36,7 +37,7 @@ public:
     VertexInfo(unsigned int const index, double const radius,
         unsigned int const resn, std::string_view const resi) :
         _index(index),
-        _radius(_radius), _resn(resn), _resi(resi) {}
+        _radius(radius), _resn(resn), _resi(resi) {}
 
     unsigned int _index;
     double _radius;
@@ -92,5 +93,34 @@ using Tetrahedron = CGAL::Tetrahedron_3<EPIC>;
 using Tetra_Vector = std::vector<Tetrahedron>;
 using Box =
     CGAL::Box_intersection_d::Box_with_handle_d<double, 3, Finite_cells_iterator>;
+
+// ANA definitions
+using MD_Element = std::array<Point, 4>;
+// Cell
+using MD_Vector = std::vector<MD_Element>;
+// Pocket
+using MD_Matrix = std::vector<MD_Vector>;
+// All voids
+using NDD_Element = std::array<std::pair<Point, double>, 4>;
+// Cell
+using NDD_Vector = std::vector<NDD_Element>;
+// Pocket
+using NDD_Matrix = std::vector<NDD_Vector>;
+// All voids
+using NDD_IElement = std::array<unsigned int, 4>;
+// Cell indices
+using NDD_IVector = std::vector<NDD_IElement>;
+// Pocket indices
+using NDD_IMatrix = std::vector<NDD_IVector>;
+// All voids indices
+using NA_Vector = std::vector<Finite_cells_iterator>;
+// Pocket
+using NA_Matrix = std::vector<NA_Vector>;
+// All voids
+using Poly_Vector = std::vector<Polyhedron>;
+// Pocket border cells
+using Poly_Matrix = std::vector<Poly_Vector>;
+// All null areas border cells
+using ANA_molecule = std::vector<std::pair<Point, VertexInfo>>;
 
 #endif

@@ -2,29 +2,25 @@
 #define ANA_UTILS_H
 
 #include <ANA/Includes.hpp>
+#include <ANA/NDDUtils.hpp>
 #include <ANA/Options.hpp>
+#include <ANA/Primitives.hpp>
 #include <ANA/Read.hpp>
 #include <ANA/Write.hpp>
 
 namespace ANA {
-// Just calculate volume of the cell.
-inline double cell_volume(Finite_cells_iterator const &cell_iterator) {
-    return CGAL::to_double(CGAL::volume(cell_iterator->vertex(0)->point(),
-        cell_iterator->vertex(1)->point(), cell_iterator->vertex(2)->point(),
-        cell_iterator->vertex(3)->point()));
-}
 
 // Substract the volume filled with the 4 atoms from the total volume of
-// the corresponding cell
+// the corresponding cell.
 double refine_cell_volume(
     double const entire_cell_vol, Finite_cells_iterator const &cell_iterator);
 
 // Get the volume occupied by the sector of the sphere inscribed in the
-// incident cell
+// incident cell.
 double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
     Point const &p_3, double const radius);
 
-// Cluster neighbouring cells
+// Cluster neighbouring cells.
 void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
     unsigned int const min_cells_cluster);
 
@@ -121,29 +117,13 @@ inline void cell_facets_areas(Finite_cells_iterator const &cell_iterator,
 
     return;
 }
-// Determine if any of the facets of the given cells has area larger
-// than criteria
-inline int refine_cell_areas(
-    Finite_cells_iterator const cell_iterator, double const criteria) {
 
-    double f0_area;
-    double f1_area;
-    double f2_area;
-    double f3_area;
-
-    cell_facets_areas(cell_iterator, f0_area, f1_area, f2_area, f3_area);
-    if (f0_area > criteria || f1_area > criteria || f2_area > criteria ||
-        f3_area > criteria) {
-        return 1;
-    } else
-        return 0;
-}
 // Fill the 2 input vectors with iterators for the outer and inner cells
-// respectively
+// respectively.
 void partition_triangulation(
     Delaunay const &T, NA_Vector &outer_cells, NA_Vector &inner_cells);
 
-// Calc volume and get the proper cells
+// Calc volume and get the proper cells.
 double get_all_voids(Delaunay const &T, NA_Vector &big_cells,
     CellFilteringOptions const cell_opts);
 
@@ -276,12 +256,11 @@ bool lb_with_indices(const std::vector<T> &v1,
 // Helper function for taking the "i" number in the 'in_vec'' that doesn't
 // match the query
 template <class T>
-T get_i_not_equal(const std::vector<T> &in_vec,
-    const T &query, unsigned int const i) {
+T get_i_not_equal(
+    const std::vector<T> &in_vec, const T &query, unsigned int const i) {
     if (in_vec.size() < i) {
-        throw std::invalid_argument(
-            "get_i_not_equal(): specified \"i\" position "
-            "larger than input vector");
+        throw std::invalid_argument("get_i_not_equal(): specified \"i\" "
+                                    "position larger than input vector");
     }
 
     unsigned int cont = 0;
@@ -326,8 +305,6 @@ T get_i_not_equal(const std::vector<T> &in_vec, const std::vector<T> &query_vec,
     // Fail
     return i;
 }
-
-
 
 } // namespace ANA
 #endif // _H
