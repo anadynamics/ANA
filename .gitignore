@@ -8,3 +8,4 @@ dep
 chemfiles/build
 chemfiles/install
 .*
+build

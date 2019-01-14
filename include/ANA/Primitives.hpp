@@ -34,7 +34,7 @@ public:
     // Cells.
     std::vector<Finite_cells_iterator> _all, _included, _inner, _intersecting,
         _joint;
-    double _volume = 0;
+    double _volume = 0, outer_volume = 0;
 };
 
 // Tool for parsing a double from input file stringstream

@@ -29,15 +29,16 @@ Check the quickstart example.
 * Road to 2.0.0
     * Major refactoring.
     * Switched to C++ 17.
-    * Deprecated Pymol CGO output.
+    * Deprecated:
+        * Cell filtering by facet area.
     * Deprecations for NDD:
         * No wall residues/atoms output.
         * included area is now mandatory.
         * Fixed to high precision mode.
         * No cavity output.
-
     * Deprecations for MD:
     * Deprecations for Static:
+        * Pymol CGO output.
 
 ### Contact info
 [@gpbarletta](https://twitter.com/gpbarletta) - pbarletta@gmail.com

@@ -15,6 +15,7 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
     Triang_Vector CH_triangs;
     NA_Vector cavity_cells, cavity_included_cells, cavity_void_cells,
         cavity_intersecting_cells, cavity_joint_cells;
+
     NA_Matrix null_areas_mtx;
     Poly_Vector border_poly;
     std::vector<std::array<bool, 4>> intersecting_bool;
@@ -25,8 +26,8 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
     ANA::ConvexHull const CH(protein, IA_opts);
     ANA::Cavity hueco(protein, cell_opts);
 
-    // Delaunay const T = ANA::triangulate(molecule_points);
-    // ANA::get_all_voids(T, cavity_cells, cell_opts);
+    Delaunay const T = ANA::triangulate(molecule_points);
+    ANA::get_all_voids(T, cavity_cells, cell_opts);
 
     discard_CH_0(cavity_cells, CH_triangs, cavity_void_cells,
         cavity_intersecting_cells, intersecting_bool, intersecting_total);
