@@ -9,3 +9,4 @@ chemfiles/build
 chemfiles/install
 .*
 build
+.vscode

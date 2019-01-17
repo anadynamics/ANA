@@ -5,18 +5,16 @@ namespace ANA {
 int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     std::string &input_md_filename, ANA::IncludedAreaOptions &IA_opts,
     std::string &AA_indices_proto, bool &triangulate_only_included_aas,
-    bool &atom_only, unsigned int &precision, unsigned int &clusters_min_size,
-    unsigned int &nbr_of_vertices_to_include, unsigned int &md_start,
-    unsigned int &md_step, unsigned int &md_end,
+    bool &atom_only, int &precision, int &clusters_min_size,
+    int &nbr_of_vertices_to_include, int &md_start, int &md_step, int &md_end,
     CellFilteringOptions &cell_opts, double &max_probe,
-    double &max_probe_length, unsigned int &sphere_count,
-    std::string &list_wall, std::string &list_wall_separator,
-    std::string &clusters_method, std::string &only_side_ASA,
-    std::string &ASA_method, std::string &exclude_ca_for_ASA,
-    NDDOptions &NDD_opts, std::string &out_filename, std::string &out_vol,
-    std::string &output_type, std::string &tool_check_CH,
-    std::string &tool_pdb_to_ch, std::string &tool_pdb_norm,
-    std::string &tool_aa_to_ca) {
+    double &max_probe_length, int &sphere_count, std::string &list_wall,
+    std::string &list_wall_separator, std::string &clusters_method,
+    std::string &only_side_ASA, std::string &ASA_method,
+    std::string &exclude_ca_for_ASA, NDDOptions &NDD_opts,
+    std::string &out_filename, std::string &out_vol, std::string &output_type,
+    std::string &tool_check_CH, std::string &tool_pdb_to_ch,
+    std::string &tool_pdb_norm, std::string &tool_aa_to_ca) {
     // clang-format off
   try {
     std::string config_filename;
@@ -79,7 +77,7 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     ->default_value("none"), "Atoms that delimit the convex hull of the"
     " included area.\n")
 
-    ("included_area_precision", PO::value<unsigned int>(&precision)
+    ("included_area_precision", PO::value<int>(&precision)
     ->default_value(0), "0: keep all cells that intercede in the included"
     " area. 1: only keep null areas that are within the included area. "
     "Default: 0.\n")
@@ -108,11 +106,11 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     "boxes: group null areas if the tetrahedrons bounding boxes intersect."
     "Default: \"boxes\"")
 
-    ("clusters_min_size", PO::value<unsigned int>(&clusters_min_size)
+    ("clusters_min_size", PO::value<int>(&clusters_min_size)
     ->default_value(2), "Minimum number of cells a cluster has to have to be "
     "included. Default: 2. \n")
 
-    ("minimum_number_of_vertices_to_include", PO::value<unsigned int>(
+    ("minimum_number_of_vertices_to_include", PO::value<int>(
     &nbr_of_vertices_to_include)->default_value(2), "Minimum number of wall "
     "atoms of the included amino acids. Default: 2.\n")
 
@@ -149,14 +147,14 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     "The bigger this number is the better (but slower) the process gets."
     "Default: 15.\n")
 
-    ("start", PO::value<unsigned int>(&md_start)->default_value(1),
+    ("start", PO::value<int>(&md_start)->default_value(1),
     "Frame to begin reading at. Default: 1.\n")
 
-    ("step", PO::value<unsigned int>(&md_step)->default_value(1),
+    ("step", PO::value<int>(&md_step)->default_value(1),
     "Step count to read trajectory frames. NetCDF format only."
     "Default: 1.\n")
 
-    ("stop", PO::value<unsigned int>(&md_end)->default_value(0),
+    ("stop", PO::value<int>(&md_end)->default_value(0),
     "Frame to stop reading. If set to 0, read all. Default: 0.\n")
 
     ("min_vol_radius", PO::value<double>(&cell_opts._minVR)->default_value(1.4)
@@ -167,7 +165,7 @@ int get_parameters(int ac, char *av[], std::string &input_struct_filename,
     ->composing(), "Radius of the sphere with the maximum surface to be taken "
     "into account. Default: 99.\n")
 
-    ("sphere_count", PO::value<unsigned int>(&sphere_count)->default_value(5)
+    ("sphere_count", PO::value<int>(&sphere_count)->default_value(5)
     ->composing(), "Sphere count for grid output. Default: 5.\n")
 
     ("output_type", PO::value<std::string>(&output_type)

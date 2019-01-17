@@ -13,10 +13,8 @@ int MD_ANA(std::string const &in_filename, std::string const &in_md_filename,
     std::string const &out_type, bool const triangulate_only_included_aas,
     bool const atom_only, CellFilteringOptions const cell_opts,
     double const max_probe, double const max_probe_length,
-    unsigned int const &sphere_count,
-    unsigned int const nbr_of_vertices_to_include, unsigned int const precision,
-    unsigned int const &md_start, unsigned int const &md_step,
-    unsigned int &md_end) {
+    int const &sphere_count, int const nbr_of_vertices_to_include,
+    int const precision, int const &md_start, int const &md_step, int &md_end) {
 
     // Read trajectory.
     chemfiles::Trajectory in_traj(in_md_filename);
@@ -27,14 +25,14 @@ int MD_ANA(std::string const &in_filename, std::string const &in_md_filename,
 
     // Get ready.
     double poly_vol = 0;
-    unsigned int frame_cnt = 1;
-    unsigned int max_atom_cnt = 0;
+    int frame_cnt = 1;
+    int max_atom_cnt = 0;
     auto const nbr_of_frames =
         ceil((md_end - md_start + 1) / static_cast<double>(md_step));
 
-    std::vector<unsigned int> atom_cnt_md(nbr_of_frames);
-    std::vector<unsigned int> CA_indices, AA_indices, include_CH_atoms;
-    std::vector<unsigned int> hetatm_atoms;
+    std::vector<int> atom_cnt_md(nbr_of_frames);
+    std::vector<int> CA_indices, AA_indices, include_CH_atoms;
+    std::vector<int> hetatm_atoms;
     Point cm;
     Polyhedron CH;
     Triang_Vector CH_triangs;
@@ -43,8 +41,7 @@ int MD_ANA(std::string const &in_filename, std::string const &in_md_filename,
     std::vector<std::array<double, 3>> in_vtces_radii;
     NDD_Matrix voids_md(nbr_of_frames);
     Poly_Matrix polys_md(nbr_of_frames);
-    std::vector<std::vector<unsigned int>> list_intersecting_total(
-        nbr_of_frames);
+    std::vector<std::vector<int>> list_intersecting_total(nbr_of_frames);
 
     // Handle input trajectory file format.
     std::string in_md_format =
@@ -72,18 +69,17 @@ int MD_ANA(std::string const &in_filename, std::string const &in_md_filename,
         CAs_Points, include_CH_atoms, CH_triangs, hetatm_atoms);
 
     while (!in_traj.done()) {
-        unsigned int atom_cnt_poly = 0;
+        int atom_cnt_poly = 0;
         NA_Vector cavity_cells;
         NA_Vector cavity_included_cells;
         NA_Vector cavity_void_cells;
         NA_Vector cavity_intersecting_cells;
         Poly_Vector border_poly;
         std::vector<std::array<bool, 4>> intersecting_bool;
-        std::vector<unsigned int> intersecting_total;
+        std::vector<int> intersecting_total;
 
         // Set next step.
-        unsigned int const current_step =
-            (frame_cnt - 1) * md_step + (md_start - 1);
+        int const current_step = (frame_cnt - 1) * md_step + (md_start - 1);
         if (current_step >= md_end) {
             // Done.
             break;
@@ -165,8 +161,7 @@ int MD_ANA(std::string const &in_filename, std::string const &in_md_filename,
 
         // Get the number of vertices (atoms) to write, look for the highest nbr
         // of "voids_md" them, and store it. Then, store voids for later output.
-        unsigned int atom_cnt_step =
-            cavity_void_cells.size() * 4 + atom_cnt_poly;
+        int atom_cnt_step = cavity_void_cells.size() * 4 + atom_cnt_poly;
         atom_cnt_md[frame_cnt - 1] = atom_cnt_step;
         if (atom_cnt_step > max_atom_cnt) {
             max_atom_cnt = atom_cnt_step;

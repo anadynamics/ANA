@@ -3,15 +3,14 @@
 namespace ANA {
 
 // Refine the provided list of amino acids. Throws a lot.
-std::vector<unsigned int> string_to_list(
-    std::string const &list_proto, unsigned int const top) {
+std::vector<int> string_to_list(std::string const &list_proto, int const top) {
 
-    std::vector<unsigned int> list;
+    std::vector<int> list;
 
     std::stringstream stream_aa(list_proto);
     std::string temp_aa;
     while (!stream_aa.eof()) {
-        unsigned int aa;
+        int aa;
         stream_aa >> temp_aa;
         try {
             aa = std::stoi(temp_aa);

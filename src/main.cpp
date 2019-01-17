@@ -17,9 +17,9 @@ int main(int argc, char *argv[]) {
 
     bool triangulate_only_included_aas = false, atom_only = true;
 
-    unsigned int nbr_of_vertices_to_include = 2, min_cells_cluster = 2,
-                 estado = 1, md_start, md_step, md_end, precision, sphere_count;
-    std::vector<unsigned int> include_CH_aa, hetatm_atoms;
+    int nbr_of_vertices_to_include = 2, min_cells_cluster = 2, estado = 1,
+        md_start, md_step, md_end, precision, sphere_count;
+    std::vector<int> include_CH_aa, hetatm_atoms;
     double max_probe, max_probe_length;
 
     estado = ANA::get_parameters(argc, argv, in_filename, in_md_filename,
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
         Triang_Vector CH_triangs;
         std::vector<Point> CAs_Points;
         ANA_molecule molecule_points;
-        std::vector<unsigned int> AA_indices, CA_indices, include_CH_atoms;
+        std::vector<int> AA_indices, CA_indices, include_CH_atoms;
         Point cm;
 
         // Read input file
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
         } else {
 
             chemfiles::Trajectory in_traj(in_md_filename);
-            unsigned int frame_cnt = 1;
+            int frame_cnt = 1;
             // Set end.
             if (md_end == 0) {
                 md_end = in_traj.nsteps();
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 
             while (!in_traj.done()) {
                 // Set next step.
-                unsigned int const current_step =
+                int const current_step =
                     (frame_cnt - 1) * md_step + (md_start - 1);
                 if (current_step >= md_end) {
                     // Done.
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
         Triang_Vector CH_triangs;
         std::vector<Point> CAs_Points;
         ANA_molecule molecule_points;
-        std::vector<unsigned int> AA_indices, CA_indices, include_CH_atoms;
+        std::vector<int> AA_indices, CA_indices, include_CH_atoms;
         Point cm;
 
         // Read input file

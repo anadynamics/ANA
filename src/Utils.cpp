@@ -4,14 +4,14 @@ namespace ANA {
 
 // Cluster neighbouring cells. CGAL neighbouring method.
 void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
-    unsigned int const min_cells_cluster) {
+    int const min_cells_cluster) {
 
-    unsigned int nbr_of_clusters = 0, cell_cnt = input_cells.size();
-    std::vector<unsigned int> already_checked;
+    int nbr_of_clusters = 0, cell_cnt = input_cells.size();
+    std::vector<int> already_checked;
     Finite_cells_iterator fc_ite;
     NA_Vector neighbors;
 
-    for (unsigned int i = 0; i <= cell_cnt; ++i) {
+    for (std::size_t i = 0; i <= cell_cnt; ++i) {
         if (std::find(already_checked.begin(), already_checked.end(), i) !=
             already_checked.end()) {
             continue;
@@ -36,10 +36,10 @@ void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
 
 // Given a cell, get all neighbouring cells that haven't been discovered yet
 void get_neighbors(NA_Vector const &input_cells,
-    Finite_cells_iterator const &query_cell, std::vector<unsigned int> &except,
+    Finite_cells_iterator const &query_cell, std::vector<int> &except,
     NA_Vector &output_cells) {
 
-    unsigned int i, cnt = 0, cell_cnt = input_cells.size();
+    int i, cnt = 0, cell_cnt = input_cells.size();
     for (i = 0; i <= cell_cnt; ++i) {
         if (find(except.begin(), except.end(), i) != except.end()) {
             continue;
@@ -56,11 +56,11 @@ void get_neighbors(NA_Vector const &input_cells,
 // Functor to get pairs of intersecting boxes and group them in clusters.
 class callback_for_boxes {
 public:
-    std::vector<unsigned int> *_id_vector_a, *_id_vector_b;
+    std::vector<int> *_id_vector_a, *_id_vector_b;
     NA_Vector *_neighbors_a, *_neighbors_b;
 
-    callback_for_boxes(std::vector<unsigned int> &id_vector_a,
-        std::vector<unsigned int> &id_vector_b, NA_Vector &neighbors_a,
+    callback_for_boxes(std::vector<int> &id_vector_a,
+        std::vector<int> &id_vector_b, NA_Vector &neighbors_a,
         NA_Vector &neighbors_b) :
         _id_vector_a(&id_vector_a),
         _id_vector_b(&id_vector_b), _neighbors_a(&neighbors_a),
@@ -81,10 +81,10 @@ public:
 void cluster_cells_boxes(
     NA_Vector const &input_cells, NA_Matrix &output_cells) {
 
-    unsigned int min_cells_cluster = 2;
+    int min_cells_cluster = 2;
     std::vector<Box> boxes;
-    std::vector<unsigned int> id_vector_a, id_vector_b;
-    std::vector<std::vector<unsigned int>> id_mtx;
+    std::vector<int> id_vector_a, id_vector_b;
+    std::vector<std::vector<int>> id_mtx;
     NA_Vector neighbors_a, neighbors_b;
     callback_for_boxes called(
         id_vector_a, id_vector_b, neighbors_a, neighbors_b);
@@ -101,16 +101,16 @@ void cluster_cells_boxes(
     CGAL::box_self_intersection_d(boxes.begin(), boxes.end(), called);
 
     // Get the indices that sort the id vectors
-    std::vector<unsigned int> indices_a = sort_indices(id_vector_a);
-    std::vector<unsigned int> indices_b = sort_indices(id_vector_b);
+    std::vector<int> indices_a = sort_indices(id_vector_a);
+    std::vector<int> indices_b = sort_indices(id_vector_b);
 
     // Get a sorted vector with all the ids and no repetitions. "map_aux" is
     // probably bigger than needed, since some cells won't have any
     // intersections
     // at all and won't appear in neither "indices_a" nor "indices_b".
-    std::vector<unsigned int> map_aux(input_cells.size());
+    std::vector<int> map_aux(input_cells.size());
     map_aux[0] = id_vector_a[indices_a[0]];
-    unsigned int cnt = 0, tmp = map_aux[cnt];
+    int cnt = 0, tmp = map_aux[cnt];
     // Get all the indices IDs from "id_vector_a".
     for (auto const &each : indices_a) {
         if (id_vector_a[each] != tmp) {
@@ -151,7 +151,7 @@ void cluster_cells_boxes(
     std::vector<bool> map_bool(map_aux.size());
 
     // Start mapping the clusters.
-    unsigned int result = 0, new_id;
+    int result = 0, new_id;
     for (size_t i = 0; i < map_aux.size(); i++) {
 
         if (map_bool[i]) {
@@ -159,7 +159,7 @@ void cluster_cells_boxes(
             continue;
         }
 
-        std::vector<unsigned int> current, current_tmp;
+        std::vector<int> current, current_tmp;
         NA_Vector neighbors;
         // This is the starting cell of the cluster.
         current_tmp.push_back(map_aux[i]);
@@ -256,9 +256,9 @@ void cluster_cells_boxes(
 
 // Keep cells that correspond to the included amino acids
 void keep_included_aa_cells(NA_Vector const &input_cells,
-    const std::vector<unsigned int> &aa_list,
-    unsigned int const nbr_of_vertices_to_include, NA_Vector &output_cells) {
-    unsigned int i, nbr_of_vertices;
+    const std::vector<int> &aa_list, int const nbr_of_vertices_to_include,
+    NA_Vector &output_cells) {
+    int i, nbr_of_vertices;
     Point p1;
 
     for (Finite_cells_iterator const &fc_ite : input_cells) {
@@ -382,7 +382,7 @@ void discard_ASA_CACH(std::vector<Point> const &Calpha_xyz,
             cell_ite->vertex(1)->point(), cell_ite->vertex(2)->point(),
             cell_ite->vertex(3)->point());
 
-        for (unsigned int j = 0; j < CH_vtces.size(); j++) {
+        for (std::size_t j = 0; j < CH_vtces.size(); j++) {
             Vector test_vtor = test_point - CH_vtces[j];
             test_vtor = test_vtor /
                 std::sqrt(CGAL::to_double(test_vtor.squared_length()));
@@ -478,7 +478,7 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
                 // Determine if there is enough of them to classify this cell as
                 // being
                 // inside
-                unsigned int const sum_halves = bool_half_xy + bool_half_yx +
+                int const sum_halves = bool_half_xy + bool_half_yx +
                     bool_half_xz + bool_half_zx + bool_half_yz + bool_half_zy;
                 if (sum_halves < 4) {
                     // can't say yet
@@ -566,7 +566,7 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
                 // Determine if there is enough of them to classify this cell as
                 // being
                 // inside
-                unsigned int const sum_halves = bool_half_xy + bool_half_yx +
+                int const sum_halves = bool_half_xy + bool_half_yx +
                     bool_half_xz + bool_half_zx + bool_half_yz + bool_half_zy;
 
                 if (sum_halves > 4) {
@@ -621,18 +621,18 @@ void partition_triangulation(
 double get_all_voids(Delaunay const &T, NA_Vector &big_cells,
     CellFilteringOptions const cell_opts) {
 
-    double volume = 0;
+    double volumen = 0;
     Finite_cells_iterator fc_ite_end = T.finite_cells_end();
 
     for (auto fc_ite = T.finite_cells_begin(); fc_ite != fc_ite_end; fc_ite++) {
-        double const cell_vol = cell_volume(fc_ite);
+        double const cell_vol = volume(fc_ite);
 
         if (cell_vol > cell_opts._min_CV) {
             big_cells.push_back(fc_ite);
-            volume = volume + cell_vol;
+            volumen = volumen + cell_vol;
         }
     }
-    return volume;
+    return volumen;
 }
 
 // Substract the volume filled with the 4 atoms from the total volume of the
@@ -659,57 +659,6 @@ double refine_cell_volume(
         vertex_1_sphere_sector_vol - vertex_2_sphere_sector_vol -
         vertex_3_sphere_sector_vol);
 }
-// Get the volume ocuppied by the sector of the sphere inscribed in the
-// incident cell.
-double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
-    Point const &p_3, double const radius) {
-    // get 1st point of the mini tetrahedron
-    Vector vec_1 = p_1 - p_0;
-    vec_1 =
-        vec_1 / (std::sqrt(CGAL::to_double(vec_1.squared_length()))) * radius;
-    Point point_1 = p_0 + vec_1;
-    // get 2nd point of the mini tetrahedron
-    Vector vec_2 = p_2 - p_0;
-    vec_2 =
-        vec_2 / (std::sqrt(CGAL::to_double(vec_2.squared_length()))) * radius;
-    Point point_2 = p_0 + vec_2;
-    // get 3rd point of the mini tetrahedron
-    Vector vec_3 = p_3 - p_0;
-    vec_3 =
-        vec_3 / (std::sqrt(CGAL::to_double(vec_3.squared_length()))) * radius;
-    Point point_3 = p_0 + vec_3;
-
-    // Now, get the volume of the sphere slice
-    // get the normal vector
-    Vector plane_vec_1 = p_2 - p_1;
-    Vector plane_vec_2 = p_3 - p_2;
-    Vector plane_normal = CGAL::cross_product(plane_vec_1, plane_vec_2);
-    // normalize the normal vector
-    plane_normal = plane_normal /
-        (std::sqrt(CGAL::to_double(plane_normal.squared_length())));
-    // get the distance between the delaunay vertex and the plane formed by p_1,
-    // p_2 and p_3
-    double dist_to_plane = CGAL::to_double(plane_normal * vec_1);
-    double h = radius - dist_to_plane;
-    double spherical_cap_volume =
-        1 / 3 * M_PI * std::pow(h, 2) * (3 * radius - h);
-    double mini_tetrahedron_vol =
-        CGAL::to_double(CGAL::volume(p_0, point_1, point_2, point_3));
-
-    // Add the 2 volumes that represent the space occupied by the atom with
-    // coordinates p0
-    double volume =
-        std::abs(mini_tetrahedron_vol) + std::abs(spherical_cap_volume);
-    if (isnan(volume)) {
-        volume = 0;
-        //    std::cerr << "Warning: sphere_sector_vol gave NaN value. Void
-        //    calculation "
-        //                 "keeps going."
-        //              << '\n';
-    }
-
-    return volume;
-}
 
 // Discard cells without a vertex inside the specified convex hull. Lo
 // precision.
@@ -731,11 +680,11 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
 
     // Now discard outside cells
     for (auto const &cell_ite : in_cells) {
-        for (unsigned int i = 0; i <= 3; ++i) {
+        for (std::size_t i = 0; i <= 3; ++i) {
             bool vtx_inside_bool = false;
             Point test_point(cell_ite->vertex(i)->point());
 
-            for (unsigned int j = 0; j < CH_vtces.size(); ++j) {
+            for (std::size_t j = 0; j < CH_vtces.size(); ++j) {
                 Vector test_vtor = test_point - CH_vtces[j];
                 test_vtor = test_vtor /
                     std::sqrt(CGAL::to_double(test_vtor.squared_length()));
@@ -764,7 +713,7 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
 void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
     NA_Vector &out_cells, NA_Vector &out_intersecting_cells,
     std::vector<std::array<bool, 4>> &intersecting_bool,
-    std::vector<unsigned int> &intersecting_total) {
+    std::vector<int> &intersecting_total) {
 
     std::vector<Vector> CH_normals;
     std::vector<Point> CH_vtces;
@@ -782,12 +731,12 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
     // Now discard outside cells
     for (auto const &cell_ite : in_cells) {
         std::array<bool, 4> vtx_inside_bool = {false, false, false, false};
-        unsigned int total = 0;
+        int total = 0;
         // Get nbr of vertices that lie outside the include area
-        for (unsigned int i = 0; i <= 3; ++i) {
+        for (std::size_t i = 0; i <= 3; ++i) {
             Point test_point(cell_ite->vertex(i)->point());
 
-            for (unsigned int j = 0; j < CH_vtces.size(); j++) {
+            for (std::size_t j = 0; j < CH_vtces.size(); j++) {
                 Vector test_vtor = test_point - CH_vtces[j];
                 test_vtor = test_vtor /
                     std::sqrt(CGAL::to_double(test_vtor.squared_length()));
@@ -823,20 +772,18 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
 double discard_CH_1(NA_Vector const &in_intersecting_cells,
     Triang_Vector const &CH_triangs,
     const std::vector<std::array<bool, 4>> &intersecting_bool,
-    const std::vector<unsigned int> &intersecting_total,
-    Poly_Vector &border_poly,
-    std::vector<std::array<double, 3>> &in_vtces_radii,
-    unsigned int &atom_cnt_poly) {
+    const std::vector<int> &intersecting_total, Poly_Vector &border_poly,
+    std::vector<std::array<double, 3>> &in_vtces_radii, int &atom_cnt_poly) {
     // Use this vector to obtain the indices of the vtces used to form the
     // intersecting segments
-    std::vector<unsigned int> v = {0, 1, 2, 3};
+    std::vector<std::size_t> v = {0, 1, 2, 3};
     double volume = 0;
 
-    for (unsigned int each = 0; each < in_intersecting_cells.size(); ++each) {
+    for (std::size_t each = 0; each < in_intersecting_cells.size(); ++each) {
 
         switch (intersecting_total[each]) {
         case 3: {
-            for (unsigned int i = 0; i < 4; i++) {
+            for (std::size_t i = 0; i < 4; i++) {
                 if (!intersecting_bool[each][i]) {
                     // Got the handles of the included_area cell(s) that contain
                     // vertices of the intersecting cell
@@ -880,8 +827,8 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                     // Check if included area and intersecting cell are sharing
                     // vertices, creating degeneracies.
                     bool degeneracies_bool = false;
-                    for (unsigned int i = 0; i < i_points.size() - 1; i++) {
-                        for (unsigned int k = i + 1; k < i_points.size(); k++) {
+                    for (std::size_t i = 0; i < i_points.size() - 1; i++) {
+                        for (std::size_t k = i + 1; k < i_points.size(); k++) {
                             if (i_points[i] == i_points[k]) {
                                 i_points[k] = i_points[k] +
                                     Vector(0.01 * i, 0.01 * k, 0.01);
@@ -914,9 +861,9 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
             break;
         }
         case 2: {
-            for (unsigned int i = 0; i < 4; i++) {
+            for (std::size_t i = 0; i < 4; i++) {
                 if (!intersecting_bool[each][i]) {
-                    for (unsigned int j = i + 1; j < 4; j++) {
+                    for (std::size_t j = i + 1; j < 4; j++) {
                         if (!intersecting_bool[each][j]) {
                             // 2 vertices inside included area
                             std::vector<Point> i_points;
@@ -940,7 +887,7 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                            ->vertex(j)
                                            ->info()
                                            ._radius);
-                            std::vector<unsigned int> query_vec = {i, j};
+                            std::vector<std::size_t> query_vec = {i, j};
                             Point p2(
                                 in_intersecting_cells[each]
                                     ->vertex(get_i_not_equal(v, query_vec, 1))
@@ -976,10 +923,10 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                             // sharing
                             // vertices, creating degeneracies.
                             bool degeneracies_bool = false;
-                            for (unsigned int i = 0; i < i_points.size() - 1;
+                            for (std::size_t i = 0; i < i_points.size() - 1;
                                  i++) {
-                                for (unsigned int k = i + 1;
-                                     k < i_points.size(); k++) {
+                                for (std::size_t k = i + 1; k < i_points.size();
+                                     k++) {
                                     if (i_points[k] == i_points[k]) {
                                         i_points[k] = i_points[k] +
                                             Vector(0.01, 0.01, 0.01);
@@ -1031,11 +978,11 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
             break;
         }
         case 1: {
-            for (unsigned int i = 0; i < 4; i++) {
+            for (std::size_t i = 0; i < 4; i++) {
                 if (!intersecting_bool[each][i]) {
-                    for (unsigned int j = i + 1; j < 4; j++) {
+                    for (std::size_t j = i + 1; j < 4; j++) {
                         if (!intersecting_bool[each][j]) {
-                            for (unsigned int k = j + 1; k < 4; k++) {
+                            for (std::size_t k = j + 1; k < 4; k++) {
                                 if (!intersecting_bool[each][k]) {
                                     // 3 vertices inside the included area
                                     std::vector<Point> i_points;
@@ -1068,7 +1015,7 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                                    ->vertex(k)
                                                    ->info()
                                                    ._radius);
-                                    std::vector<unsigned int> query_vec = {
+                                    std::vector<std::size_t> query_vec = {
                                         i, j, k};
                                     Point p3(in_intersecting_cells[each]
                                                  ->vertex(get_i_not_equal(
@@ -1103,9 +1050,9 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                     // cell are sharing
                                     // vertices, creating degeneracies.
                                     bool degeneracies_bool = false;
-                                    for (unsigned int i = 0;
+                                    for (std::size_t i = 0;
                                          i < i_points.size() - 1; i++) {
-                                        for (unsigned int k = i + 1;
+                                        for (std::size_t k = i + 1;
                                              k < i_points.size(); k++) {
                                             if (i_points[k] == i_points[k]) {
                                                 i_points[k] = i_points[k] +
@@ -1241,7 +1188,7 @@ void tool_PDB_norm(
     std::string const &in_filename, std::string const &tool_pdb_norm) {
 
     std::vector<chemfiles::Residue> res_vec;
-    std::vector<unsigned int> resid_vec;
+    std::vector<int> resid_vec;
 
     // Read PDB
     chemfiles::Trajectory input_pdb_traj(in_filename);

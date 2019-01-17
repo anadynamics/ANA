@@ -1,6 +1,7 @@
 #ifndef ANA_UTILS_H
 #define ANA_UTILS_H
 
+#include <ANA/CGALUtils.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/NDDUtils.hpp>
 #include <ANA/Options.hpp>
@@ -15,18 +16,13 @@ namespace ANA {
 double refine_cell_volume(
     double const entire_cell_vol, Finite_cells_iterator const &cell_iterator);
 
-// Get the volume occupied by the sector of the sphere inscribed in the
-// incident cell.
-double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
-    Point const &p_3, double const radius);
-
 // Cluster neighbouring cells.
 void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
-    unsigned int const min_cells_cluster);
+    int const min_cells_cluster);
 
 // Given a cell, get all neighbouring cells that haven't been discovered yet
 void get_neighbors(NA_Vector const &input_cells,
-    Finite_cells_iterator const &query_cell, std::vector<unsigned int> &except,
+    Finite_cells_iterator const &query_cell, std::vector<int> &except,
     NA_Vector &output_cells);
 
 // Cluster neighbouring cells. Iso-oriented boxes method
@@ -34,8 +30,8 @@ void cluster_cells_boxes(NA_Vector const &input_cells, NA_Matrix &output_cells);
 
 // Keep cells that correspond to the included amino acids
 void keep_included_aa_cells(NA_Vector const &input_cells,
-    const std::vector<unsigned int> &aa_list,
-    unsigned int const nbr_of_vertices_to_include, NA_Vector &output_cells);
+    const std::vector<int> &aa_list, int const nbr_of_vertices_to_include,
+    NA_Vector &output_cells);
 
 // Discard exposed cells
 void discard_ASA_dot_pdt_cm(Point const &cm,
@@ -62,23 +58,23 @@ inline Delaunay triangulate(ANA_molecule const &molecule_points) {
 }
 // Calc volume of the input cells.
 inline double get_void_volume(NA_Vector const &input_cells) {
-    double volume = 0;
+    double volumen = 0;
 
     double current_cell_vol;
     for (Finite_cells_iterator const &fc_ite : input_cells) {
-        current_cell_vol = cell_volume(fc_ite);
+        current_cell_vol = volume(fc_ite);
 
         current_cell_vol = refine_cell_volume(current_cell_vol, fc_ite);
 
-        volume = volume + current_cell_vol;
+        volumen = volumen + current_cell_vol;
     }
-    return volume;
+    return volumen;
 }
 // Disregard lone cells.
 inline void disregard_lone_cells(
     NA_Vector const &input_cells, NA_Vector &output_cells) {
 
-    unsigned int i, j, cell_cnt = input_cells.size();
+    int i, j, cell_cnt = input_cells.size();
 
     Finite_cells_iterator cell_ite1, cell_ite2;
 
@@ -137,17 +133,15 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
 void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
     NA_Vector &out_cells, NA_Vector &out_intersecting_cells,
     std::vector<std::array<bool, 4>> &intersecting_bool,
-    std::vector<unsigned int> &intersecting_total);
+    std::vector<int> &intersecting_total);
 
 // Discard parts of cells outside the specified triangulation using
 // intersecitons.
 double discard_CH_1(NA_Vector const &in_intersecting_cells,
     Triang_Vector const &CH_triangs,
     const std::vector<std::array<bool, 4>> &intersecting_bool,
-    const std::vector<unsigned int> &intersecting_total,
-    Poly_Vector &border_poly,
-    std::vector<std::array<double, 3>> &in_vtces_radii,
-    unsigned int &atom_cnt_poly);
+    const std::vector<int> &intersecting_total, Poly_Vector &border_poly,
+    std::vector<std::array<double, 3>> &in_vtces_radii, int &atom_cnt_poly);
 
 // Discard cells without a vertex inside the specified convex hull
 void discard_CH(
@@ -176,17 +170,68 @@ void insert_into_ord_vtor(Vector &v, const T &to_insert) {
     return;
 }
 
+// Helper function for taking the "i" number in the 'in_vec'' that doesn't
+// match the query.
+template <class T>
+T get_i_not_equal(const std::vector<T> &in_vec, const T &query, int const i) {
+    if (in_vec.size() < i) {
+        throw std::invalid_argument("get_i_not_equal(): specified \"i\" "
+                                    "position larger than input vector");
+    }
+
+    int cont = 0;
+    for (auto const &each : in_vec) {
+        if (each != query) {
+            ++cont;
+            if (cont >= i) {
+                return each;
+            }
+        }
+    }
+
+    // Fail
+    return i;
+}
+
+// Helper function for taking the "i" number in the 'in_vec'' that doesn't
+// match the query vector.
+template <class T>
+T get_i_not_equal(const std::vector<T> &in_vec, const std::vector<T> &query_vec,
+    int const i) {
+    if (in_vec.size() < i) {
+        throw std::invalid_argument("get_i_not_equal(): specified \"i\" "
+                                    "position larger than input vector");
+    }
+
+    int cont = 0;
+    for (auto const &each : in_vec) {
+        bool each_bool = true;
+        for (auto const &query : query_vec) {
+            each_bool = each_bool && (each != query);
+        }
+        if (each_bool) {
+            ++cont;
+            if (cont >= i) {
+                return each;
+            }
+        }
+    }
+
+    // Fail
+    return i;
+}
+
 // Helper function for getting the indices that sort a vector.
 template <typename T>
-std::vector<unsigned int> sort_indices(const std::vector<T> &v) {
+std::vector<int> sort_indices(const std::vector<T> &v) {
 
     // initialize original index locations
-    std::vector<unsigned int> idx(v.size());
+    std::vector<int> idx(v.size());
     std::iota(idx.begin(), idx.end(), 0);
 
     // sort indices based on comparing values in v
-    sort(idx.begin(), idx.end(),
-        [&v](unsigned int i1, unsigned int i2) { return v[i1] < v[i2]; });
+    sort(
+        idx.begin(), idx.end(), [&v](int i1, int i2) { return v[i1] < v[i2]; });
 
     return idx;
 }
@@ -197,9 +242,9 @@ std::vector<unsigned int> sort_indices(const std::vector<T> &v) {
 // stores the index of the element that satisfies the lower bound condition in
 // the variable "first".
 template <typename T>
-bool lb(const std::vector<T> &v1, const T q1, unsigned int &first) {
+bool lb(const std::vector<T> &v1, const T q1, int &first) {
 
-    unsigned int count = v1.size(), step, current;
+    int count = v1.size(), step, current;
     first = 0;
 
     while (count > 0) {
@@ -228,10 +273,10 @@ bool lb(const std::vector<T> &v1, const T q1, unsigned int &first) {
 // This variable also serves as a starting point in the search, to start
 // searching in an arbitrary position and forward.
 template <typename T>
-bool lb_with_indices(const std::vector<T> &v1,
-    const std::vector<unsigned int> &indices, const T q1, unsigned int &first) {
+bool lb_with_indices(const std::vector<T> &v1, const std::vector<int> &indices,
+    const T q1, int &first) {
 
-    unsigned int count = v1.size(), step, current;
+    int count = v1.size(), step, current;
     first = 0;
 
     while (count > 0) {
@@ -251,59 +296,6 @@ bool lb_with_indices(const std::vector<T> &v1,
         return false;
     } else
         return true;
-}
-
-// Helper function for taking the "i" number in the 'in_vec'' that doesn't
-// match the query
-template <class T>
-T get_i_not_equal(
-    const std::vector<T> &in_vec, const T &query, unsigned int const i) {
-    if (in_vec.size() < i) {
-        throw std::invalid_argument("get_i_not_equal(): specified \"i\" "
-                                    "position larger than input vector");
-    }
-
-    unsigned int cont = 0;
-    for (auto const &each : in_vec) {
-        if (each != query) {
-            ++cont;
-            if (cont >= i) {
-                return each;
-            }
-        }
-    }
-
-    // Fail
-    return i;
-}
-
-// Helper function for taking the "i" number in the 'in_vec'' that doesn't
-// match the query vector.
-template <class T>
-T get_i_not_equal(const std::vector<T> &in_vec, const std::vector<T> &query_vec,
-    unsigned int const i) {
-    if (in_vec.size() < i) {
-        throw std::invalid_argument(
-            "get_i_not_equal(): specified \"i\" position "
-            "larger than input vector");
-    }
-
-    unsigned int cont = 0;
-    for (auto const &each : in_vec) {
-        bool each_bool = true;
-        for (auto const &query : query_vec) {
-            each_bool = each_bool && (each != query);
-        }
-        if (each_bool) {
-            ++cont;
-            if (cont >= i) {
-                return each;
-            }
-        }
-    }
-
-    // Fail
-    return i;
 }
 
 } // namespace ANA

@@ -9,19 +9,19 @@ bool read_static(std::string const &filename,
     std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
     std::string &sphere_proto, std::string &cylinder_proto,
     std::string &prism_proto, std::string const &include_CH_filename,
-    ANA_molecule &molecule_points, Point &cm,
-    std::vector<unsigned int> &aa_list, std::vector<unsigned int> &CA_indices,
-    std::vector<Point> &CAs_Points, std::vector<unsigned int> &include_CH_atoms,
-    Triang_Vector &CH_triangs, std::vector<unsigned int> &hetatm_atoms) {
+    ANA_molecule &molecule_points, Point &cm, std::vector<int> &aa_list,
+    std::vector<int> &CA_indices, std::vector<Point> &CAs_Points,
+    std::vector<int> &include_CH_atoms, Triang_Vector &CH_triangs,
+    std::vector<int> &hetatm_atoms) {
 
     bool requested_CH = false;
-    std::vector<unsigned int> exclude_ca_for_ASA, include_CH_aa;
+    std::vector<int> exclude_ca_for_ASA, include_CH_aa;
     std::string elmnt;
     std::vector<Point> incl_area_points;
     Finite_vertices_iterator fv_ite;
     // For: // Sort "molecule_points" according to atom indices. Needed for
     // wall_output in MD
-    std::vector<unsigned int> atom_indices_to_sort;
+    std::vector<int> atom_indices_to_sort;
 
     // Read PDB
     chemfiles::Trajectory input_pdb_traj(filename);
@@ -29,7 +29,7 @@ bool read_static(std::string const &filename,
     auto in_xyz = input_pdb_frame.positions();
     chemfiles::Topology input_pdb_top = input_pdb_frame.topology();
     // get center of mass
-    unsigned int const natoms = input_pdb_top.natoms();
+    int const natoms = input_pdb_top.natoms();
     cm = getCM(in_xyz, natoms);
     // Turn list of aminoacids and atoms from strings to vectors of ints.
     bool const listed_included_aa = adapt_AA_list(aa_list_proto, aa_list);
@@ -487,17 +487,16 @@ bool read_static(std::string const &filename,
 // Read coordinates in netcdf format.
 void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
     std::string const &sphere_proto, std::string const &cylinder_proto,
-    std::string const &prism_proto,
-    const std::vector<unsigned int> &hetatm_atoms,
-    std::vector<unsigned int> &include_CH_atoms,
-    std::string const &include_CH_filename, Triang_Vector &CH_triangs,
-    std::string const &ASA_method, const std::vector<unsigned int> &CA_indices,
-    std::vector<Point> &CAs_points, ANA_molecule &molecule_points) {
-    unsigned int i;
+    std::string const &prism_proto, const std::vector<int> &hetatm_atoms,
+    std::vector<int> &include_CH_atoms, std::string const &include_CH_filename,
+    Triang_Vector &CH_triangs, std::string const &ASA_method,
+    const std::vector<int> &CA_indices, std::vector<Point> &CAs_points,
+    ANA_molecule &molecule_points) {
+    int i;
     Point p1;
 
     // Get positions. Discard hetatms if so requested.
-    unsigned int const natoms = molecule_points.size();
+    int const natoms = molecule_points.size();
     auto in_xyz = in_frame.positions();
     if (hetatm_atoms.size() != 0) {
         auto ite_beg = hetatm_atoms.begin();
@@ -564,13 +563,13 @@ void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
 }
 
 // Get the center of mass from a chemfiles molecule.
-inline Point getCM(const chemfiles::span<chemfiles::Vector3D> &in_xyz,
-    unsigned int const natoms) {
+inline Point getCM(
+    const chemfiles::span<chemfiles::Vector3D> &in_xyz, int const natoms) {
     double x_cm = 0;
     double y_cm = 0;
     double z_cm = 0;
 
-    for (unsigned int i = 0; i < natoms; ++i) {
+    for (std::size_t i = 0; i < natoms; ++i) {
         x_cm += in_xyz[i][0];
         y_cm += in_xyz[i][1];
         z_cm += in_xyz[i][2];

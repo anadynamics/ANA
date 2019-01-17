@@ -1,6 +1,7 @@
 #ifndef ANA_PRIMITIVES_H
 #define ANA_PRIMITIVES_H
 
+#include <ANA/CGALUtils.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/Options.hpp>
 
@@ -12,12 +13,12 @@ public:
 
     Molecule(std::string const &filename, bool const atom_only);
 
-    unsigned int _natoms, _nres;
+    int _natoms, _nres;
     std::vector<std::pair<Point, VertexInfo>> _data;
     // Alpha carbon indices
-    std::vector<unsigned int> _alphaCarbons;
+    std::vector<int> _alphaCarbons;
     // Hetero-atoms indices
-    std::vector<unsigned int> _hetatms;
+    std::vector<int> _hetatms;
 };
 
 class Cavity {
@@ -30,11 +31,28 @@ public:
 
     Cavity(Molecule const &molecule, CellFilteringOptions const cell_opts);
 
+    void add_border_tetra(Point const &p0, Point const &p1, Point const &p2,
+        Point const &p3, double const vdw0);
+
+    void add_border_penta(Point const &p0, Point const &p1, Point const &p2,
+        Point const &p3, Point const &p4, Point const &p5, double const vdw0,
+        double const vdw1);
+
+    void add_border_penta(Point const &p0, Point const &p1, Point const &p2,
+        Point const &p3, Point const &p4, Point const &p5, double const vdw0,
+        double const vdw1, double const vdw2);
+
+    friend void draw(Cavity const &hueco, std::string const &filename);
+
     Delaunay _triangulation;
-    // Cells.
-    std::vector<Finite_cells_iterator> _all, _included, _inner, _intersecting,
-        _joint;
-    double _volume = 0, outer_volume = 0;
+    std::vector<Finite_cells_iterator> _all_cells, _included_cells;
+    double _volume = 0, _outer_volume = 0;
+
+private:
+    // Border polyhedrons from the cells that intersected the convex hull.
+    std::vector<Polyhedron> _border;
+    // Number of polyhedron vertices. Needed for output.
+    int _poly_vtx_cnt = 0;
 };
 
 // Tool for parsing a double from input file stringstream
@@ -68,13 +86,6 @@ inline bool refine_cell_areas(
     bool const larger = (f0 > top || f1 > top || f2 > top || f3 > top);
 
     return larger;
-}
-
-// Just calculate volume of the cell.
-inline double cell_volume(Finite_cells_iterator const &cell_iterator) {
-    return CGAL::to_double(CGAL::volume(cell_iterator->vertex(0)->point(),
-        cell_iterator->vertex(1)->point(), cell_iterator->vertex(2)->point(),
-        cell_iterator->vertex(3)->point()));
 }
 
 }

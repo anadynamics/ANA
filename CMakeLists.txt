@@ -20,13 +20,15 @@ endif()
 add_executable(ANA "")
 target_sources(ANA
     PRIVATE
-        src/main.cpp
+        src/CGALUtils.cpp
         src/ConvexHull.cpp
+        src/ConvexHullFunctions.cpp
         src/main.cpp
         src/MD.cpp
         src/Modes.cpp
         src/NDD.cpp
         src/NDDUtils.cpp
+        src/PDB.cpp
         src/Primitives.cpp
         src/ProgramOptions.cpp
         src/Read.cpp
@@ -34,6 +36,8 @@ target_sources(ANA
         src/Utils.cpp
         src/Write.cpp
 
+        include/ANA/CGALUtils.hpp
+        include/ANA/ConvexHullFunctions.hpp
         include/ANA/ConvexHull.hpp
         include/ANA/Includes.hpp
         include/ANA/MD.hpp
@@ -41,7 +45,7 @@ target_sources(ANA
         include/ANA/NDD.hpp
         include/ANA/NDDUtils.hpp
         include/ANA/Options.hpp
-        include/ANA/pch.sh
+        include/ANA/PDB.hpp
         include/ANA/Primitives.hpp
         include/ANA/ProgramOptions.hpp
         include/ANA/Read.hpp
@@ -65,7 +69,7 @@ add_subdirectory(chemfiles EXCLUDE_FROM_ALL)
 target_link_libraries(ANA PRIVATE chemfiles)
 
 message("${Magenta}Using chemfiles's fmt header-only library.${ColourReset}")
-include_directories(build/external/chemfiles/external/fmt)
+include_directories(build/chemfiles/external/fmt)
 
 target_include_directories(ANA
     PRIVATE
@@ -79,3 +83,12 @@ cotire(ANA)
 
 target_compile_options(ANA PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_features(ANA PRIVATE cxx_std_17)
+
+option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." ON)
+if (${FORCE_COLORED_OUTPUT})
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        target_compile_options(ANA PRIVATE -fdiagnostics-color=always)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        target_compile_options(ANA PRIVATE -fcolor-diagnostics)
+    endif ()
+endif ()

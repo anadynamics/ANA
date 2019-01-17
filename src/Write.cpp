@@ -8,7 +8,7 @@ std::ofstream out_vol_stream;
 void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
     std::string const &out_filename) {
 
-    unsigned int atom_cnt = 4;
+    int atom_cnt = 4;
     // Write PDB header.
     chemfiles::Topology ana_void_top;
     chemfiles::Frame ana_void_frame;
@@ -47,11 +47,11 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
     }
 
     // Now, the polyhedron of the intersecting cells, if there are any.
-    unsigned int res_cnt = atom_cnt * 0.25;
+    int res_cnt = atom_cnt * 0.25;
     atom_cnt -= 4;
     for (auto const &polyhedron : polys) {
         P_Facet_const_iterator fc_end = polyhedron.facets_end();
-        unsigned int first_atom = atom_cnt;
+        int first_atom = atom_cnt;
 
         for (P_Facet_const_iterator fc_ite = polyhedron.facets_begin();
              fc_ite != fc_end; ++fc_ite) {
@@ -88,7 +88,7 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
 // void draw_raw_PDB(NA_Vector const &pocket, const Poly_Vector &polys,
 //     std::string out_filename) {
 
-//     unsigned int atom_cnt = 4;
+//     int atom_cnt = 4;
 //     // Write PDB header
 //     chemfiles::Topology ana_void_top;
 //     chemfiles::Frame ana_void_frame;
@@ -127,11 +127,11 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
 //     }
 
 //     // Now, the polyhedron of the intersecting cells.
-//     unsigned int res_cnt = atom_cnt * 0.25;
+//     int res_cnt = atom_cnt * 0.25;
 //     atom_cnt -= 4;
 //     for (auto const &polyhedron : polys) {
 //         P_Facet_const_iterator fc_end = polyhedron.facets_end();
-//         unsigned int first_atom = atom_cnt;
+//         int first_atom = atom_cnt;
 
 //         for (P_Facet_const_iterator fc_ite = polyhedron.facets_begin();
 //              fc_ite != fc_end; ++fc_ite) {
@@ -167,13 +167,13 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
 // Draw pockets in .PDB format. MD version, whole trajectory.
 void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
     const Poly_Matrix &list_of_polys, std::string &out_filename,
-    unsigned int const max_atom_cnt) {
+    int const max_atom_cnt) {
 
     out_filename.append(".pdb");
     auto out_traj = chemfiles::Trajectory(out_filename, 'w');
 
     for (size_t i = 0; i < list_of_pockets.size(); i++) {
-        unsigned int atom_cnt = 4;
+        int atom_cnt = 4;
         // Write PDB header.
         chemfiles::Topology ana_void_top;
         chemfiles::Frame ana_void_frame;
@@ -212,7 +212,7 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
             atom_cnt += 4;
         }
 
-        unsigned int res_cnt = atom_cnt * 0.25;
+        int res_cnt = atom_cnt * 0.25;
 
         if (list_of_polys.size() != 0) {
             atom_cnt -= 4;
@@ -220,7 +220,7 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
             for (auto const &polyhedron : list_of_polys[i]) {
                 P_Vertex_const_iterator v_end = polyhedron.vertices_end();
                 P_Vertex_const_iterator v_beg = polyhedron.vertices_begin();
-                unsigned int first_atom = atom_cnt;
+                int first_atom = atom_cnt;
 
                 for (P_Vertex_const_iterator v_ite = v_beg; v_ite != v_end;
                      ++v_ite) {
@@ -242,8 +242,8 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
                     }
                 } else if ((atom_cnt - first_atom) == 12) {
                     // These polyhedron is composed of 3 tetrahedrons.
-                    unsigned int const low_treshold = first_atom + 4,
-                                       hi_treshold = first_atom + 8;
+                    int const low_treshold = first_atom + 4,
+                              hi_treshold = first_atom + 8;
 
                     for (size_t j = first_atom; j < low_treshold - 1; j++) {
                         for (size_t k = j + 1; k < low_treshold; k++) {
@@ -296,13 +296,12 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
 void draw_grid_pdb(const NDD_Matrix &list_of_pockets,
     const Poly_Matrix &list_of_polys,
     const std::vector<std::array<double, 3>> &in_vtces_radii,
-    const std::vector<std::vector<unsigned int>> &list_intersecting_total,
-    unsigned int const sphere_count, unsigned int const precision,
-    std::string &out_filename) {
+    const std::vector<std::vector<int>> &list_intersecting_total,
+    int const sphere_count, int const precision, std::string &out_filename) {
 
     // Write PDB header.
-    unsigned int frame_nbr = list_of_pockets.size(), max_atom_cnt = 0;
-    std::vector<unsigned int> atom_cnt_list(frame_nbr), res_cnt_list(frame_nbr);
+    int frame_nbr = list_of_pockets.size(), max_atom_cnt = 0;
+    std::vector<int> atom_cnt_list(frame_nbr), res_cnt_list(frame_nbr);
 
     std::vector<chemfiles::Frame> list_ana_void_frame(frame_nbr);
     std::vector<chemfiles::Topology> list_ana_void_top(frame_nbr);
@@ -310,7 +309,7 @@ void draw_grid_pdb(const NDD_Matrix &list_of_pockets,
     auto out_traj = chemfiles::Trajectory(out_filename, 'w');
 
     for (size_t i = 0; i < frame_nbr; i++) {
-        unsigned int res_cnt = 0;
+        int res_cnt = 0;
         chemfiles::Topology ana_void_top;
         chemfiles::Frame ana_void_frame;
         atom_cnt_list[i] = make_grid_pdb(list_of_pockets[i], ana_void_top,
@@ -355,12 +354,12 @@ void draw_grid_pdb(const NDD_Matrix &list_of_pockets,
 }
 
 // Draw cells as dots in a PDB. Using "NDD_Vector" data structure.
-unsigned int make_grid_pdb(NDD_Vector const &cells_to_draw,
+int make_grid_pdb(NDD_Vector const &cells_to_draw,
     chemfiles::Topology &ana_void_top, chemfiles::Frame &ana_void_frame,
-    unsigned int const sphere_count, unsigned int &res_cnt) {
+    int const sphere_count, int &res_cnt) {
 
-    unsigned int n = sphere_count, atom_cnt_old, atom_cnt = 0;
-    unsigned int const corner = (int)(sphere_count / 3);
+    int n = sphere_count, atom_cnt_old, atom_cnt = 0;
+    int const corner = (int)(sphere_count / 3);
 
     for (auto const &cell : cells_to_draw) {
         atom_cnt_old = atom_cnt;
@@ -384,11 +383,11 @@ unsigned int make_grid_pdb(NDD_Vector const &cells_to_draw,
         std::array<double, 3> p3_ = {CGAL::to_double(p3.x()),
             CGAL::to_double(p3.y()), CGAL::to_double(p3.z())};
 
-        for (unsigned int i = 0; i < sphere_count; i++) {
-            for (unsigned int j = 0; j <= sphere_count - i; j++) {
-                for (unsigned int k = 0; k <= sphere_count - i - j; k++) {
+        for (std::size_t i = 0; i < sphere_count; i++) {
+            for (std::size_t j = 0; j <= sphere_count - i; j++) {
+                for (std::size_t k = 0; k <= sphere_count - i - j; k++) {
                     std::array<double, 3> point;
-                    unsigned int l = n - i - j - k;
+                    int l = n - i - j - k;
 
                     point[0] =
                         (i * p0_[0] + j * p1_[0] + k * p2_[0] + l * p3_[0]) / n;
@@ -445,17 +444,16 @@ unsigned int make_grid_pdb(NDD_Vector const &cells_to_draw,
 }
 
 // Draw a vector of polyhedrons as dots in a PDB.
-unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
+int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
     chemfiles::Frame &ana_void_frame,
     const std::vector<std::array<double, 3>> &in_vtces_radii,
-    const std::vector<unsigned int> &intersecting_total,
-    const Poly_Vector &CH_vec, double const sphere_count, unsigned int atom_cnt,
-    unsigned int &res_cnt) {
+    const std::vector<int> &intersecting_total, const Poly_Vector &CH_vec,
+    double const sphere_count, int atom_cnt, int &res_cnt) {
 
-    unsigned int n = sphere_count, atom_cnt_old;
-    unsigned int const corner = (int)(sphere_count / 3);
+    int n = sphere_count, atom_cnt_old;
+    int const corner = (int)(sphere_count / 3);
 
-    for (unsigned int ii = 0; ii < CH_vec.size(); ++ii) {
+    for (std::size_t ii = 0; ii < CH_vec.size(); ++ii) {
 
         atom_cnt_old = atom_cnt;
         ++res_cnt;
@@ -480,11 +478,11 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
                 CGAL::to_double(points[2].y()), CGAL::to_double(points[2].z())};
             std::array<double, 3> p3_ = {CGAL::to_double(points[3].x()),
                 CGAL::to_double(points[3].y()), CGAL::to_double(points[3].z())};
-            for (unsigned int i = 0; i < sphere_count; i++) {
-                for (unsigned int j = 0; j <= sphere_count - i; j++) {
-                    for (unsigned int k = 0; k <= sphere_count - i - j; k++) {
+            for (std::size_t i = 0; i < sphere_count; i++) {
+                for (std::size_t j = 0; j <= sphere_count - i; j++) {
+                    for (std::size_t k = 0; k <= sphere_count - i - j; k++) {
                         std::array<double, 3> point;
-                        unsigned int l = n - i - j - k;
+                        int l = n - i - j - k;
 
                         point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                        l * p3_[0]) /
@@ -519,7 +517,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
             // This polyhedron comprises 3 tetrahedrons from the intersection of
             // a
             // cell with 2 vtces inside the included area
-            for (unsigned int jj = 0; jj < 3; ++jj) {
+            for (std::size_t jj = 0; jj < 3; ++jj) {
                 std::array<double, 3> p0_ = {
                     CGAL::to_double(points[(jj * 4) + 0].x()),
                     CGAL::to_double(points[(jj * 4) + 0].y()),
@@ -536,12 +534,12 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
                     CGAL::to_double(points[(jj * 4) + 3].x()),
                     CGAL::to_double(points[(jj * 4) + 3].y()),
                     CGAL::to_double(points[(jj * 4) + 3].z())};
-                for (unsigned int i = 0; i < sphere_count; i++) {
-                    for (unsigned int j = 0; j <= sphere_count - i; j++) {
-                        for (unsigned int k = 0; k <= sphere_count - i - j;
+                for (std::size_t i = 0; i < sphere_count; i++) {
+                    for (std::size_t j = 0; j <= sphere_count - i; j++) {
+                        for (std::size_t k = 0; k <= sphere_count - i - j;
                              k++) {
                             std::array<double, 3> point;
-                            unsigned int l = n - i - j - k;
+                            int l = n - i - j - k;
 
                             point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                            l * p3_[0]) /
@@ -615,7 +613,7 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
             // This polyhedron comprises 3 tetrahedrons from the intersection of
             // a
             // cell with 3 vtces inside the included area
-            for (unsigned int jj = 0; jj < 3; ++jj) {
+            for (std::size_t jj = 0; jj < 3; ++jj) {
                 std::array<double, 3> p0_ = {
                     CGAL::to_double(points[(jj * 4) + 0].x()),
                     CGAL::to_double(points[(jj * 4) + 0].y()),
@@ -632,12 +630,12 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
                     CGAL::to_double(points[(jj * 4) + 3].x()),
                     CGAL::to_double(points[(jj * 4) + 3].y()),
                     CGAL::to_double(points[(jj * 4) + 3].z())};
-                for (unsigned int i = 0; i < sphere_count; i++) {
-                    for (unsigned int j = 0; j <= sphere_count - i; j++) {
-                        for (unsigned int k = 0; k <= sphere_count - i - j;
+                for (std::size_t i = 0; i < sphere_count; i++) {
+                    for (std::size_t j = 0; j <= sphere_count - i; j++) {
+                        for (std::size_t k = 0; k <= sphere_count - i - j;
                              k++) {
                             std::array<double, 3> point;
-                            unsigned int l = n - i - j - k;
+                            int l = n - i - j - k;
 
                             point[0] = (i * p0_[0] + j * p1_[0] + k * p2_[0] +
                                            l * p3_[0]) /
@@ -736,11 +734,10 @@ unsigned int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
 // version.
 void draw_grid_pdb(NA_Vector const &pocket,
     const std::vector<std::array<double, 3>> &in_vtces_radii,
-    const std::vector<unsigned int> &intersecting_total,
-    const Poly_Vector &polys, std::string &out_filename,
-    unsigned int const sphere_count, unsigned int const precision) {
+    const std::vector<int> &intersecting_total, const Poly_Vector &polys,
+    std::string &out_filename, int const sphere_count, int const precision) {
     // Write PDB header.
-    unsigned int res_cnt = 0;
+    int res_cnt = 0;
     chemfiles::Topology ana_void_top;
     chemfiles::Frame ana_void_frame;
     auto out_traj = chemfiles::Trajectory(out_filename, 'w');
@@ -761,12 +758,12 @@ void draw_grid_pdb(NA_Vector const &pocket,
 }
 
 // Draw cells as dots in a PDB. Using CGAL Cell data structure.
-unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
+int make_grid_pdb(NA_Vector const &cells_to_draw,
     chemfiles::Topology &ana_void_top, chemfiles::Frame &ana_void_frame,
-    unsigned int const sphere_count, unsigned int &res_cnt) {
+    int const sphere_count, int &res_cnt) {
 
-    unsigned int n = sphere_count, atom_cnt_old, atom_cnt = 0;
-    unsigned int const corner = (int)(sphere_count / 3);
+    int n = sphere_count, atom_cnt_old, atom_cnt = 0;
+    int const corner = (int)(sphere_count / 3);
 
     for (auto const &ac_ite : cells_to_draw) {
         atom_cnt_old = atom_cnt;
@@ -790,11 +787,11 @@ unsigned int make_grid_pdb(NA_Vector const &cells_to_draw,
         std::array<double, 3> p3_ = {CGAL::to_double(p3.x()),
             CGAL::to_double(p3.y()), CGAL::to_double(p3.z())};
 
-        for (unsigned int i = 0; i < sphere_count; i++) {
-            for (unsigned int j = 0; j <= sphere_count - i; j++) {
-                for (unsigned int k = 0; k <= sphere_count - i - j; k++) {
+        for (std::size_t i = 0; i < sphere_count; i++) {
+            for (std::size_t j = 0; j <= sphere_count - i; j++) {
+                for (std::size_t k = 0; k <= sphere_count - i - j; k++) {
                     std::array<double, 3> point;
-                    unsigned int l = n - i - j - k;
+                    int l = n - i - j - k;
 
                     point[0] =
                         (i * p0_[0] + j * p1_[0] + k * p2_[0] + l * p3_[0]) / n;
@@ -864,7 +861,7 @@ inline void header_PDB(
 
 // Construct a residue object with 4 atoms starting at index cell_cnt
 inline chemfiles::Residue make_cell_residue(
-    unsigned int const cell_cnt, unsigned int const atom_cnt) {
+    int const cell_cnt, int const atom_cnt) {
     // Each cell will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", cell_cnt);
     // Create all cell "atoms"
@@ -876,12 +873,12 @@ inline chemfiles::Residue make_cell_residue(
 }
 
 // Construct a residue object with atoms from 'first_atom' to 'atom_cnt'
-inline chemfiles::Residue make_polyhedron_residue(unsigned int const res_cnt,
-    unsigned int const first_atom, unsigned int const atom_cnt) {
+inline chemfiles::Residue make_polyhedron_residue(
+    int const res_cnt, int const first_atom, int const atom_cnt) {
     // Each polyhedron will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", res_cnt);
 
-    for (unsigned int i = first_atom; i < atom_cnt; i++) {
+    for (std::size_t i = first_atom; i < atom_cnt; i++) {
         pocket_res.add_atom(i);
     }
 
@@ -889,12 +886,12 @@ inline chemfiles::Residue make_polyhedron_residue(unsigned int const res_cnt,
 }
 
 // Construct a residue object for grid output
-inline chemfiles::Residue make_grid_residue(unsigned int const atom_cnt_old,
-    unsigned int const atom_cnt, unsigned int const res_cnt) {
+inline chemfiles::Residue make_grid_residue(
+    int const atom_cnt_old, int const atom_cnt, int const res_cnt) {
     // Each cell will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", res_cnt);
     // Create all cell "atoms"
-    for (unsigned int i = atom_cnt_old; i < atom_cnt; ++i) {
+    for (std::size_t i = atom_cnt_old; i < atom_cnt; ++i) {
         pocket_res.add_atom(i);
     }
     return pocket_res;
@@ -902,7 +899,7 @@ inline chemfiles::Residue make_grid_residue(unsigned int const atom_cnt_old,
 
 // Connect a residue object with the atoms starting at index cell_cnt
 inline void connect_cell_residue(
-    chemfiles::Topology &topology, unsigned int const atom_index) {
+    chemfiles::Topology &topology, int const atom_index) {
     topology.add_bond(atom_index - 4, atom_index - 3);
     topology.add_bond(atom_index - 4, atom_index - 2);
     topology.add_bond(atom_index - 4, atom_index - 1);
@@ -913,8 +910,7 @@ inline void connect_cell_residue(
 }
 
 // Connect a facet of a polyhedron with the atoms starting at index atom_index
-inline void connect_facet(
-    chemfiles::Topology &topology, unsigned int const atom_index) {
+inline void connect_facet(chemfiles::Topology &topology, int const atom_index) {
 
     topology.add_bond(atom_index, atom_index + 1);
     topology.add_bond(atom_index, atom_index + 2);
@@ -934,7 +930,7 @@ void draw_CH(const Polyhedron &CH, std::string &out_filename) {
     chemfiles::Trajectory out_trj(out_filename, 'w');
     chemfiles::Frame out_frm;
     chemfiles::Topology out_top;
-    unsigned int atom_cnt = 0;
+    int atom_cnt = 0;
 
     for (P_Facet_const_iterator fc_ite = CH.facets_begin();
          fc_ite != fc_ite_end; ++fc_ite) {
@@ -966,7 +962,7 @@ void draw_CH(Triang_Vector const &CH_triang, std::string &out_filename) {
     chemfiles::Trajectory out_trj(out_filename, 'w');
     chemfiles::Frame out_frm;
     chemfiles::Topology out_top;
-    unsigned int atom_cnt = 0;
+    int atom_cnt = 0;
 
     for (auto const &triangle : CH_triang) {
         for (size_t i = 0; i < 3; i++) {
@@ -992,7 +988,7 @@ void draw_CH(Triang_Vector const &CH_triang, chemfiles::Trajectory &out_traj) {
 
     chemfiles::Frame out_frm;
     chemfiles::Topology out_top;
-    unsigned int atom_cnt = 0;
+    int atom_cnt = 0;
 
     for (auto const &triangle : CH_triang) {
         for (size_t i = 0; i < 3; i++) {
@@ -1017,11 +1013,10 @@ void draw_CH(Triang_Vector const &CH_triang, chemfiles::Trajectory &out_traj) {
 void wall_atom_output(std::ofstream &wall_out, NA_Vector const &in_cells,
     NA_Vector const &in_intersecting_cells,
     const std::vector<std::array<bool, 4>> intersecting_bool,
-    bool const requested_CH, unsigned int const precision,
-    unsigned int const pock_cnt, unsigned int const frame_cnt,
-    std::string const &list_wall_separator) {
+    bool const requested_CH, int const precision, int const pock_cnt,
+    int const frame_cnt, std::string const &list_wall_separator) {
 
-    std::vector<unsigned int> wall_aa_idx, wall_atom_idx;
+    std::vector<int> wall_aa_idx, wall_atom_idx;
     std::vector<std::string> wall_aa_id;
     // Pocket ID
     std::string pock_out_filename = "pocket_";
@@ -1044,11 +1039,10 @@ void wall_atom_output(std::ofstream &wall_out, NA_Vector const &in_cells,
 void wall_aa_output(std::ofstream &wall_out, NA_Vector const &in_cells,
     NA_Vector const &in_intersecting_cells,
     const std::vector<std::array<bool, 4>> intersecting_bool,
-    bool const requested_CH, unsigned int const precision,
-    unsigned int const pock_cnt, unsigned int const frame_cnt,
-    std::string const &list_wall_separator) {
+    bool const requested_CH, int const precision, int const pock_cnt,
+    int const frame_cnt, std::string const &list_wall_separator) {
 
-    std::vector<unsigned int> wall_aa_idx;
+    std::vector<int> wall_aa_idx;
     std::vector<std::string> wall_aa_id;
     std::string pock_out_filename = "pocket_";
     pock_out_filename.append(std::to_string(pock_cnt));
@@ -1069,16 +1063,15 @@ void wall_aa_output(std::ofstream &wall_out, NA_Vector const &in_cells,
 
 // Get names and indices of participating atoms and amino acids
 void get_info_cell(NA_Vector const &null_areas_vtor,
-    std::vector<unsigned int> &wall_aa_idx,
-    std::vector<std::string> &wall_aa_id,
-    std::vector<unsigned int> &wall_atom_idx) {
+    std::vector<int> &wall_aa_idx, std::vector<std::string> &wall_aa_id,
+    std::vector<int> &wall_atom_idx) {
 
-    std::vector<unsigned int>::iterator a_idx;
-    unsigned int atom_idx, a;
+    std::vector<int>::iterator a_idx;
+    int atom_idx, a;
     VertexInfo v_info;
 
     for (auto const &cell : null_areas_vtor) {
-        for (unsigned int i = 0; i < 3; i++) {
+        for (std::size_t i = 0; i < 3; i++) {
             // Get Info data structure
             v_info = cell->vertex(i)->info();
             // Get Atom Index
@@ -1113,16 +1106,15 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
 // intersecting cells
 void get_info_cell(NA_Vector const &cavity_intersecting_cells,
     const std::vector<std::array<bool, 4>> &intersecting_bool,
-    std::vector<unsigned int> &wall_aa_idx,
-    std::vector<std::string> &wall_aa_id,
-    std::vector<unsigned int> &wall_atom_idx) {
+    std::vector<int> &wall_aa_idx, std::vector<std::string> &wall_aa_id,
+    std::vector<int> &wall_atom_idx) {
 
-    std::vector<unsigned int>::iterator a_idx;
-    unsigned int atom_idx, a, ii = 0;
+    std::vector<int>::iterator a_idx;
+    int atom_idx, a, ii = 0;
     VertexInfo v_info;
 
     for (auto const &cell : cavity_intersecting_cells) {
-        for (unsigned int i = 0; i < 3; i++) {
+        for (std::size_t i = 0; i < 3; i++) {
             if (intersecting_bool[ii][i]) {
                 // This vtx is outside the included area
                 continue;
@@ -1160,15 +1152,14 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
 
 // Get names and indices of participating amino acids.
 void get_info_cell(NA_Vector const &null_areas_vtor,
-    std::vector<unsigned int> &wall_aa_idx,
-    std::vector<std::string> &wall_aa_id) {
+    std::vector<int> &wall_aa_idx, std::vector<std::string> &wall_aa_id) {
 
-    std::vector<unsigned int>::iterator r_idx;
-    unsigned int res_idx, r;
+    std::vector<int>::iterator r_idx;
+    int res_idx, r;
     VertexInfo v_info;
 
     for (auto const &cell : null_areas_vtor) {
-        for (unsigned int i = 0; i < 3; i++) {
+        for (std::size_t i = 0; i < 3; i++) {
             // Get Info data structure
             v_info = cell->vertex(i)->info();
             // Get residue Index
@@ -1199,15 +1190,14 @@ void get_info_cell(NA_Vector const &null_areas_vtor,
 // Get names and indices of participating amino acids from intersecting cells
 void get_info_cell(NA_Vector const &cavity_intersecting_cells,
     const std::vector<std::array<bool, 4>> &intersecting_bool,
-    std::vector<unsigned int> &wall_aa_idx,
-    std::vector<std::string> &wall_aa_id) {
+    std::vector<int> &wall_aa_idx, std::vector<std::string> &wall_aa_id) {
 
-    std::vector<unsigned int>::iterator r_idx;
-    unsigned int res_idx, r, ii = 0;
+    std::vector<int>::iterator r_idx;
+    int res_idx, r, ii = 0;
     VertexInfo v_info;
 
     for (auto const &cell : cavity_intersecting_cells) {
-        for (unsigned int i = 0; i < 3; i++) {
+        for (std::size_t i = 0; i < 3; i++) {
             if (intersecting_bool[ii][i]) {
                 // This vtx is outside the included area
                 continue;
@@ -1243,13 +1233,12 @@ void get_info_cell(NA_Vector const &cavity_intersecting_cells,
 
 // Write wall amino acids and atoms
 void write_wall_file(std::ofstream &pock_out_file,
-    std::string const &pock_out_filename,
-    const std::vector<unsigned int> &wall_aa_idx,
+    std::string const &pock_out_filename, const std::vector<int> &wall_aa_idx,
     const std::vector<std::string> &wall_aa_id,
-    const std::vector<unsigned int> &wall_atom_idx,
-    unsigned int const frame_cnt, std::string const &list_wall_separator) {
+    const std::vector<int> &wall_atom_idx, int const frame_cnt,
+    std::string const &list_wall_separator) {
 
-    unsigned int atom_length = wall_atom_idx.size();
+    int atom_length = wall_atom_idx.size();
 
     if (pock_out_file.is_open()) {
         // Header
@@ -1257,17 +1246,17 @@ void write_wall_file(std::ofstream &pock_out_file,
 
         pock_out_file << '\n' << "ATOM |\t";
         pock_out_file << wall_atom_idx[0];
-        for (unsigned int i = 1; i < atom_length; ++i) {
+        for (std::size_t i = 1; i < atom_length; ++i) {
             pock_out_file << list_wall_separator << wall_atom_idx[i];
         }
         pock_out_file << '\n' << "RESN |\t";
         pock_out_file << wall_aa_id[0];
-        for (unsigned int i = 1; i < atom_length; ++i) {
+        for (std::size_t i = 1; i < atom_length; ++i) {
             pock_out_file << list_wall_separator << wall_aa_id[i];
         }
         pock_out_file << '\n' << "RESI |\t";
         pock_out_file << wall_aa_idx[0];
-        for (unsigned int i = 1; i < atom_length; ++i) {
+        for (std::size_t i = 1; i < atom_length; ++i) {
             pock_out_file << list_wall_separator << wall_aa_idx[i];
         }
 
@@ -1282,12 +1271,11 @@ void write_wall_file(std::ofstream &pock_out_file,
 
 // Write wall amino acids
 void write_wall_file(std::ofstream &pock_out_file,
-    std::string const &pock_out_filename,
-    const std::vector<unsigned int> &wall_aa_idx,
-    const std::vector<std::string> &wall_aa_id, unsigned int const frame_cnt,
+    std::string const &pock_out_filename, const std::vector<int> &wall_aa_idx,
+    const std::vector<std::string> &wall_aa_id, int const frame_cnt,
     std::string const &list_wall_separator) {
 
-    unsigned int resi_length = wall_aa_idx.size();
+    int resi_length = wall_aa_idx.size();
 
     if (pock_out_file.is_open()) {
         // Header
@@ -1295,7 +1283,7 @@ void write_wall_file(std::ofstream &pock_out_file,
 
         pock_out_file << '\n' << "RESN |\t";
         pock_out_file << wall_aa_id[0];
-        for (unsigned int i = 1; i < resi_length; ++i) {
+        for (std::size_t i = 1; i < resi_length; ++i) {
             pock_out_file << list_wall_separator << wall_aa_id[i];
         }
 
@@ -1303,7 +1291,7 @@ void write_wall_file(std::ofstream &pock_out_file,
         pock_out_file << "RESI |\t";
 
         pock_out_file << wall_aa_idx[0];
-        for (unsigned int i = 1; i < resi_length; ++i) {
+        for (std::size_t i = 1; i < resi_length; ++i) {
             pock_out_file << list_wall_separator << wall_aa_idx[i];
         }
 
@@ -1330,7 +1318,7 @@ void open_vol_file(std::string const &out_vol) {
 // Final function to output volume. NA_Matrix (static) version.
 void write_output_volume(NA_Matrix const &null_areas_vt_mt, double poly_vol) {
 
-    unsigned int pock_cnt = 1;
+    int pock_cnt = 1;
     if (out_vol_stream.is_open()) {
         for (NA_Vector const &null_areas_vtor : null_areas_vt_mt) {
             double const volume = ANA::get_void_volume(null_areas_vtor);
@@ -1363,7 +1351,7 @@ void write_output_volume(
 
 // Final function to output volume. NA_Vector (MD) version.
 void write_output_volume(NA_Vector const &null_areas_vtor,
-    double const poly_vol, unsigned int const frame_cnt) {
+    double const poly_vol, int const frame_cnt) {
 
     double const volume = ANA::get_void_volume(null_areas_vtor);
     if (out_vol_stream.is_open()) {

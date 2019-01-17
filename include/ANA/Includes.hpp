@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <boost/program_options.hpp>
 #include <cmath>
+#include <fmt/format.h>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -34,15 +35,15 @@ struct VertexInfo {
 public:
     VertexInfo() = default;
 
-    VertexInfo(unsigned int const index, double const radius,
-        unsigned int const resn, std::string_view const resi) :
+    VertexInfo(int const index, double const radius, int const resn,
+        std::string_view const resi) :
         _index(index),
         _radius(radius), _resn(resn), _resi(resi) {}
 
-    unsigned int _index;
+    int _index;
     double _radius;
     // atom's residue number
-    unsigned int _resn;
+    int _resn;
     // atom's residue name in 3 letter format
     std::string _resi;
 };
@@ -107,7 +108,7 @@ using NDD_Vector = std::vector<NDD_Element>;
 // Pocket
 using NDD_Matrix = std::vector<NDD_Vector>;
 // All voids
-using NDD_IElement = std::array<unsigned int, 4>;
+using NDD_IElement = std::array<int, 4>;
 // Cell indices
 using NDD_IVector = std::vector<NDD_IElement>;
 // Pocket indices

@@ -12,16 +12,16 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
     std::string &out_filename, std::string const &out_type,
     bool const triangulate_only_included_aas, bool const atom_only,
     CellFilteringOptions const cell_opts, double const max_probe,
-    double const max_probe_length, unsigned int const sphere_count,
-    unsigned int const nbr_of_vertices_to_include,
-    unsigned int const clusters_min_size, unsigned int const precision) {
+    double const max_probe_length, int const sphere_count,
+    int const nbr_of_vertices_to_include, int const clusters_min_size,
+    int const precision) {
 
     // atom_cnt_poly is for MD only.
-    unsigned int atom_cnt_poly = 0;
+    int atom_cnt_poly = 0;
     double poly_vol = 0;
     std::vector<Point> CAs_Points;
     ANA_molecule molecule_points;
-    std::vector<unsigned int> AA_indices, CA_indices, include_CH_atoms;
+    std::vector<int> AA_indices, CA_indices, include_CH_atoms;
     Point cm;
     Triang_Vector CH_triangs;
     NA_Vector cavity_cells, cavity_included_cells, cavity_void_cells,
@@ -29,9 +29,9 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
     NA_Matrix null_areas_mtx;
     Poly_Vector border_poly;
     std::vector<std::array<bool, 4>> intersecting_bool;
-    std::vector<unsigned int> intersecting_total;
-    std::vector<unsigned int> wall_aa_idx, wall_atom_idx;
-    std::vector<unsigned int> hetatm_atoms;
+    std::vector<int> intersecting_total;
+    std::vector<int> wall_aa_idx, wall_atom_idx;
+    std::vector<int> hetatm_atoms;
     std::vector<std::string> wall_aa_id;
     std::vector<std::array<double, 3>> in_vtces_radii;
 
@@ -95,7 +95,7 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
 
     if (out_filename != "none") {
         if (out_type == "raw_pdb") {
-            unsigned int pock_cnt = 1;
+            int pock_cnt = 1;
             for (NA_Vector const &null_areas_vtor : null_areas_mtx) {
                 // Get ready to write the pockets in different .pdbs
                 std::string pock_out_filename = out_filename;
@@ -108,7 +108,7 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
                 ++pock_cnt;
             }
         } else if (out_type == "grid_pdb") {
-            unsigned int pock_cnt = 1;
+            int pock_cnt = 1;
             for (NA_Vector const &null_areas_vtor : null_areas_mtx) {
                 // Get ready to write the pockets in different .pdbs
                 std::string pock_out_filename = out_filename;
@@ -124,7 +124,7 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
     }
 
     if (list_wall == "atom") {
-        unsigned int pock_cnt = 1;
+        int pock_cnt = 1;
         // Remove ".pdb"
         std::string filename = in_filename.substr(0, in_filename.size() - 4);
         filename.insert(0, "wall_");
@@ -136,7 +136,7 @@ int static_ANA(std::string const &in_filename, std::string &AA_indices_proto,
             ++pock_cnt;
         }
     } else if (list_wall == "residue") {
-        unsigned int pock_cnt = 1;
+        int pock_cnt = 1;
         // Remove ".pdb"
         std::string filename = in_filename.substr(0, in_filename.size() - 4);
         filename.insert(0, "wall_");

@@ -10,8 +10,8 @@ Molecule::Molecule(std::string const &filename, bool const atom_only) {
     auto const in_xyz = input_pdb_frame.positions();
     auto const input_pdb_top = input_pdb_frame.topology();
 
-    unsigned int const natoms = input_pdb_top.natoms();
-    unsigned int const nres = input_pdb_top.residues().size();
+    int const natoms = input_pdb_top.natoms();
+    int const nres = input_pdb_top.residues().size();
 
     _data.reserve(natoms);
     _alphaCarbons.reserve(nres);
@@ -32,8 +32,7 @@ Molecule::Molecule(std::string const &filename, bool const atom_only) {
             if (vdw_opt) {
                 vdw = vdw_opt.value();
             } else {
-                printf("Element for atom %i not available. Using Van Der "
-                       "Walls "
+                printf("Element for atom %i not available. Using Van Der Walls "
                        "radius of 1.5.\n",
                     static_cast<int>(i) + 1);
             }
@@ -61,12 +60,52 @@ Cavity::Cavity(Molecule const &molecule, CellFilteringOptions const cell_opts) {
     for (auto fc_ite = _triangulation.finite_cells_begin();
          fc_ite != fc_ite_end; ++fc_ite) {
 
-        double const vol = cell_volume(fc_ite);
+        double const vol = volume(fc_ite);
         if (vol > cell_opts._min_CV) {
-            _all.push_back(fc_ite);
+            _all_cells.push_back(fc_ite);
             _volume = _volume + vol;
         }
     }
+}
+
+void Cavity::add_border_tetra(Point const &p0, Point const &p1, Point const &p2,
+    Point const &p3, double const vdw0) {
+
+    double const vol =
+        volume(p0, p1, p2, p3) - sphere_sector_vol(p0, p1, p2, p3, vdw0);
+    _outer_volume += vol;
+
+    Polyhedron P;
+    P.make_tetrahedron(p0, p1, p2, p3);
+    _border.push_back(std::move(P));
+    _poly_vtx_cnt += 4;
+    return;
+}
+
+void Cavity::add_border_penta(Point const &p0, Point const &p1, Point const &p2,
+    Point const &p3, Point const &p4, Point const &p5, double const vdw0,
+    double const vdw1) {
+
+    Polyhedron P;
+    P.make_tetrahedron(p0, p1, p2, p3);
+    P.make_tetrahedron(p1, p2, p3, p4);
+    P.make_tetrahedron(p1, p3, p4, p5);
+    _border.push_back(std::move(P));
+    _poly_vtx_cnt += 12;
+    return;
+}
+
+void Cavity::add_border_penta(Point const &p0, Point const &p1, Point const &p2,
+    Point const &p3, Point const &p4, Point const &p5, double const vdw0,
+    double const vdw1, double const vdw2) {
+
+    Polyhedron P;
+    P.make_tetrahedron(p0, p1, p2, p3);
+    P.make_tetrahedron(p1, p2, p3, p4);
+    P.make_tetrahedron(p2, p3, p4, p5);
+    _border.push_back(std::move(P));
+    _poly_vtx_cnt += 12;
+    return;
 }
 
 // Tool for parsing a double from input file stringstream

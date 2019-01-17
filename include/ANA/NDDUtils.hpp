@@ -26,7 +26,7 @@ void ndd_read_PDB_get_cells(std::string const &filename,
 // NDD Specific function for PDB input. Hi precision method
 void ndd_read_PDB_get_cells(std::string const &filename,
     NDD_IVector const &in_void_cells_indices,
-    const std::vector<unsigned int> &include_CH_atoms, NDD_Vector &output_cells,
+    const std::vector<int> &include_CH_atoms, NDD_Vector &output_cells,
     Triang_Vector &CH_triangs);
 
 // Analytical NDD
@@ -35,8 +35,7 @@ void ndd(NA_Vector const &cavity_void_cells, NDDOptions const &NDD_opts);
 // Perform Non Delaunay Dynamics.
 void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
     std::string const &pdb_list, bool const precision,
-    const std::vector<unsigned int> include_CH_atoms,
-    std::string const &out_file);
+    const std::vector<int> include_CH_atoms, std::string const &out_file);
 
 // Get the indices of the atoms involved in the given cells
 NDD_IVector get_vertices(NA_Vector const &cavity_void_cells);
@@ -83,15 +82,14 @@ void ndd_discard_CH_0(NDD_Vector const &in_cells,
     Triang_Vector const &CH_triangs, NDD_Vector &out_cells,
     NDD_Vector &out_intersecting_cells,
     std::vector<std::array<bool, 4>> &intersecting_bool,
-    std::vector<unsigned int> &intersecting_total);
+    std::vector<int> &intersecting_total);
 
 // Discard parts of cells outside the specified triangulation using
 // intersecitons
 double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
     Triang_Vector const &CH_triangs,
     const std::vector<std::array<bool, 4>> &intersecting_bool,
-    const std::vector<unsigned int> &intersecting_total,
-    Poly_Vector &border_poly);
+    const std::vector<int> &intersecting_total, Poly_Vector &border_poly);
 
 } // namespace NDD:: ANA
 

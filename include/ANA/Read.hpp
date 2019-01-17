@@ -9,8 +9,8 @@ namespace ANA {
 // array of two '0' elements.
 template <class T>
 bool adapt_AA_list(
-    std::string &aa_list_proto, std::vector<T> &aa_list, unsigned int top = 0) {
-    unsigned int aa;
+    std::string &aa_list_proto, std::vector<T> &aa_list, int top = 0) {
+    int aa;
 
     if (aa_list_proto == "none") {
         aa_list.push_back(0);
@@ -68,24 +68,23 @@ bool read_static(std::string const &filename,
     std::string &include_CH_aa_proto, std::string &include_CH_atom_proto,
     std::string &sphere_proto, std::string &cylinder_proto,
     std::string &prism_proto, std::string const &include_CH_filename,
-    ANA_molecule &molecule_points, Point &cm,
-    std::vector<unsigned int> &aa_list, std::vector<unsigned int> &CA_indices,
-    std::vector<Point> &CAs_Points, std::vector<unsigned int> &include_CH_aa,
-    Triang_Vector &CH_triangs, std::vector<unsigned int> &hetatm_atoms);
+    ANA_molecule &molecule_points, Point &cm, std::vector<int> &aa_list,
+    std::vector<int> &CA_indices, std::vector<Point> &CAs_Points,
+    std::vector<int> &include_CH_aa, Triang_Vector &CH_triangs,
+    std::vector<int> &hetatm_atoms);
 
 // Read coordinates in netcdf format.
 void read_MD(const chemfiles::Frame &in_frame, bool const requested_CH,
     std::string const &sphere_proto, std::string const &cylinder_proto,
-    std::string const &prism_proto,
-    const std::vector<unsigned int> &hetatm_atoms,
-    std::vector<unsigned int> &include_CH_atoms,
-    std::string const &include_CH_filename, Triang_Vector &CH_triangs,
-    std::string const &ASA_method, const std::vector<unsigned int> &CA_indices,
-    std::vector<Point> &CAs_points, ANA_molecule &molecule_points);
+    std::string const &prism_proto, const std::vector<int> &hetatm_atoms,
+    std::vector<int> &include_CH_atoms, std::string const &include_CH_filename,
+    Triang_Vector &CH_triangs, std::string const &ASA_method,
+    const std::vector<int> &CA_indices, std::vector<Point> &CAs_points,
+    ANA_molecule &molecule_points);
 
 // Get the center of mass from a chemfiles molecule.
-Point getCM(const chemfiles::span<chemfiles::Vector3D> &in_xyz,
-    unsigned int const natoms);
+Point getCM(
+    const chemfiles::span<chemfiles::Vector3D> &in_xyz, int const natoms);
 
 // Read PDB to draw included area for MD
 void read_included_area(

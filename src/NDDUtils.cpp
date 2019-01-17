@@ -16,7 +16,7 @@ void ndd_read_PDB_get_cells(std::string const &filename,
 
     for (NDD_IElement const &idx : in_void_cells_indices) {
         // Iterate over each cell of the current pocket
-        for (unsigned int i = 0; i < 4; ++i) {
+        for (std::size_t i = 0; i < 4; ++i) {
             // Iterate over each vertex of the current cell
             Point const p0 =
                 Point(in_xyz[idx[i]][0], in_xyz[idx[i]][1], in_xyz[idx[i]][2]);
@@ -32,7 +32,7 @@ void ndd_read_PDB_get_cells(std::string const &filename,
 // NDD Specific function for PDB input. Hi precision method
 void ndd_read_PDB_get_cells(std::string const &filename,
     NDD_IVector const &in_void_cells_indices,
-    const std::vector<unsigned int> &include_CH_atoms, NDD_Vector &output_cells,
+    const std::vector<int> &include_CH_atoms, NDD_Vector &output_cells,
     Triang_Vector &CH_triangs) {
 
     // Read molecule
@@ -46,7 +46,7 @@ void ndd_read_PDB_get_cells(std::string const &filename,
 
     for (NDD_IElement const &idx : in_void_cells_indices) {
         // Iterate over each cell of the current pocket
-        for (unsigned int i = 0; i < 4; ++i) {
+        for (std::size_t i = 0; i < 4; ++i) {
             // Iterate over each vertex of the current cell
             Point const p0 =
                 Point(in_xyz[idx[i]][0], in_xyz[idx[i]][1], in_xyz[idx[i]][2]);
@@ -84,7 +84,7 @@ void ndd_read_PDB_get_cells(std::string const &filename,
 void ndd(NA_Vector const &cavity_void_cells, NDDOptions const &NDD_opts) {
 
     std::vector<double> output_volumes;
-    std::vector<unsigned int> all_indices;
+    std::vector<int> all_indices;
 
     NDD_IVector const cells_indices = get_vertices(cavity_void_cells);
 
@@ -98,10 +98,9 @@ void ndd(NA_Vector const &cavity_void_cells, NDDOptions const &NDD_opts) {
 // Perform Non Delaunay Dynamics.
 void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
     std::string const &pdb_list, bool const precision,
-    const std::vector<unsigned int> include_CH_atoms,
-    std::string const &out_file) {
+    const std::vector<int> include_CH_atoms, std::string const &out_file) {
     std::vector<double> output_volumes;
-    std::vector<unsigned int> all_indices;
+    std::vector<int> all_indices;
 
     NDD_IVector cells_indices;
     std::ifstream input_pdbs_filename(pdb_list);
@@ -123,7 +122,7 @@ void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
                     cavity_void_coords, cavity_intersecting_coords;
                 Triang_Vector CH_triangs;
                 std::vector<std::array<bool, 4>> intersecting_bool;
-                std::vector<unsigned int> intersecting_total;
+                std::vector<int> intersecting_total;
                 Poly_Vector border_poly;
 
                 // Get cell coordinates and the new include area triangles
@@ -252,7 +251,7 @@ void ndd_discard_CH_0(NDD_Vector const &in_coords,
     Triang_Vector const &CH_triangs, NDD_Vector &out_coords,
     NDD_Vector &out_intersecting_coords,
     std::vector<std::array<bool, 4>> &intersecting_bool,
-    std::vector<unsigned int> &intersecting_total) {
+    std::vector<int> &intersecting_total) {
 
     std::vector<Vector> CH_normals;
     std::vector<Point> CH_vtces;
@@ -270,12 +269,12 @@ void ndd_discard_CH_0(NDD_Vector const &in_coords,
     // Now discard outside cells
     for (auto const &ndd_array : in_coords) {
         std::array<bool, 4> vtx_inside_bool = {false, false, false, false};
-        unsigned int total = 0;
+        int total = 0;
         // Get nbr of vertices that lie outside the include area.
-        for (unsigned int i = 0; i <= 3; ++i) {
+        for (std::size_t i = 0; i <= 3; ++i) {
             Point test_point(ndd_array[i].first);
 
-            for (unsigned int j = 0; j < CH_vtces.size(); j++) {
+            for (std::size_t j = 0; j < CH_vtces.size(); j++) {
                 Vector test_vtor = test_point - CH_vtces[j];
                 test_vtor = test_vtor /
                     std::sqrt(CGAL::to_double(test_vtor.squared_length()));
@@ -311,18 +310,17 @@ void ndd_discard_CH_0(NDD_Vector const &in_coords,
 double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
     Triang_Vector const &CH_triangs,
     const std::vector<std::array<bool, 4>> &intersecting_bool,
-    const std::vector<unsigned int> &intersecting_total,
-    Poly_Vector &border_poly) {
+    const std::vector<int> &intersecting_total, Poly_Vector &border_poly) {
     // Use this vector to obtain the indices of the vtces used to form the
     // intersecting segments
-    std::vector<unsigned int> v = {0, 1, 2, 3};
+    std::vector<std::size_t> v = {0, 1, 2, 3};
     double volume = 0;
 
-    for (unsigned int each = 0; each < in_intersecting_coords.size(); ++each) {
+    for (std::size_t each = 0; each < in_intersecting_coords.size(); ++each) {
 
         switch (intersecting_total[each]) {
         case 3: {
-            for (unsigned int i = 0; i < 4; i++) {
+            for (std::size_t i = 0; i < 4; i++) {
                 if (!intersecting_bool[each][i]) {
                     // Got the handles of the included_area cell(s) that
                     // contain vertices of the intersecting cell 1 vertex
@@ -363,8 +361,8 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                     // Check if included area and intersecting cell are
                     // sharing vertices, creating degeneracies.
                     bool degeneracies_bool = false;
-                    for (unsigned int i = 0; i < i_points.size() - 1; i++) {
-                        for (unsigned int k = i + 1; k < i_points.size(); k++) {
+                    for (std::size_t i = 0; i < i_points.size() - 1; i++) {
+                        for (std::size_t k = i + 1; k < i_points.size(); k++) {
                             if (i_points[i] == i_points[k]) {
                                 i_points[k] = i_points[k] +
                                     Vector(0.01 * i, 0.01 * k, 0.01);
@@ -395,9 +393,9 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
             break;
         }
         case 2: {
-            for (unsigned int i = 0; i < 4; i++) {
+            for (std::size_t i = 0; i < 4; i++) {
                 if (!intersecting_bool[each][i]) {
-                    for (unsigned int j = i + 1; j < 4; j++) {
+                    for (std::size_t j = i + 1; j < 4; j++) {
                         if (!intersecting_bool[each][j]) {
                             // 2 vertices inside included area
                             std::vector<Point> i_points;
@@ -410,7 +408,7 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                                 double(in_intersecting_coords[each][i].second);
                             double const VdW_radius_1 =
                                 double(in_intersecting_coords[each][j].second);
-                            std::vector<unsigned int> query_vec = {i, j};
+                            std::vector<std::size_t> query_vec = {i, j};
                             Point p2(
                                 in_intersecting_coords[each][get_i_not_equal(v,
                                                                  query_vec, 1)]
@@ -441,10 +439,10 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                             // Check if included area and intersecting cell
                             // are sharing vertices, creating degeneracies.
                             bool degeneracies_bool = false;
-                            for (unsigned int i = 0; i < i_points.size() - 1;
+                            for (std::size_t i = 0; i < i_points.size() - 1;
                                  i++) {
-                                for (unsigned int k = i + 1;
-                                     k < i_points.size(); k++) {
+                                for (std::size_t k = i + 1; k < i_points.size();
+                                     k++) {
                                     if (i_points[k] == i_points[k]) {
                                         i_points[k] = i_points[k] +
                                             Vector(0.01, 0.01, 0.01);
@@ -494,11 +492,11 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
             break;
         }
         case 1: {
-            for (unsigned int i = 0; i < 4; i++) {
+            for (std::size_t i = 0; i < 4; i++) {
                 if (!intersecting_bool[each][i]) {
-                    for (unsigned int j = i + 1; j < 4; j++) {
+                    for (std::size_t j = i + 1; j < 4; j++) {
                         if (!intersecting_bool[each][j]) {
-                            for (unsigned int k = j + 1; k < 4; k++) {
+                            for (std::size_t k = j + 1; k < 4; k++) {
                                 if (!intersecting_bool[each][k]) {
                                     // 3 vertices inside the included area
                                     std::vector<Point> i_points;
@@ -518,7 +516,7 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                                         in_intersecting_coords[each][j].second);
                                     double const VdW_radius_2 = double(
                                         in_intersecting_coords[each][k].second);
-                                    std::vector<unsigned int> query_vec = {
+                                    std::vector<std::size_t> query_vec = {
                                         i, j, k};
                                     Point p3(in_intersecting_coords
                                                  [each][get_i_not_equal(
@@ -549,9 +547,9 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                                     // intersecting cell are sharing
                                     // vertices, creating degeneracies.
                                     bool degeneracies_bool = false;
-                                    for (unsigned int i = 0;
+                                    for (std::size_t i = 0;
                                          i < i_points.size() - 1; i++) {
-                                        for (unsigned int k = i + 1;
+                                        for (std::size_t k = i + 1;
                                              k < i_points.size(); k++) {
                                             if (i_points[k] == i_points[k]) {
                                                 i_points[k] = i_points[k] +
