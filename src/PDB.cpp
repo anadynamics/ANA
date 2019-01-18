@@ -9,6 +9,7 @@ void draw(Cavity const &hueco, std::string const &filename) {
         for (auto const &cell : hueco._included_cells) {
             draw(cell, out_file, idx, resid);
         }
+        connect_cells(out_file, 1, resid);
         // for (auto const &polyhedron : hueco._border) {
         //     draw(polyhedron, out_file, idx, resid);
         // }
@@ -31,12 +32,6 @@ void draw(
     draw(cell->vertex(1)->point(), out_file, j, resid);
     draw(cell->vertex(2)->point(), out_file, k, resid);
     draw(cell->vertex(3)->point(), out_file, l, resid);
-
-    fmt::print(out_file, "CONECT {:>4} {:>4} {:>4}\n", i, j, k, l);
-    fmt::print(out_file, "CONECT {:>4} {:>4} {:>4}\n", j, k, l, i);
-    fmt::print(out_file, "CONECT {:>4} {:>4} {:>4}\n", k, l, i, j);
-    fmt::print(out_file, "CONECT {:>4} {:>4} {:>4}\n", l, i, j, k);
-
     ++resid;
     return;
 }
@@ -58,6 +53,22 @@ void draw(Point const &punto, FILE *out_file, int const idx, int const resid) {
         "HETATM", idx, "H", "ANA", "A", resid, punto.x(), punto.y(), punto.z(),
         1.0, 0.0, "H");
     return;
+}
+
+void connect_cells(FILE *out_file, int const first_cell, int const last_cell) {
+    assert(first_cell < last_cell);
+
+    for (auto r = first_cell; r < last_cell; ++r) {
+        auto const i = (r - 1) * 4 + 1;
+        auto const j = i + 1;
+        auto const k = i + 2;
+        auto const l = i + 3;
+
+        fmt::print(out_file, "CONECT {:>4} {:>4} {:>4} {:>4}\n", i, j, k, l);
+        fmt::print(out_file, "CONECT {:>4} {:>4} {:>4} {:>4}\n", j, k, l, i);
+        fmt::print(out_file, "CONECT {:>4} {:>4} {:>4} {:>4}\n", k, l, i, j);
+        fmt::print(out_file, "CONECT {:>4} {:>4} {:>4} {:>4}\n", l, i, j, k);
+    }
 }
 
 } // namespace PDB

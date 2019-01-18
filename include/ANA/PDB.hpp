@@ -14,6 +14,8 @@ void draw(Polyhedron const &polyhedron, FILE *out_file, int &idx, int &resid);
 
 void draw(Point const &punto, FILE *out_file, int constidx, int const resid);
 
+void connect_cells(FILE *out_file, int const first_cell, int const last_cell);
+
 } // namespace PDB
 // namespace ANA
 #endif
