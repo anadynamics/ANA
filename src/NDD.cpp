@@ -8,11 +8,7 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
 
     Molecule const protein = ANA::Molecule(in_filename, atom_only);
 
-    ANA::ConvexHull CH(protein, IA_opts);
-
-    ANA::draw(CH, "hull.pdb");
-    std::cout << CH._normals.size() << '\n';
-    std::cout << CH._triangles.size() << '\n';
+    ANA::ConvexHull const CH = create_convex_hull(protein, IA_opts);
 
     ANA::Cavity hueco(protein, cell_opts);
 
@@ -22,8 +18,8 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
 
     // ANA::write_output_volume(cavity_void_cells, poly_vol);
 
-    std::string sal{"sal.pdb"};
-    ANA::draw(hueco, sal);
+    ANA::draw(hueco, "sal.pdb");
+    ANA::draw(CH, "hull.pdb");
 
     return 0;
 }

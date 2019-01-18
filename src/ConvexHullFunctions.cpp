@@ -29,9 +29,9 @@ void carve_CH_into_cavity(Cavity &hueco, ConvexHull const &CH) {
         if (vertices_out_cnt == 0) {
             // cell is entirely contained in the included area.
             hueco._included_cells.push_back(cell);
+            printf("cell is entirely contained the included area.\n");
         } else if (vertices_out_cnt == 4) {
             // cell is outside the included area.
-            printf("cell is outside the included area.\n");
             continue;
         } else {
             printf("Cell has 1-3 vertices.\n");

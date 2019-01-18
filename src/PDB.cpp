@@ -99,6 +99,7 @@ void draw(Point const &punto, FILE *out_file, int const idx, int const resid) {
 }
 
 void connect_cell(FILE *out_file, int const first_cell, int const last_cell) {
+    std::cout << first_cell << "  " << last_cell << '\n';
     assert(first_cell < last_cell);
 
     for (auto r = first_cell; r < last_cell; ++r) {
@@ -115,5 +116,4 @@ void connect_cell(FILE *out_file, int const first_cell, int const last_cell) {
     return;
 }
 
-} // namespace PDB
-// namespace ANA
+} // namespace ANA

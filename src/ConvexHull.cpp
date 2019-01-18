@@ -39,33 +39,28 @@ std::vector<int> string_to_list(std::string const &list_proto, int const top) {
     return list;
 }
 
-ConvexHull::ConvexHull(
+ConvexHull create_convex_hull(
     Molecule const &protein, IncludedAreaOptions const &IA_opts) {
 
     switch (IA_opts._opt) {
     case IncludedAreaOptions::IAOption::residue:
-        ConvexHull(protein, IA_opts._resn_proto, ResidueTag());
-        break;
+        return ConvexHull(protein, IA_opts._resn_proto, ResidueTag());
     case IncludedAreaOptions::IAOption::atom:
-        ConvexHull(protein, IA_opts._atom_proto, AtomTag());
-        break;
+        return ConvexHull(protein, IA_opts._atom_proto, AtomTag());
     case IncludedAreaOptions::IAOption::sphere:
-        ConvexHull(IA_opts._sphere_proto, SphereTag());
-        break;
+        return ConvexHull(IA_opts._sphere_proto, SphereTag());
     case IncludedAreaOptions::IAOption::cylinder:
-        ConvexHull(IA_opts._cylinder_proto, CylinderTag());
-        break;
+        return ConvexHull(IA_opts._cylinder_proto, CylinderTag());
     case IncludedAreaOptions::IAOption::prism:
-        ConvexHull(IA_opts._prism_proto, PrismTag());
-        break;
+        return ConvexHull(IA_opts._prism_proto, PrismTag());
     case IncludedAreaOptions::IAOption::file:
-        ConvexHull(IA_opts._filename, FileTag());
-        break;
+        return ConvexHull(IA_opts._filename, FileTag());
     case IncludedAreaOptions::IAOption::none:
         throw(std::logic_error(
             "No Convex Hull input could be parsed. This shouldn't happen."));
         break;
     }
+    return {};
 }
 
 ConvexHull::ConvexHull(
@@ -77,7 +72,8 @@ ConvexHull::ConvexHull(
     incl_area_points.reserve(residues.size());
 
     for (auto const i : residues) {
-        incl_area_points.push_back(protein._data[i - 1].first);
+        incl_area_points.push_back(
+            protein._data[protein._alphaCarbons[i - 1]].first);
     }
 
     try {
@@ -87,9 +83,6 @@ ConvexHull::ConvexHull(
     } catch (...) {
         throw("Uknown error when triangulating convex hull. Aborting.");
     }
-
-    std::cout << _normals.size() << '\n';
-    std::cout << _triangles.size() << '\n';
 }
 
 ConvexHull::ConvexHull(

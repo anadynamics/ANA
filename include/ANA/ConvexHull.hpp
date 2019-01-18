@@ -21,10 +21,6 @@ struct ConvexHull {
 public:
     ConvexHull() = default;
 
-    ConvexHull(Molecule const &protein, IncludedAreaOptions const &IA_opts);
-
-    // Atom and residue constructors are identical for now. I'll probably do
-    // something different in the future.
     ConvexHull(
         Molecule const &protein, std::string const &resn_proto, ResidueTag);
 
@@ -81,6 +77,9 @@ public:
     std::vector<Triangle> _triangles;
     std::vector<Vector> _normals;
 };
+
+ConvexHull create_convex_hull(
+    Molecule const &protein, IncludedAreaOptions const &IA_opts);
 
 } // namespace ANA
 
