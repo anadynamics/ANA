@@ -8,7 +8,11 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
 
     Molecule const protein = ANA::Molecule(in_filename, atom_only);
 
-    ANA::ConvexHull const CH(protein, IA_opts);
+    ANA::ConvexHull CH(protein, IA_opts);
+
+    ANA::draw(CH, "hull.pdb");
+    std::cout << CH._normals.size() << '\n';
+    std::cout << CH._triangles.size() << '\n';
 
     ANA::Cavity hueco(protein, cell_opts);
 

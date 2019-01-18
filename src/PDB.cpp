@@ -2,6 +2,50 @@
 
 namespace ANA {
 
+void draw(ConvexHull const &CH, std::string const &filename) {
+
+    FILE *out_file = std::fopen(filename.c_str(), "w");
+    if (out_file) {
+        int idx = 1, resid = 1;
+        for (auto const &triangle : CH._triangles) {
+            draw(triangle, out_file, idx, resid);
+        }
+        connect_triangle(out_file, 1, resid);
+    } else {
+        printf("Could not open %s.\n", filename.c_str());
+    }
+    std::fclose(out_file);
+
+    return;
+}
+
+void draw(Triangle const &t, FILE *out_file, int &idx, int &resid) {
+
+    auto const i = idx++;
+    auto const j = idx++;
+    auto const k = idx++;
+
+    draw(t.vertex(0), out_file, i, resid);
+    draw(t.vertex(1), out_file, j, resid);
+    draw(t.vertex(2), out_file, k, resid);
+    ++resid;
+    return;
+}
+
+void connect_triangle(FILE *out_file, int const first_t, int const last_t) {
+
+    for (auto r = first_t; r < last_t; ++r) {
+        auto const i = (r - 1) * 3 + 1;
+        auto const j = i + 1;
+        auto const k = i + 2;
+
+        fmt::print(out_file, "CONECT {:>4} {:>4} {:>4}\n", i, j, k);
+        fmt::print(out_file, "CONECT {:>4} {:>4} {:>4}\n", j, i, k);
+        fmt::print(out_file, "CONECT {:>4} {:>4} {:>4}\n", k, i, j);
+    }
+    return;
+}
+
 void draw(Cavity const &hueco, std::string const &filename) {
     FILE *out_file = std::fopen(filename.c_str(), "w");
     if (out_file) {
@@ -9,7 +53,7 @@ void draw(Cavity const &hueco, std::string const &filename) {
         for (auto const &cell : hueco._included_cells) {
             draw(cell, out_file, idx, resid);
         }
-        connect_cells(out_file, 1, resid);
+        connect_cell(out_file, 1, resid);
         // for (auto const &polyhedron : hueco._border) {
         //     draw(polyhedron, out_file, idx, resid);
         // }
@@ -17,7 +61,6 @@ void draw(Cavity const &hueco, std::string const &filename) {
         printf("Could not open %s.\n", filename.c_str());
     }
     std::fclose(out_file);
-
     return;
 }
 
@@ -55,7 +98,7 @@ void draw(Point const &punto, FILE *out_file, int const idx, int const resid) {
     return;
 }
 
-void connect_cells(FILE *out_file, int const first_cell, int const last_cell) {
+void connect_cell(FILE *out_file, int const first_cell, int const last_cell) {
     assert(first_cell < last_cell);
 
     for (auto r = first_cell; r < last_cell; ++r) {
@@ -69,6 +112,7 @@ void connect_cells(FILE *out_file, int const first_cell, int const last_cell) {
         fmt::print(out_file, "CONECT {:>4} {:>4} {:>4} {:>4}\n", k, l, i, j);
         fmt::print(out_file, "CONECT {:>4} {:>4} {:>4} {:>4}\n", l, i, j, k);
     }
+    return;
 }
 
 } // namespace PDB

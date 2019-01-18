@@ -8,7 +8,7 @@ void carve_CH_into_cavity(Cavity &hueco, ConvexHull const &CH) {
     for (auto const &cell : hueco._all_cells) {
         std::vector<int> vertices_out, vertices_in;
         // Only inside points will give a >0 dot product against all normals.
-        for (std::size_t i = 0; i <= 3; ++i) {
+        for (std::size_t i = 0; i < 4; ++i) {
             Point const test_point(cell->vertex(i)->point());
 
             for (std::size_t j = 0; j < CH._triangles.size(); j++) {
@@ -31,8 +31,10 @@ void carve_CH_into_cavity(Cavity &hueco, ConvexHull const &CH) {
             hueco._included_cells.push_back(cell);
         } else if (vertices_out_cnt == 4) {
             // cell is outside the included area.
+            printf("cell is outside the included area.\n");
             continue;
         } else {
+            printf("Cell has 1-3 vertices.\n");
             // Cell has 1-3 vertices inside the included area.
             // Get the points of the intersections between the convex hull
             // and the tetrahedron's segments that go from the inner

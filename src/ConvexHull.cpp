@@ -87,6 +87,9 @@ ConvexHull::ConvexHull(
     } catch (...) {
         throw("Uknown error when triangulating convex hull. Aborting.");
     }
+
+    std::cout << _normals.size() << '\n';
+    std::cout << _triangles.size() << '\n';
 }
 
 ConvexHull::ConvexHull(

@@ -74,6 +74,7 @@ public:
 
             _triangles.emplace_back(p0, p1, p2);
         }
+
         return;
     }
 
