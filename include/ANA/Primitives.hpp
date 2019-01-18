@@ -31,15 +31,15 @@ public:
 
     Cavity(Molecule const &molecule, CellFilteringOptions const cell_opts);
 
-    void add_border_tetra(Point const &p0, Point const &p1, Point const &p2,
-        Point const &p3, double const vdw0);
+    void add_border_tetra(Point const &p0, Point const &ip1, Point const &ip2,
+        Point const &ip3, double const vdw0);
 
-    void add_border_penta(Point const &p0, Point const &p1, Point const &p2,
-        Point const &p3, Point const &p4, Point const &p5, double const vdw0,
+    void add_border_penta(Point const &p0, Point const &p1, Point const &ip2,
+        Point const &ip3, Point const &ip4, Point const &ip5, double const vdw0,
         double const vdw1);
 
     void add_border_penta(Point const &p0, Point const &p1, Point const &p2,
-        Point const &p3, Point const &p4, Point const &p5, double const vdw0,
+        Point const &ip3, Point const &ip4, Point const &ip5, double const vdw0,
         double const vdw1, double const vdw2);
 
     friend void draw(Cavity const &hueco, std::string const &filename);

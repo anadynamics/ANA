@@ -3,8 +3,7 @@
 namespace ANA {
 
 // Discard voids outside the convex hull.
-void carve_CH_into_cavity(
-    Molecule const &protein, Cavity &hueco, ConvexHull const &CH) {
+void carve_CH_into_cavity(Cavity &hueco, ConvexHull const &CH) {
 
     for (auto const &cell : hueco._all_cells) {
         std::vector<int> vertices_out, vertices_in;

@@ -8,8 +8,7 @@
 namespace ANA {
 
 // Discard voids outside the convex hull.
-void carve_CH_into_cavity(
-    Molecule const &protein, Cavity &hueco, ConvexHull const &CH);
+void carve_CH_into_cavity(Cavity &hueco, ConvexHull const &CH);
 
 // Discard cells without a vertex inside the specified convex hull. Lo
 // precision. DEPRECATED.

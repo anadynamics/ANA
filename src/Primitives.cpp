@@ -68,41 +68,67 @@ Cavity::Cavity(Molecule const &molecule, CellFilteringOptions const cell_opts) {
     }
 }
 
-void Cavity::add_border_tetra(Point const &p0, Point const &p1, Point const &p2,
-    Point const &p3, double const vdw0) {
+void Cavity::add_border_tetra(Point const &p0, Point const &ip1,
+    Point const &ip2, Point const &ip3, double const vdw0) {
 
     double const vol =
-        volume(p0, p1, p2, p3) - sphere_sector_vol(p0, p1, p2, p3, vdw0);
+        volume(p0, ip1, ip2, ip3) - sphere_sector_vol(p0, ip1, ip2, ip3, vdw0);
     _outer_volume += vol;
 
     Polyhedron P;
-    P.make_tetrahedron(p0, p1, p2, p3);
+    P.make_tetrahedron(p0, ip1, ip2, ip3);
     _border.push_back(std::move(P));
     _poly_vtx_cnt += 4;
     return;
 }
 
-void Cavity::add_border_penta(Point const &p0, Point const &p1, Point const &p2,
-    Point const &p3, Point const &p4, Point const &p5, double const vdw0,
-    double const vdw1) {
+void Cavity::add_border_penta(Point const &p0, Point const &p1,
+    Point const &ip2, Point const &ip3, Point const &ip4, Point const &ip5,
+    double const vdw0, double const vdw1) {
+
+    double const vol1 = volume(p0, p1, ip2, ip3) -
+        sphere_sector_vol(p0, p1, ip2, ip3, vdw0) -
+        sphere_sector_vol(p1, p0, ip2, ip3, vdw1);
+
+    double const vol2 =
+        volume(p1, ip2, ip3, ip4) - sphere_sector_vol(p1, ip2, ip3, ip4, vdw1);
+
+    double const vol3 =
+        volume(p1, ip3, ip4, ip5) - sphere_sector_vol(p1, ip3, ip4, ip5, vdw1);
+
+    _outer_volume += vol1 + vol2 + vol3;
 
     Polyhedron P;
-    P.make_tetrahedron(p0, p1, p2, p3);
-    P.make_tetrahedron(p1, p2, p3, p4);
-    P.make_tetrahedron(p1, p3, p4, p5);
+    P.make_tetrahedron(p0, p1, ip2, ip3);
+    P.make_tetrahedron(p1, ip2, ip3, ip4);
+    P.make_tetrahedron(p1, ip3, ip4, ip5);
     _border.push_back(std::move(P));
     _poly_vtx_cnt += 12;
     return;
 }
 
 void Cavity::add_border_penta(Point const &p0, Point const &p1, Point const &p2,
-    Point const &p3, Point const &p4, Point const &p5, double const vdw0,
+    Point const &ip3, Point const &ip4, Point const &ip5, double const vdw0,
     double const vdw1, double const vdw2) {
 
+    double const vol1 = volume(p0, p1, p2, ip3) -
+        sphere_sector_vol(p0, p1, p2, ip3, vdw0) -
+        sphere_sector_vol(p1, p0, p2, ip3, vdw1) -
+        sphere_sector_vol(p2, p1, p0, ip3, vdw2);
+
+    double const vol2 = volume(p1, p2, ip3, ip4) -
+        sphere_sector_vol(p1, p2, ip3, ip4, vdw1) -
+        sphere_sector_vol(p2, p1, ip3, ip4, vdw2);
+
+    double const vol3 =
+        volume(p2, ip3, ip4, ip5) - sphere_sector_vol(p2, ip3, ip4, ip5, vdw2);
+
+    _outer_volume += vol1 + vol2 + vol3;
+
     Polyhedron P;
-    P.make_tetrahedron(p0, p1, p2, p3);
-    P.make_tetrahedron(p1, p2, p3, p4);
-    P.make_tetrahedron(p2, p3, p4, p5);
+    P.make_tetrahedron(p0, p1, p2, ip3);
+    P.make_tetrahedron(p1, p2, ip3, ip4);
+    P.make_tetrahedron(p2, ip3, ip4, ip5);
     _border.push_back(std::move(P));
     _poly_vtx_cnt += 12;
     return;

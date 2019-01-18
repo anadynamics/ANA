@@ -569,7 +569,7 @@ inline Point getCM(
     double y_cm = 0;
     double z_cm = 0;
 
-    for (std::size_t i = 0; i < natoms; ++i) {
+    for (int i = 0; i < natoms; ++i) {
         x_cm += in_xyz[i][0];
         y_cm += in_xyz[i][1];
         z_cm += in_xyz[i][2];

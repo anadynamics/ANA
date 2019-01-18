@@ -6,7 +6,7 @@ namespace ANA {
 void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
     int const min_cells_cluster) {
 
-    int nbr_of_clusters = 0, cell_cnt = input_cells.size();
+    std::size_t nbr_of_clusters = 0, cell_cnt = input_cells.size();
     std::vector<int> already_checked;
     Finite_cells_iterator fc_ite;
     NA_Vector neighbors;
@@ -25,7 +25,7 @@ void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
         for (Finite_cells_iterator const &fc_ite2 : neighbors) {
             get_neighbors(input_cells, fc_ite2, already_checked, neighbors);
         }
-        if (neighbors.size() >= min_cells_cluster) {
+        if (static_cast<int>(neighbors.size()) >= min_cells_cluster) {
             ++nbr_of_clusters;
             output_cells.push_back(neighbors);
         }
@@ -39,7 +39,7 @@ void get_neighbors(NA_Vector const &input_cells,
     Finite_cells_iterator const &query_cell, std::vector<int> &except,
     NA_Vector &output_cells) {
 
-    int i, cnt = 0, cell_cnt = input_cells.size();
+    std::size_t i, cnt = 0, cell_cnt = input_cells.size();
     for (i = 0; i <= cell_cnt; ++i) {
         if (find(except.begin(), except.end(), i) != except.end()) {
             continue;
@@ -151,7 +151,7 @@ void cluster_cells_boxes(
     std::vector<bool> map_bool(map_aux.size());
 
     // Start mapping the clusters.
-    int result = 0, new_id;
+    std::size_t result = 0, new_id;
     for (size_t i = 0; i < map_aux.size(); i++) {
 
         if (map_bool[i]) {
@@ -245,7 +245,7 @@ void cluster_cells_boxes(
         }
 
         // Done with this cluster.
-        if (current.size() >= min_cells_cluster) {
+        if (static_cast<int>(current.size()) >= min_cells_cluster) {
             id_mtx.push_back(std::move(current));
             output_cells.push_back(std::move(neighbors));
         }

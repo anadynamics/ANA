@@ -2,8 +2,6 @@
 
 namespace ANA {
 
-void draw(Molecule const &protein, std::string const &filename) { return; }
-
 void draw(Cavity const &hueco, std::string const &filename) {
     FILE *out_file = std::fopen(filename.c_str(), "w");
     if (out_file) {
@@ -15,7 +13,7 @@ void draw(Cavity const &hueco, std::string const &filename) {
         //     draw(polyhedron, out_file, idx, resid);
         // }
     } else {
-        printf("Could not open %s.\n", filename);
+        printf("Could not open %s.\n", filename.c_str());
     }
     std::fclose(out_file);
 

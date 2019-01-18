@@ -5,8 +5,6 @@
 
 namespace ANA {
 
-void draw(Molecule const &protein, std::string const &filename);
-
 void draw(Cavity const &hueco, std::string const &filename);
 
 void draw(

@@ -12,7 +12,7 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
 
     ANA::Cavity hueco(protein, cell_opts);
 
-    ANA::carve_CH_into_cavity(protein, hueco, CH);
+    ANA::carve_CH_into_cavity(hueco, CH);
 
     // ANA::NDD::ndd(cavity_joint_cells, NDD_opts);
 

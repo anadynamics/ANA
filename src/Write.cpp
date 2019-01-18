@@ -235,8 +235,8 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
                 // Connect the vertices.
                 if ((atom_cnt - first_atom) == 4) {
                     // These polyhedron is composed of 1 tetrahedron.
-                    for (size_t j = first_atom; j < atom_cnt - 1; j++) {
-                        for (size_t k = j + 1; k < atom_cnt; k++) {
+                    for (int j = first_atom; j < atom_cnt - 1; j++) {
+                        for (int k = j + 1; k < atom_cnt; k++) {
                             ana_void_top.add_bond(j, k);
                         }
                     }
@@ -245,18 +245,18 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
                     int const low_treshold = first_atom + 4,
                               hi_treshold = first_atom + 8;
 
-                    for (size_t j = first_atom; j < low_treshold - 1; j++) {
-                        for (size_t k = j + 1; k < low_treshold; k++) {
+                    for (int j = first_atom; j < low_treshold - 1; j++) {
+                        for (int k = j + 1; k < low_treshold; k++) {
                             ana_void_top.add_bond(j, k);
                         }
                     }
-                    for (size_t j = low_treshold; j < hi_treshold - 1; j++) {
-                        for (size_t k = j + 1; k < hi_treshold; k++) {
+                    for (int j = low_treshold; j < hi_treshold - 1; j++) {
+                        for (int k = j + 1; k < hi_treshold; k++) {
                             ana_void_top.add_bond(j, k);
                         }
                     }
-                    for (size_t j = hi_treshold; j < atom_cnt - 1; j++) {
-                        for (size_t k = j + 1; k < atom_cnt; k++) {
+                    for (int j = hi_treshold; j < atom_cnt - 1; j++) {
+                        for (int k = j + 1; k < atom_cnt; k++) {
                             ana_void_top.add_bond(j, k);
                         }
                     }
@@ -272,7 +272,7 @@ void draw_raw_PDB(const NDD_Matrix &list_of_pockets,
         }
         // In order to make it VMD-friendly, every model needs to have the same
         // nbr of atoms.
-        for (size_t j = atom_cnt; j < max_atom_cnt; j++) {
+        for (int j = atom_cnt; j < max_atom_cnt; j++) {
             ana_void_top.add_atom(chemfiles::Atom("N", "NE"));
             ana_void_frame.add_atom(
                 chemfiles::Atom("N"), chemfiles::Vector3D(0., 0., 0.));
@@ -308,7 +308,7 @@ void draw_grid_pdb(const NDD_Matrix &list_of_pockets,
     out_filename.append(".pdb");
     auto out_traj = chemfiles::Trajectory(out_filename, 'w');
 
-    for (size_t i = 0; i < frame_nbr; i++) {
+    for (int i = 0; i < frame_nbr; i++) {
         int res_cnt = 0;
         chemfiles::Topology ana_void_top;
         chemfiles::Frame ana_void_frame;
@@ -334,10 +334,10 @@ void draw_grid_pdb(const NDD_Matrix &list_of_pockets,
     }
 
     // Write.
-    for (size_t i = 0; i < frame_nbr; i++) {
+    for (int i = 0; i < frame_nbr; i++) {
         // In order to make it VMD-friendly, every model needs to have the same
         // nbr of atoms. Adding extra atoms.
-        for (size_t j = atom_cnt_list[i]; j < max_atom_cnt; j++) {
+        for (int j = atom_cnt_list[i]; j < max_atom_cnt; j++) {
             list_ana_void_top[i].add_atom(chemfiles::Atom("N", "NE"));
             list_ana_void_frame[i].add_atom(
                 chemfiles::Atom("N"), chemfiles::Vector3D(0., 0., 0.));
@@ -383,9 +383,9 @@ int make_grid_pdb(NDD_Vector const &cells_to_draw,
         std::array<double, 3> p3_ = {CGAL::to_double(p3.x()),
             CGAL::to_double(p3.y()), CGAL::to_double(p3.z())};
 
-        for (std::size_t i = 0; i < sphere_count; i++) {
-            for (std::size_t j = 0; j <= sphere_count - i; j++) {
-                for (std::size_t k = 0; k <= sphere_count - i - j; k++) {
+        for (int i = 0; i < sphere_count; i++) {
+            for (int j = 0; j <= sphere_count - i; j++) {
+                for (int k = 0; k <= sphere_count - i - j; k++) {
                     std::array<double, 3> point;
                     int l = n - i - j - k;
 
@@ -478,9 +478,9 @@ int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
                 CGAL::to_double(points[2].y()), CGAL::to_double(points[2].z())};
             std::array<double, 3> p3_ = {CGAL::to_double(points[3].x()),
                 CGAL::to_double(points[3].y()), CGAL::to_double(points[3].z())};
-            for (std::size_t i = 0; i < sphere_count; i++) {
-                for (std::size_t j = 0; j <= sphere_count - i; j++) {
-                    for (std::size_t k = 0; k <= sphere_count - i - j; k++) {
+            for (int i = 0; i < sphere_count; i++) {
+                for (int j = 0; j <= sphere_count - i; j++) {
+                    for (int k = 0; k <= sphere_count - i - j; k++) {
                         std::array<double, 3> point;
                         int l = n - i - j - k;
 
@@ -534,10 +534,9 @@ int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
                     CGAL::to_double(points[(jj * 4) + 3].x()),
                     CGAL::to_double(points[(jj * 4) + 3].y()),
                     CGAL::to_double(points[(jj * 4) + 3].z())};
-                for (std::size_t i = 0; i < sphere_count; i++) {
-                    for (std::size_t j = 0; j <= sphere_count - i; j++) {
-                        for (std::size_t k = 0; k <= sphere_count - i - j;
-                             k++) {
+                for (int i = 0; i < sphere_count; i++) {
+                    for (int j = 0; j <= sphere_count - i; j++) {
+                        for (int k = 0; k <= sphere_count - i - j; k++) {
                             std::array<double, 3> point;
                             int l = n - i - j - k;
 
@@ -630,10 +629,9 @@ int make_grid_pdb_polyhedrons(chemfiles::Topology &ana_void_top,
                     CGAL::to_double(points[(jj * 4) + 3].x()),
                     CGAL::to_double(points[(jj * 4) + 3].y()),
                     CGAL::to_double(points[(jj * 4) + 3].z())};
-                for (std::size_t i = 0; i < sphere_count; i++) {
-                    for (std::size_t j = 0; j <= sphere_count - i; j++) {
-                        for (std::size_t k = 0; k <= sphere_count - i - j;
-                             k++) {
+                for (int i = 0; i < sphere_count; i++) {
+                    for (int j = 0; j <= sphere_count - i; j++) {
+                        for (int k = 0; k <= sphere_count - i - j; k++) {
                             std::array<double, 3> point;
                             int l = n - i - j - k;
 
@@ -787,9 +785,9 @@ int make_grid_pdb(NA_Vector const &cells_to_draw,
         std::array<double, 3> p3_ = {CGAL::to_double(p3.x()),
             CGAL::to_double(p3.y()), CGAL::to_double(p3.z())};
 
-        for (std::size_t i = 0; i < sphere_count; i++) {
-            for (std::size_t j = 0; j <= sphere_count - i; j++) {
-                for (std::size_t k = 0; k <= sphere_count - i - j; k++) {
+        for (int i = 0; i < sphere_count; i++) {
+            for (int j = 0; j <= sphere_count - i; j++) {
+                for (int k = 0; k <= sphere_count - i - j; k++) {
                     std::array<double, 3> point;
                     int l = n - i - j - k;
 
@@ -878,7 +876,7 @@ inline chemfiles::Residue make_polyhedron_residue(
     // Each polyhedron will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", res_cnt);
 
-    for (std::size_t i = first_atom; i < atom_cnt; i++) {
+    for (int i = first_atom; i < atom_cnt; i++) {
         pocket_res.add_atom(i);
     }
 
@@ -891,7 +889,7 @@ inline chemfiles::Residue make_grid_residue(
     // Each cell will be considered as a separate residue
     chemfiles::Residue pocket_res("ANA", res_cnt);
     // Create all cell "atoms"
-    for (std::size_t i = atom_cnt_old; i < atom_cnt; ++i) {
+    for (int i = atom_cnt_old; i < atom_cnt; ++i) {
         pocket_res.add_atom(i);
     }
     return pocket_res;
@@ -1238,7 +1236,7 @@ void write_wall_file(std::ofstream &pock_out_file,
     const std::vector<int> &wall_atom_idx, int const frame_cnt,
     std::string const &list_wall_separator) {
 
-    int atom_length = wall_atom_idx.size();
+    std::size_t atom_length = wall_atom_idx.size();
 
     if (pock_out_file.is_open()) {
         // Header
@@ -1275,7 +1273,7 @@ void write_wall_file(std::ofstream &pock_out_file,
     const std::vector<std::string> &wall_aa_id, int const frame_cnt,
     std::string const &list_wall_separator) {
 
-    int resi_length = wall_aa_idx.size();
+    std::size_t resi_length = wall_aa_idx.size();
 
     if (pock_out_file.is_open()) {
         // Header

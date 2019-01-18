@@ -174,7 +174,7 @@ void insert_into_ord_vtor(Vector &v, const T &to_insert) {
 // match the query.
 template <class T>
 T get_i_not_equal(const std::vector<T> &in_vec, const T &query, int const i) {
-    if (in_vec.size() < i) {
+    if (static_cast<int>(in_vec.size()) < i) {
         throw std::invalid_argument("get_i_not_equal(): specified \"i\" "
                                     "position larger than input vector");
     }
@@ -198,7 +198,7 @@ T get_i_not_equal(const std::vector<T> &in_vec, const T &query, int const i) {
 template <class T>
 T get_i_not_equal(const std::vector<T> &in_vec, const std::vector<T> &query_vec,
     int const i) {
-    if (in_vec.size() < i) {
+    if (static_cast<int>(in_vec.size()) < i) {
         throw std::invalid_argument("get_i_not_equal(): specified \"i\" "
                                     "position larger than input vector");
     }
@@ -241,10 +241,11 @@ std::vector<int> sort_indices(const std::vector<T> &v) {
 // and
 // stores the index of the element that satisfies the lower bound condition in
 // the variable "first".
-template <typename T>
-bool lb(const std::vector<T> &v1, const T q1, int &first) {
+template <typename T, typename K>
+bool lb(const std::vector<T> &v1, const T q1, K &first) {
 
-    int count = v1.size(), step, current;
+    static_assert(std::is_integral<K>::value);
+    K count = v1.size(), step, current;
     first = 0;
 
     while (count > 0) {
@@ -260,7 +261,7 @@ bool lb(const std::vector<T> &v1, const T q1, int &first) {
     }
 
     // Did the query match?
-    if (first == v1.size()) {
+    if (first == count) {
         return false;
     } else
         return true;
@@ -272,11 +273,12 @@ bool lb(const std::vector<T> &v1, const T q1, int &first) {
 // element that satisfies the lower bound condition in the variable "first".
 // This variable also serves as a starting point in the search, to start
 // searching in an arbitrary position and forward.
-template <typename T>
+template <typename T, typename K>
 bool lb_with_indices(const std::vector<T> &v1, const std::vector<int> &indices,
-    const T q1, int &first) {
+    const T q1, K &first) {
 
-    int count = v1.size(), step, current;
+    static_assert(std::is_integral<K>::value);
+    K count = v1.size(), step, current;
     first = 0;
 
     while (count > 0) {
@@ -292,7 +294,7 @@ bool lb_with_indices(const std::vector<T> &v1, const std::vector<int> &indices,
     }
 
     // Is the query larger?
-    if (first == v1.size()) {
+    if (first == count) {
         return false;
     } else
         return true;
