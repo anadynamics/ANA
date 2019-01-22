@@ -14,7 +14,7 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
     chemfiles::Frame ana_void_frame;
     auto out_traj = chemfiles::Trajectory(out_filename, 'w');
 
-    for (Finite_cells_iterator const &cell : list_of_pockets) {
+    for (Finite_cells_iterator const cell : list_of_pockets) {
         // Add the 4 vertices to the topology and their coords to the frame.
         ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
         ana_void_frame.add_atom(chemfiles::Atom("N"),
@@ -94,7 +94,7 @@ void draw_raw_PDB(NA_Vector const &list_of_pockets, const Poly_Vector &polys,
 //     chemfiles::Frame ana_void_frame;
 //     auto out_traj = chemfiles::Trajectory(out_filename, 'a');
 
-//     for (Finite_cells_iterator const &cell : pocket) {
+//     for (Finite_cells_iterator const cell : pocket) {
 //         // Add the 4 vertices to the topology and their cords to the frame
 //         ana_void_top.add_atom(chemfiles::Atom("N", "N0"));
 //         ana_void_frame.add_atom(chemfiles::Atom("N"),

@@ -10,3 +10,4 @@ chemfiles/install
 .*
 build
 .vscode
+test

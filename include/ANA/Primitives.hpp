@@ -59,7 +59,7 @@ private:
 double parse_double(std::stringstream &in_stream);
 
 // Calculate area of the cell's facets
-inline auto get_facets_areas(Finite_cells_iterator const &cell_iterator)
+inline auto get_facets_areas(Finite_cells_iterator const cell_iterator)
     -> std::tuple<double, double, double, double> {
 
     double const f0 = CGAL::to_double(CGAL::squared_area(

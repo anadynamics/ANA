@@ -56,7 +56,7 @@ ConvexHull create_convex_hull(
     case IncludedAreaOptions::IAOption::file:
         return ConvexHull(IA_opts._filename, FileTag());
     case IncludedAreaOptions::IAOption::none:
-        throw(std::logic_error(
+        throw(std::invalid_argument(
             "No Convex Hull input could be parsed. This shouldn't happen."));
         break;
     }

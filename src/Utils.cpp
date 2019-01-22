@@ -22,7 +22,7 @@ void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
             continue;
         }
         // Now iterate over each of its neighbors and its neighbors's neighbors
-        for (Finite_cells_iterator const &fc_ite2 : neighbors) {
+        for (Finite_cells_iterator const fc_ite2 : neighbors) {
             get_neighbors(input_cells, fc_ite2, already_checked, neighbors);
         }
         if (static_cast<int>(neighbors.size()) >= min_cells_cluster) {
@@ -36,7 +36,7 @@ void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
 
 // Given a cell, get all neighbouring cells that haven't been discovered yet
 void get_neighbors(NA_Vector const &input_cells,
-    Finite_cells_iterator const &query_cell, std::vector<int> &except,
+    Finite_cells_iterator const query_cell, std::vector<int> &except,
     NA_Vector &output_cells) {
 
     std::size_t i, cnt = 0, cell_cnt = input_cells.size();
@@ -261,7 +261,7 @@ void keep_included_aa_cells(NA_Vector const &input_cells,
     int i, nbr_of_vertices;
     Point p1;
 
-    for (Finite_cells_iterator const &fc_ite : input_cells) {
+    for (Finite_cells_iterator const fc_ite : input_cells) {
         nbr_of_vertices = 0;
         for (i = 0; i <= 3; ++i) {
             if (std::binary_search(aa_list.begin(), aa_list.end(),
@@ -283,7 +283,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
     NA_Vector const &input_cells, NA_Vector &output_cells) {
 
     if (only_side_ASA == "inside") {
-        for (Finite_cells_iterator const &cell_ite : input_cells) {
+        for (Finite_cells_iterator const cell_ite : input_cells) {
 
             Point test_point = CGAL::centroid(cell_ite->vertex(0)->point(),
                 cell_ite->vertex(1)->point(), cell_ite->vertex(2)->point(),
@@ -310,7 +310,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
             }
         }
     } else if (only_side_ASA == "outside") {
-        for (Finite_cells_iterator const &cell_ite : input_cells) {
+        for (Finite_cells_iterator const cell_ite : input_cells) {
 
             double top_dot_pdt = -1.0;
             Point test_point = CGAL::centroid(cell_ite->vertex(0)->point(),
@@ -638,7 +638,7 @@ double get_all_voids(Delaunay const &T, NA_Vector &big_cells,
 // Substract the volume filled with the 4 atoms from the total volume of the
 // corresponding cell.
 double refine_cell_volume(
-    double const entire_cell_vol, Finite_cells_iterator const &cell_iterator) {
+    double const entire_cell_vol, Finite_cells_iterator const cell_iterator) {
     double const rdW_0 = double(cell_iterator->vertex(0)->info()._radius);
     double const rdW_1 = double(cell_iterator->vertex(1)->info()._radius);
     double const rdW_2 = double(cell_iterator->vertex(2)->info()._radius);

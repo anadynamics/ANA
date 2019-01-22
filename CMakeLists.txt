@@ -15,8 +15,6 @@ if(NOT WIN32)
 endif()
 ###################################################################
 
-# set(ANA_CGAL_DIR "" CACHE STRING "CGAL installation folder.")
-
 add_executable(ANA "")
 target_sources(ANA
     PRIVATE

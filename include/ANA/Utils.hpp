@@ -14,7 +14,7 @@ namespace ANA {
 // Substract the volume filled with the 4 atoms from the total volume of
 // the corresponding cell.
 double refine_cell_volume(
-    double const entire_cell_vol, Finite_cells_iterator const &cell_iterator);
+    double const entire_cell_vol, Finite_cells_iterator const cell_iterator);
 
 // Cluster neighbouring cells.
 void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
@@ -22,7 +22,7 @@ void cluster_cells_cgal(NA_Vector const &input_cells, NA_Matrix &output_cells,
 
 // Given a cell, get all neighbouring cells that haven't been discovered yet
 void get_neighbors(NA_Vector const &input_cells,
-    Finite_cells_iterator const &query_cell, std::vector<int> &except,
+    Finite_cells_iterator const query_cell, std::vector<int> &except,
     NA_Vector &output_cells);
 
 // Cluster neighbouring cells. Iso-oriented boxes method
@@ -61,7 +61,7 @@ inline double get_void_volume(NA_Vector const &input_cells) {
     double volumen = 0;
 
     double current_cell_vol;
-    for (Finite_cells_iterator const &fc_ite : input_cells) {
+    for (Finite_cells_iterator const fc_ite : input_cells) {
         current_cell_vol = volume(fc_ite);
 
         current_cell_vol = refine_cell_volume(current_cell_vol, fc_ite);
@@ -91,7 +91,7 @@ inline void disregard_lone_cells(
     }
 }
 // Calculate area of the cell's facets
-inline void cell_facets_areas(Finite_cells_iterator const &cell_iterator,
+inline void cell_facets_areas(Finite_cells_iterator const cell_iterator,
     double &facet_0_area, double &facet_1_area, double &facet_2_area,
     double &facet_3_area) {
 

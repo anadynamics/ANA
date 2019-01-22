@@ -18,7 +18,7 @@ inline Vector normal(Point const p0, Point const p1, Point const p2) {
 }
 
 // Just calculate volume of the cell.
-inline double volume(Finite_cells_iterator const &cell_iterator) {
+inline double volume(Finite_cells_iterator const cell_iterator) {
     return CGAL::to_double(CGAL::volume(cell_iterator->vertex(0)->point(),
         cell_iterator->vertex(1)->point(), cell_iterator->vertex(2)->point(),
         cell_iterator->vertex(3)->point()));
