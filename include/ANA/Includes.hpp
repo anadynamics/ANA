@@ -91,8 +91,8 @@ using Object = CGAL::Object;
 using Triangle = CGAL::Triangle_3<EPIC>;
 using Triang_Vector = std::vector<Triangle>;
 using Segment = EPIC::Segment_3;
-using Tetrahedron = CGAL::Tetrahedron_3<EPIC>;
-using Tetra_Vector = std::vector<Tetrahedron>;
+using CTetrahedron = CGAL::Tetrahedron_3<EPIC>;
+using Tetra_Vector = std::vector<CTetrahedron>;
 using Box =
     CGAL::Box_intersection_d::Box_with_handle_d<double, 3, Finite_cells_iterator>;
 

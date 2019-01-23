@@ -23,6 +23,7 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
 
     ANA::draw(hueco, "sal.pdb");
     ANA::draw(CH, "hull.pdb");
+    printf("Volumen:  %f\n", hueco._volume + hueco._outer_volume);
 
     return 0;
 }

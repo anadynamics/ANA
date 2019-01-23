@@ -91,7 +91,7 @@ void cluster_cells_boxes(
 
     // Get cells bounding boxes.
     for (auto const &cell_ite : input_cells) {
-        const Tetrahedron tetra(cell_ite->vertex(0)->point(),
+        const CTetrahedron tetra(cell_ite->vertex(0)->point(),
             cell_ite->vertex(1)->point(), cell_ite->vertex(2)->point(),
             cell_ite->vertex(3)->point());
         boxes.push_back(Box(std::move(tetra.bbox()), cell_ite));

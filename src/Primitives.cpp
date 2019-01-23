@@ -59,11 +59,8 @@ Cavity::Cavity(Molecule const &molecule, CellFilteringOptions const cell_opts) {
     Finite_cells_iterator fc_ite_end = _triangulation.finite_cells_end();
     for (auto fc_ite = _triangulation.finite_cells_begin();
          fc_ite != fc_ite_end; ++fc_ite) {
-
-        double const vol = volume(fc_ite);
-        if (vol > cell_opts._min_CV) {
+        if (volume(fc_ite) > cell_opts._min_CV) {
             _all_cells.push_back(fc_ite);
-            _volume = _volume + vol;
         }
     }
 }
@@ -75,10 +72,7 @@ void Cavity::add_border_tetra(Point const &p0, Point const &ip1,
         volume(p0, ip1, ip2, ip3) - sphere_sector_vol(p0, ip1, ip2, ip3, vdw0);
     _outer_volume += vol;
 
-    Polyhedron P;
-    P.make_tetrahedron(p0, ip1, ip2, ip3);
-    _border.push_back(std::move(P));
-    _poly_vtx_cnt += 4;
+    _tetra_border.emplace_back(p0, ip1, ip2, ip3);
     return;
 }
 
@@ -95,15 +89,16 @@ void Cavity::add_border_penta(Point const &p0, Point const &p1,
 
     double const vol3 =
         volume(p1, ip3, ip4, ip5) - sphere_sector_vol(p1, ip3, ip4, ip5, vdw1);
-
     _outer_volume += vol1 + vol2 + vol3;
 
-    Polyhedron P;
-    P.make_tetrahedron(p0, p1, ip2, ip3);
-    P.make_tetrahedron(p1, ip2, ip3, ip4);
-    P.make_tetrahedron(p1, ip3, ip4, ip5);
-    _border.push_back(std::move(P));
-    _poly_vtx_cnt += 12;
+    _penta_border.emplace_back(p0, p1, ip2, ip3, ip4, ip5);
+
+    // Polyhedron P;
+    // P.make_tetrahedron(p0, p1, ip2, ip3);
+    // P.make_tetrahedron(p1, ip2, ip3, ip4);
+    // P.make_tetrahedron(p1, ip3, ip4, ip5);
+    // _border.push_back(std::move(P));
+    // _poly_vtx_cnt.push_back(12);
     return;
 }
 
@@ -125,12 +120,14 @@ void Cavity::add_border_penta(Point const &p0, Point const &p1, Point const &p2,
 
     _outer_volume += vol1 + vol2 + vol3;
 
-    Polyhedron P;
-    P.make_tetrahedron(p0, p1, p2, ip3);
-    P.make_tetrahedron(p1, p2, ip3, ip4);
-    P.make_tetrahedron(p2, ip3, ip4, ip5);
-    _border.push_back(std::move(P));
-    _poly_vtx_cnt += 12;
+    _penta_border.emplace_back(p0, p1, p2, ip3, ip4, ip5);
+
+    // Polyhedron P;
+    // P.make_tetrahedron(p0, p1, p2, ip3);
+    // P.make_tetrahedron(p1, p2, ip3, ip4);
+    // P.make_tetrahedron(p2, ip3, ip4, ip5);
+    // _border.push_back(std::move(P));
+    // _poly_vtx_cnt.push_back(12);
     return;
 }
 

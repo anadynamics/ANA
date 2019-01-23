@@ -31,6 +31,7 @@ void carve_CH_into_cavity(Cavity &hueco, ConvexHull const &CH) {
         auto const vertices_out_cnt = vertices_out.size();
         if (vertices_out_cnt == 0) {
             // cell is entirely contained in the included area.
+            hueco._volume = hueco._volume + volume(cell);
             hueco._included_cells.push_back(cell);
         } else if (vertices_out_cnt == 4) {
             // cell is outside the included area.
