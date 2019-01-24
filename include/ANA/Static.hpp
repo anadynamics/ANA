@@ -1,6 +1,5 @@
 #ifndef ANA_STATIC_H
 #define ANA_STATIC_H
-
 #include <ANA/ConvexHullFunctions.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/Options.hpp>

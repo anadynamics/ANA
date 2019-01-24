@@ -13,7 +13,7 @@ void carve_CH_into_cavity(Cavity &hueco, ConvexHull const &CH) {
             Point const test_point(cell->vertex(i)->point());
 
             for (std::size_t j = 0; j < CH._triangles.size(); j++) {
-                Vector test_vtor = test_point - CH._triangles[j][1];
+                CVector test_vtor = test_point - CH._triangles[j][1];
                 test_vtor = test_vtor /
                     std::sqrt(CGAL::to_double(test_vtor.squared_length()));
                 double const test_dot_pdt =

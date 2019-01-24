@@ -1,6 +1,5 @@
 #ifndef ANA_MD_H
 #define ANA_MD_H
-
 #include <ANA/ConvexHullFunctions.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/Options.hpp>

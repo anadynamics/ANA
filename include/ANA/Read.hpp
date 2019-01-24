@@ -1,8 +1,10 @@
 #ifndef ANA_READ_H
 #define ANA_READ_H
-
+#include <ANA/Molecule.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/Primitives.hpp>
+#include <ANA/Cavity.hpp>
+#include <ANA/Molecule.hpp>
 
 namespace ANA {
 // Refine the provided list of amino acids. If its not present, then return an

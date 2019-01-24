@@ -11,3 +11,5 @@ chemfiles/install
 build
 .vscode
 test
+as.hpp
+ras.hpp

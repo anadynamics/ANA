@@ -1,7 +1,9 @@
 #ifndef ANA_PDB_H
 #define ANA_PDB_H
+#include <ANA/Cavity.hpp>
 #include <ANA/ConvexHull.hpp>
 #include <ANA/Includes.hpp>
+#include <ANA/Molecule.hpp>
 #include <ANA/Primitives.hpp>
 
 namespace ANA {

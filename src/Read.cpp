@@ -263,45 +263,57 @@ bool read_static(std::string const &filename,
         double const sin_30 = 0.5;
 
         Point center(x, y, z);
-        incl_area_points.push_back(center + Vector(r, 0, 0));
-        incl_area_points.push_back(center + Vector(0, r, 0));
-        incl_area_points.push_back(center + Vector(0, 0, r));
-        incl_area_points.push_back(center + Vector(-r, 0, 0));
-        incl_area_points.push_back(center + Vector(0, -r, 0));
-        incl_area_points.push_back(center + Vector(0, 0, -r));
+        incl_area_points.push_back(center + CVector(r, 0, 0));
+        incl_area_points.push_back(center + CVector(0, r, 0));
+        incl_area_points.push_back(center + CVector(0, 0, r));
+        incl_area_points.push_back(center + CVector(-r, 0, 0));
+        incl_area_points.push_back(center + CVector(0, -r, 0));
+        incl_area_points.push_back(center + CVector(0, 0, -r));
         // X-Y plane
-        incl_area_points.push_back(center + Vector(r * cos_30, r * sin_30, 0));
-        incl_area_points.push_back(center + Vector(r * sin_30, r * cos_30, 0));
-        incl_area_points.push_back(center + Vector(r * cos_30, -r * sin_30, 0));
-        incl_area_points.push_back(center + Vector(r * sin_30, -r * cos_30, 0));
-        incl_area_points.push_back(center + Vector(-r * cos_30, r * sin_30, 0));
-        incl_area_points.push_back(center + Vector(-r * sin_30, r * cos_30, 0));
+        incl_area_points.push_back(center + CVector(r * cos_30, r * sin_30, 0));
+        incl_area_points.push_back(center + CVector(r * sin_30, r * cos_30, 0));
         incl_area_points.push_back(
-            center + Vector(-r * cos_30, -r * sin_30, 0));
+            center + CVector(r * cos_30, -r * sin_30, 0));
         incl_area_points.push_back(
-            center + Vector(-r * sin_30, -r * cos_30, 0));
+            center + CVector(r * sin_30, -r * cos_30, 0));
+        incl_area_points.push_back(
+            center + CVector(-r * cos_30, r * sin_30, 0));
+        incl_area_points.push_back(
+            center + CVector(-r * sin_30, r * cos_30, 0));
+        incl_area_points.push_back(
+            center + CVector(-r * cos_30, -r * sin_30, 0));
+        incl_area_points.push_back(
+            center + CVector(-r * sin_30, -r * cos_30, 0));
         // X-Z plane
-        incl_area_points.push_back(center + Vector(r * cos_30, 0, r * sin_30));
-        incl_area_points.push_back(center + Vector(r * sin_30, 0, r * cos_30));
-        incl_area_points.push_back(center + Vector(r * cos_30, 0, -r * sin_30));
-        incl_area_points.push_back(center + Vector(r * sin_30, 0, -r * cos_30));
-        incl_area_points.push_back(center + Vector(-r * cos_30, 0, r * sin_30));
-        incl_area_points.push_back(center + Vector(-r * sin_30, 0, r * cos_30));
+        incl_area_points.push_back(center + CVector(r * cos_30, 0, r * sin_30));
+        incl_area_points.push_back(center + CVector(r * sin_30, 0, r * cos_30));
         incl_area_points.push_back(
-            center + Vector(-r * cos_30, 0, -r * sin_30));
+            center + CVector(r * cos_30, 0, -r * sin_30));
         incl_area_points.push_back(
-            center + Vector(-r * sin_30, 0, -r * cos_30));
+            center + CVector(r * sin_30, 0, -r * cos_30));
+        incl_area_points.push_back(
+            center + CVector(-r * cos_30, 0, r * sin_30));
+        incl_area_points.push_back(
+            center + CVector(-r * sin_30, 0, r * cos_30));
+        incl_area_points.push_back(
+            center + CVector(-r * cos_30, 0, -r * sin_30));
+        incl_area_points.push_back(
+            center + CVector(-r * sin_30, 0, -r * cos_30));
         // Y-Z plane
-        incl_area_points.push_back(center + Vector(0, r * cos_30, r * sin_30));
-        incl_area_points.push_back(center + Vector(0, r * sin_30, r * cos_30));
-        incl_area_points.push_back(center + Vector(0, r * cos_30, -r * sin_30));
-        incl_area_points.push_back(center + Vector(0, r * sin_30, -r * cos_30));
-        incl_area_points.push_back(center + Vector(0, -r * cos_30, r * sin_30));
-        incl_area_points.push_back(center + Vector(0, -r * sin_30, r * cos_30));
+        incl_area_points.push_back(center + CVector(0, r * cos_30, r * sin_30));
+        incl_area_points.push_back(center + CVector(0, r * sin_30, r * cos_30));
         incl_area_points.push_back(
-            center + Vector(0, -r * cos_30, -r * sin_30));
+            center + CVector(0, r * cos_30, -r * sin_30));
         incl_area_points.push_back(
-            center + Vector(0, -r * sin_30, -r * cos_30));
+            center + CVector(0, r * sin_30, -r * cos_30));
+        incl_area_points.push_back(
+            center + CVector(0, -r * cos_30, r * sin_30));
+        incl_area_points.push_back(
+            center + CVector(0, -r * sin_30, r * cos_30));
+        incl_area_points.push_back(
+            center + CVector(0, -r * cos_30, -r * sin_30));
+        incl_area_points.push_back(
+            center + CVector(0, -r * sin_30, -r * cos_30));
 
         Polyhedron CH;
         CGAL::convex_hull_3(
@@ -338,9 +350,9 @@ bool read_static(std::string const &filename,
 
         Point center_1(x1, y1, z1);
         Point center_2(x2, y2, z2);
-        Vector vdiff(center_2 - center_1);
-        Vector n1(-vdiff.y(), vdiff.x(), 0);
-        Vector n2 = CGAL::cross_product(vdiff, n1);
+        CVector vdiff(center_2 - center_1);
+        CVector n1(-vdiff.y(), vdiff.x(), 0);
+        CVector n2 = CGAL::cross_product(vdiff, n1);
         n1 = n1 / std::sqrt(CGAL::to_double(n1.squared_length()));
         n2 = n2 / std::sqrt(CGAL::to_double(n2.squared_length()));
 
@@ -420,9 +432,9 @@ bool read_static(std::string const &filename,
 
         Point center_1(x1, y1, z1);
         Point center_2(x2, y2, z2);
-        Vector vdiff(center_2 - center_1);
-        Vector n1(-vdiff.y(), vdiff.x(), 0);
-        Vector n2 = CGAL::cross_product(vdiff, n1);
+        CVector vdiff(center_2 - center_1);
+        CVector n1(-vdiff.y(), vdiff.x(), 0);
+        CVector n2 = CGAL::cross_product(vdiff, n1);
         n1 = n1 / std::sqrt(CGAL::to_double(n1.squared_length()));
         n2 = n2 / std::sqrt(CGAL::to_double(n2.squared_length()));
 

@@ -1,11 +1,13 @@
 #ifndef ANA_UTILS_H
 #define ANA_UTILS_H
-
+#include <ANA/Molecule.hpp>
 #include <ANA/CGALUtils.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/NDDUtils.hpp>
 #include <ANA/Options.hpp>
 #include <ANA/Primitives.hpp>
+#include <ANA/Cavity.hpp>
+#include <ANA/Molecule.hpp>
 #include <ANA/Read.hpp>
 #include <ANA/Write.hpp>
 
@@ -160,9 +162,9 @@ void tool_PDB_norm(
     std::string const &in_filename, std::string const &tool_pdb_norm);
 
 // Helper function for inserting elements in ordered vectors.
-template <class Vector, class T>
-void insert_into_ord_vtor(Vector &v, const T &to_insert) {
-    typename Vector::iterator i =
+template <class CVector, class T>
+void insert_into_ord_vtor(CVector &v, const T &to_insert) {
+    typename CVector::iterator i =
         std::lower_bound(v.begin(), v.end(), to_insert);
     if (i == v.end() || to_insert < *i) {
         v.insert(i, to_insert);

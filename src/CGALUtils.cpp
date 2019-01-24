@@ -8,17 +8,17 @@ double sphere_sector_vol(Point const &p0, Point const &p1, Point const &p2,
     Point const &p3, double const radius) {
 
     // Get 1st point of the mini tetrahedron.
-    Vector vec_1 = p1 - p0;
+    CVector vec_1 = p1 - p0;
     vec_1 =
         (vec_1 / std::sqrt(CGAL::to_double(vec_1.squared_length()))) * radius;
     Point point_1 = p0 + vec_1;
     // Get 2nd point of the mini tetrahedron.
-    Vector vec_2 = p2 - p0;
+    CVector vec_2 = p2 - p0;
     vec_2 =
         (vec_2 / std::sqrt(CGAL::to_double(vec_2.squared_length()))) * radius;
     Point point_2 = p0 + vec_2;
     // Get 3rd point of the mini tetrahedron.
-    Vector vec_3 = p3 - p0;
+    CVector vec_3 = p3 - p0;
     vec_3 =
         (vec_3 / std::sqrt(CGAL::to_double(vec_3.squared_length()))) * radius;
     Point point_3 = p0 + vec_3;

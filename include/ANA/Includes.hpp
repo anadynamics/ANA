@@ -57,7 +57,7 @@ using Tds = CGAL::Triangulation_data_structure_3<Vb>;
 using Delaunay = CGAL::Delaunay_triangulation_3<EPIC, Tds>;
 
 // Definitions for Delaunay triangulation
-using Vector = CGAL::Vector_3<EPIC>;
+using CVector = CGAL::Vector_3<EPIC>;
 using Segment = CGAL::Segment_3<EPIC>;
 using Point = Delaunay::Point;
 using Vertex_handle = Delaunay::Vertex_handle;

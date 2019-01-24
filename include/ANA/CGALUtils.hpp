@@ -1,16 +1,15 @@
 #ifndef ANA_CGAL_UTILS_H
 #define ANA_CGAL_UTILS_H
-
 #include <ANA/Includes.hpp>
 
 namespace ANA {
 
 // Get the normal vector of the plane specified by p0, p1, p3.
-inline Vector normal(Point const p0, Point const p1, Point const p2) {
+inline CVector normal(Point const p0, Point const p1, Point const p2) {
 
-    Vector const plane_vec_1 = p1 - p0;
-    Vector const plane_vec_2 = p2 - p1;
-    Vector plane_normal = CGAL::cross_product(plane_vec_1, plane_vec_2);
+    CVector const plane_vec_1 = p1 - p0;
+    CVector const plane_vec_2 = p2 - p1;
+    CVector plane_normal = CGAL::cross_product(plane_vec_1, plane_vec_2);
     plane_normal = plane_normal /
         std::sqrt(CGAL::to_double(plane_normal.squared_length()));
 

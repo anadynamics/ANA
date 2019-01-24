@@ -1,8 +1,9 @@
-#ifndef ANA_CONVEX_HULL_FUNCTIONS_H
-#define ANA_CONVEX_HULL_FUNCTIONS_H
-
+#ifndef ANA_CONVEXHULLFUNCTIONS_H
+#define ANA_CONVEXHULLFUNCTIONS_H
+#include <ANA/Cavity.hpp>
 #include <ANA/ConvexHull.hpp>
 #include <ANA/Includes.hpp>
+#include <ANA/Molecule.hpp>
 #include <ANA/Primitives.hpp>
 
 namespace ANA {

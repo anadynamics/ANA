@@ -18,28 +18,33 @@ endif()
 add_executable(ANA "")
 target_sources(ANA
     PRIVATE
+
+        src/Cavity.cpp
         src/CGALUtils.cpp
         src/ConvexHull.cpp
         src/ConvexHullFunctions.cpp
         src/main.cpp
         src/MD.cpp
         src/Modes.cpp
+        src/Molecule.cpp
         src/NDD.cpp
         src/NDDUtils.cpp
         src/PDB.cpp
-        src/Primitives.cpp
         src/ProgramOptions.cpp
         src/Read.cpp
         src/Static.cpp
         src/Utils.cpp
         src/Write.cpp
 
+
+        include/ANA/Cavity.hpp
         include/ANA/CGALUtils.hpp
         include/ANA/ConvexHullFunctions.hpp
         include/ANA/ConvexHull.hpp
         include/ANA/Includes.hpp
         include/ANA/MD.hpp
         include/ANA/Modes.hpp
+        include/ANA/Molecule.hpp
         include/ANA/NDD.hpp
         include/ANA/NDDUtils.hpp
         include/ANA/Options.hpp

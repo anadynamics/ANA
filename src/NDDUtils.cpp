@@ -81,12 +81,13 @@ void ndd_read_PDB_get_cells(std::string const &filename,
 }
 
 // Analytical NDD.
-void ndd(NA_Vector const &cavity_void_cells, NDDOptions const &NDD_opts) {
+void ndd(
+    Cavity &cavity_void_cells, ConvexHull &CH, NDDOptions const &NDD_opts) {
 
     std::vector<double> output_volumes;
     std::vector<int> all_indices;
 
-    NDD_IVector const cells_indices = get_vertices(cavity_void_cells);
+    // NDD_IVector const cells_indices = get_vertices(cavity_void_cells);
 
     Modes const modes(NDD_opts._modes_ndd_filename);
 
@@ -181,26 +182,26 @@ NDD_IVector get_vertices(NA_Vector const &cavity_void_cells) {
 double sphere_sector_vol(Point const &p_0, Point const &p_1, Point const &p_2,
     Point const &p_3, double const radius) {
     // get 1st point of the mini tetrahedron
-    Vector vec_1 = p_1 - p_0;
+    CVector vec_1 = p_1 - p_0;
     vec_1 =
         vec_1 / (std::sqrt(CGAL::to_double(vec_1.squared_length()))) * radius;
     Point point_1 = p_0 + vec_1;
     // get 2nd point of the mini tetrahedron
-    Vector vec_2 = p_2 - p_0;
+    CVector vec_2 = p_2 - p_0;
     vec_2 =
         vec_2 / (std::sqrt(CGAL::to_double(vec_2.squared_length()))) * radius;
     Point point_2 = p_0 + vec_2;
     // get 3rd point of the mini tetrahedron
-    Vector vec_3 = p_3 - p_0;
+    CVector vec_3 = p_3 - p_0;
     vec_3 =
         vec_3 / (std::sqrt(CGAL::to_double(vec_3.squared_length()))) * radius;
     Point point_3 = p_0 + vec_3;
 
     // Now, get the volume of the sphere slice
     // get the normal vector
-    Vector plane_vec_1 = p_2 - p_1;
-    Vector plane_vec_2 = p_3 - p_2;
-    Vector plane_normal = CGAL::cross_product(plane_vec_1, plane_vec_2);
+    CVector plane_vec_1 = p_2 - p_1;
+    CVector plane_vec_2 = p_3 - p_2;
+    CVector plane_normal = CGAL::cross_product(plane_vec_1, plane_vec_2);
     // normalize the normal vector
     plane_normal = plane_normal /
         (std::sqrt(CGAL::to_double(plane_normal.squared_length())));
@@ -253,14 +254,14 @@ void ndd_discard_CH_0(NDD_Vector const &in_coords,
     std::vector<std::array<bool, 4>> &intersecting_bool,
     std::vector<int> &intersecting_total) {
 
-    std::vector<Vector> CH_normals;
+    std::vector<CVector> CH_normals;
     std::vector<Point> CH_vtces;
     // Triangle normals point inwards. Only inside points will give a
     // positive dot product against all normals
     for (auto const &triangle : CH_triangs) {
-        Vector v1 = triangle.vertex(1) - triangle.vertex(0);
-        Vector v2 = triangle.vertex(2) - triangle.vertex(1);
-        Vector normal = CGAL::cross_product(v2, v1);
+        CVector v1 = triangle.vertex(1) - triangle.vertex(0);
+        CVector v2 = triangle.vertex(2) - triangle.vertex(1);
+        CVector normal = CGAL::cross_product(v2, v1);
         normal = normal / std::sqrt(CGAL::to_double(normal.squared_length()));
         CH_normals.push_back(normal);
         CH_vtces.push_back(triangle.vertex(1));
@@ -275,7 +276,7 @@ void ndd_discard_CH_0(NDD_Vector const &in_coords,
             Point test_point(ndd_array[i].first);
 
             for (std::size_t j = 0; j < CH_vtces.size(); j++) {
-                Vector test_vtor = test_point - CH_vtces[j];
+                CVector test_vtor = test_point - CH_vtces[j];
                 test_vtor = test_vtor /
                     std::sqrt(CGAL::to_double(test_vtor.squared_length()));
                 double test_dot_pdt =
@@ -365,13 +366,13 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                         for (std::size_t k = i + 1; k < i_points.size(); k++) {
                             if (i_points[i] == i_points[k]) {
                                 i_points[k] = i_points[k] +
-                                    Vector(0.01 * i, 0.01 * k, 0.01);
+                                    CVector(0.01 * i, 0.01 * k, 0.01);
                                 degeneracies_bool = true;
                             }
                         }
                     }
                     if (degeneracies_bool == true) {
-                        p0 = p0 - Vector(0.01, 0.01, 0.01);
+                        p0 = p0 - CVector(0.01, 0.01, 0.01);
                     }
 
                     // Construct the polyhedron and get its volume.
@@ -445,14 +446,14 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                                      k++) {
                                     if (i_points[k] == i_points[k]) {
                                         i_points[k] = i_points[k] +
-                                            Vector(0.01, 0.01, 0.01);
+                                            CVector(0.01, 0.01, 0.01);
                                         degeneracies_bool = true;
                                     }
                                 }
                             }
                             if (degeneracies_bool == true) {
-                                p0 = p0 - Vector(0.01, 0.01, 0.01);
-                                p1 = p1 - Vector(0.01, -0.01, 0.01);
+                                p0 = p0 - CVector(0.01, 0.01, 0.01);
+                                p1 = p1 - CVector(0.01, -0.01, 0.01);
                             }
 
                             // Construct the polyhedron and get its volume
@@ -553,15 +554,15 @@ double ndd_discard_CH_1(NDD_Vector const &in_intersecting_coords,
                                              k < i_points.size(); k++) {
                                             if (i_points[k] == i_points[k]) {
                                                 i_points[k] = i_points[k] +
-                                                    Vector(0.01, 0.01, 0.01);
+                                                    CVector(0.01, 0.01, 0.01);
                                                 degeneracies_bool = true;
                                             }
                                         }
                                     }
                                     if (degeneracies_bool == true) {
-                                        p0 = p0 - Vector(0.01, 0.01, 0.01);
-                                        p1 = p1 - Vector(0.01, -0.01, 0.01);
-                                        p2 = p2 - Vector(0.01, -0.01, -0.01);
+                                        p0 = p0 - CVector(0.01, 0.01, 0.01);
+                                        p1 = p1 - CVector(0.01, -0.01, 0.01);
+                                        p2 = p2 - CVector(0.01, -0.01, -0.01);
                                     }
 
                                     // Construct the polyhedron and get its

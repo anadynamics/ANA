@@ -288,7 +288,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
             Point test_point = CGAL::centroid(cell_ite->vertex(0)->point(),
                 cell_ite->vertex(1)->point(), cell_ite->vertex(2)->point(),
                 cell_ite->vertex(3)->point());
-            Vector diff_cm = test_point - cm;
+            CVector diff_cm = test_point - cm;
             diff_cm = diff_cm /
                 (std::sqrt(CGAL::to_double(diff_cm.squared_length())));
 
@@ -296,7 +296,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
                 // if ( current_point == test_point ) continue; // only when
                 // checking
                 // vtces
-                Vector diff_1 = current_point - test_point;
+                CVector diff_1 = current_point - test_point;
                 double diff_norm =
                     std::sqrt(CGAL::to_double(diff_1.squared_length()));
                 if (diff_norm > max_length)
@@ -316,7 +316,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
             Point test_point = CGAL::centroid(cell_ite->vertex(0)->point(),
                 cell_ite->vertex(1)->point(), cell_ite->vertex(2)->point(),
                 cell_ite->vertex(3)->point());
-            Vector diff_cm = test_point - cm;
+            CVector diff_cm = test_point - cm;
             diff_cm = diff_cm /
                 (std::sqrt(CGAL::to_double(diff_cm.squared_length())));
 
@@ -324,7 +324,7 @@ void discard_ASA_dot_pdt_cm(Point const &cm,
                 // if ( current_point == test_point ) continue; // only when
                 // checking
                 // vtces
-                Vector diff_1 = current_point - test_point;
+                CVector diff_1 = current_point - test_point;
                 double diff_norm =
                     std::sqrt(CGAL::to_double(diff_1.squared_length()));
                 if (diff_norm > max_length)
@@ -350,7 +350,7 @@ void discard_ASA_CACH(std::vector<Point> const &Calpha_xyz,
     NA_Vector &output_cells) {
 
     Polyhedron CH;
-    std::vector<Vector> CH_normals;
+    std::vector<CVector> CH_normals;
     std::vector<Point> CH_vtces;
 
     // Get the convex hull determined by the Calphas
@@ -367,9 +367,9 @@ void discard_ASA_CACH(std::vector<Point> const &Calpha_xyz,
         Point p0((++he_ite)->vertex()->point());
         Point p1((++he_ite)->vertex()->point());
         Point p2((++he_ite)->vertex()->point());
-        Vector v1 = p1 - p0;
-        Vector v2 = p2 - p1;
-        Vector normal = CGAL::cross_product(v2, v1);
+        CVector v1 = p1 - p0;
+        CVector v2 = p2 - p1;
+        CVector normal = CGAL::cross_product(v2, v1);
         normal = normal / std::sqrt(CGAL::to_double(normal.squared_length()));
         CH_normals.push_back(normal);
         CH_vtces.push_back(he_ite->vertex()->point());
@@ -383,7 +383,7 @@ void discard_ASA_CACH(std::vector<Point> const &Calpha_xyz,
             cell_ite->vertex(3)->point());
 
         for (std::size_t j = 0; j < CH_vtces.size(); j++) {
-            Vector test_vtor = test_point - CH_vtces[j];
+            CVector test_vtor = test_point - CH_vtces[j];
             test_vtor = test_vtor /
                 std::sqrt(CGAL::to_double(test_vtor.squared_length()));
             double test_dot_pdt = CGAL::to_double(test_vtor * CH_normals[j]);
@@ -425,14 +425,14 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
             Point const ctd = CGAL::centroid(cell_ite->vertex(0)->point(),
                 cell_ite->vertex(1)->point(), cell_ite->vertex(2)->point(),
                 cell_ite->vertex(3)->point());
-            const Vector Vctd = ctd - CGAL::ORIGIN;
-            const Vector Vx = Vctd + Vector(1, 0, 0);
-            const Vector Vy = Vctd + Vector(0, 1, 0);
-            const Vector Vz = Vctd + Vector(0, 0, 1);
+            const CVector Vctd = ctd - CGAL::ORIGIN;
+            const CVector Vx = Vctd + CVector(1, 0, 0);
+            const CVector Vy = Vctd + CVector(0, 1, 0);
+            const CVector Vz = Vctd + CVector(0, 0, 1);
             // Get xy, xz and yz planes normal vectors
-            Vector Vxy = CGAL::cross_product(Vx, Vy);
-            Vector Vxz = CGAL::cross_product(Vx, Vz);
-            Vector Vyz = CGAL::cross_product(Vy, Vz);
+            CVector Vxy = CGAL::cross_product(Vx, Vy);
+            CVector Vxz = CGAL::cross_product(Vx, Vz);
+            CVector Vyz = CGAL::cross_product(Vy, Vz);
             // Normalize them
             Vxy = Vxy / (std::sqrt(CGAL::to_double(Vxy.squared_length())));
             Vxz = Vxz / (std::sqrt(CGAL::to_double(Vxz.squared_length())));
@@ -444,7 +444,7 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
             for (auto const &CA : Calpha_xyz) {
 
                 // Get difference vector from centroid to current Calpha
-                Vector Vdiff = CA - ctd;
+                CVector Vdiff = CA - ctd;
                 double Vdiff_norm =
                     std::sqrt(CGAL::to_double(Vdiff.squared_length()));
                 if (Vdiff_norm > max_length)
@@ -513,14 +513,14 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
             Point const ctd = CGAL::centroid(cell_ite->vertex(0)->point(),
                 cell_ite->vertex(1)->point(), cell_ite->vertex(2)->point(),
                 cell_ite->vertex(3)->point());
-            const Vector Vctd = ctd - CGAL::ORIGIN;
-            const Vector Vx = Vctd + Vector(1, 0, 0);
-            const Vector Vy = Vctd + Vector(0, 1, 0);
-            const Vector Vz = Vctd + Vector(0, 0, 1);
+            const CVector Vctd = ctd - CGAL::ORIGIN;
+            const CVector Vx = Vctd + CVector(1, 0, 0);
+            const CVector Vy = Vctd + CVector(0, 1, 0);
+            const CVector Vz = Vctd + CVector(0, 0, 1);
             // Get xy, xz and yz planes normal vectors
-            Vector Vxy = CGAL::cross_product(Vx, Vy);
-            Vector Vxz = CGAL::cross_product(Vx, Vz);
-            Vector Vyz = CGAL::cross_product(Vy, Vz);
+            CVector Vxy = CGAL::cross_product(Vx, Vy);
+            CVector Vxz = CGAL::cross_product(Vx, Vz);
+            CVector Vyz = CGAL::cross_product(Vy, Vz);
             // Normalize them
             Vxy = Vxy / (std::sqrt(CGAL::to_double(Vxy.squared_length())));
             Vxz = Vxz / (std::sqrt(CGAL::to_double(Vxz.squared_length())));
@@ -532,7 +532,7 @@ void discard_ASA_dot_pdt_axes(std::vector<Point> const &Calpha_xyz,
             for (auto const &CA : Calpha_xyz) {
 
                 // Get difference vector from centroid to current Calpha
-                Vector Vdiff = CA - ctd;
+                CVector Vdiff = CA - ctd;
                 double Vdiff_norm =
                     std::sqrt(CGAL::to_double(Vdiff.squared_length()));
                 if (Vdiff_norm > max_length)
@@ -665,14 +665,14 @@ double refine_cell_volume(
 void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
     NA_Vector &out_cells) {
 
-    std::vector<Vector> CH_normals;
+    std::vector<CVector> CH_normals;
     std::vector<Point> CH_vtces;
     // Triangle normals point inwards. Only inside points will give a positive
     // dot product against all normals
     for (auto const &triangle : CH_triangs) {
-        Vector v1 = triangle.vertex(1) - triangle.vertex(0);
-        Vector v2 = triangle.vertex(2) - triangle.vertex(1);
-        Vector normal = CGAL::cross_product(v2, v1);
+        CVector v1 = triangle.vertex(1) - triangle.vertex(0);
+        CVector v2 = triangle.vertex(2) - triangle.vertex(1);
+        CVector normal = CGAL::cross_product(v2, v1);
         normal = normal / std::sqrt(CGAL::to_double(normal.squared_length()));
         CH_normals.push_back(normal);
         CH_vtces.push_back(triangle.vertex(1));
@@ -685,7 +685,7 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
             Point test_point(cell_ite->vertex(i)->point());
 
             for (std::size_t j = 0; j < CH_vtces.size(); ++j) {
-                Vector test_vtor = test_point - CH_vtces[j];
+                CVector test_vtor = test_point - CH_vtces[j];
                 test_vtor = test_vtor /
                     std::sqrt(CGAL::to_double(test_vtor.squared_length()));
                 double test_dot_pdt =
@@ -715,14 +715,14 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
     std::vector<std::array<bool, 4>> &intersecting_bool,
     std::vector<int> &intersecting_total) {
 
-    std::vector<Vector> CH_normals;
+    std::vector<CVector> CH_normals;
     std::vector<Point> CH_vtces;
     // Triangle normals point inwards. Only inside points will give a positive
     // dot product against all normals.
     for (auto const &triangle : CH_triangs) {
-        Vector v1 = triangle.vertex(1) - triangle.vertex(0);
-        Vector v2 = triangle.vertex(2) - triangle.vertex(1);
-        Vector normal = CGAL::cross_product(v2, v1);
+        CVector v1 = triangle.vertex(1) - triangle.vertex(0);
+        CVector v2 = triangle.vertex(2) - triangle.vertex(1);
+        CVector normal = CGAL::cross_product(v2, v1);
         normal = normal / std::sqrt(CGAL::to_double(normal.squared_length()));
         CH_normals.push_back(normal);
         CH_vtces.push_back(triangle.vertex(1));
@@ -737,7 +737,7 @@ void discard_CH_0(NA_Vector const &in_cells, Triang_Vector const &CH_triangs,
             Point test_point(cell_ite->vertex(i)->point());
 
             for (std::size_t j = 0; j < CH_vtces.size(); j++) {
-                Vector test_vtor = test_point - CH_vtces[j];
+                CVector test_vtor = test_point - CH_vtces[j];
                 test_vtor = test_vtor /
                     std::sqrt(CGAL::to_double(test_vtor.squared_length()));
                 double test_dot_pdt =
@@ -831,13 +831,13 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                         for (std::size_t k = i + 1; k < i_points.size(); k++) {
                             if (i_points[i] == i_points[k]) {
                                 i_points[k] = i_points[k] +
-                                    Vector(0.01 * i, 0.01 * k, 0.01);
+                                    CVector(0.01 * i, 0.01 * k, 0.01);
                                 degeneracies_bool = true;
                             }
                         }
                     }
                     if (degeneracies_bool == true) {
-                        p0 = p0 - Vector(0.01, 0.01, 0.01);
+                        p0 = p0 - CVector(0.01, 0.01, 0.01);
                     }
 
                     // Construct the polyhedron and get its volume
@@ -929,14 +929,14 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                      k++) {
                                     if (i_points[k] == i_points[k]) {
                                         i_points[k] = i_points[k] +
-                                            Vector(0.01, 0.01, 0.01);
+                                            CVector(0.01, 0.01, 0.01);
                                         degeneracies_bool = true;
                                     }
                                 }
                             }
                             if (degeneracies_bool == true) {
-                                p0 = p0 - Vector(0.01, 0.01, 0.01);
-                                p1 = p1 - Vector(0.01, -0.01, 0.01);
+                                p0 = p0 - CVector(0.01, 0.01, 0.01);
+                                p1 = p1 - CVector(0.01, -0.01, 0.01);
                             }
 
                             // Construct the polyhedron and get its volume
@@ -1056,15 +1056,15 @@ double discard_CH_1(NA_Vector const &in_intersecting_cells,
                                              k < i_points.size(); k++) {
                                             if (i_points[k] == i_points[k]) {
                                                 i_points[k] = i_points[k] +
-                                                    Vector(0.01, 0.01, 0.01);
+                                                    CVector(0.01, 0.01, 0.01);
                                                 degeneracies_bool = true;
                                             }
                                         }
                                     }
                                     if (degeneracies_bool == true) {
-                                        p0 = p0 - Vector(0.01, 0.01, 0.01);
-                                        p1 = p1 - Vector(0.01, -0.01, 0.01);
-                                        p2 = p2 - Vector(0.01, -0.01, -0.01);
+                                        p0 = p0 - CVector(0.01, 0.01, 0.01);
+                                        p1 = p1 - CVector(0.01, -0.01, 0.01);
+                                        p2 = p2 - CVector(0.01, -0.01, -0.01);
                                     }
 
                                     // Construct the polyhedron and get its

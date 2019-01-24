@@ -121,33 +121,33 @@ ConvexHull::ConvexHull(std::string const &sphere_proto, SphereTag) {
     // Drawin a pseudo-sphere. The first 6 correspondon the XYZ axes, the
     // next 8 to the X-Y plane, then 8 more for the X-Z plane and 8 for the
     // Y-Z plane.
-    std::array<Point, 30> const incl_area_points{center + Vector(r, 0, 0),
-        center + Vector(0, r, 0), center + Vector(0, 0, r),
-        center + Vector(-r, 0, 0), center + Vector(0, -r, 0),
-        center + Vector(0, 0, -r), center + Vector(r * cos_30, r * sin_30, 0),
-        center + Vector(r * sin_30, r * cos_30, 0),
-        center + Vector(r * cos_30, -r * sin_30, 0),
-        center + Vector(r * sin_30, -r * cos_30, 0),
-        center + Vector(-r * cos_30, r * sin_30, 0),
-        center + Vector(-r * sin_30, r * cos_30, 0),
-        center + Vector(-r * cos_30, -r * sin_30, 0),
-        center + Vector(-r * sin_30, -r * cos_30, 0),
-        center + Vector(r * cos_30, 0, r * sin_30),
-        center + Vector(r * sin_30, 0, r * cos_30),
-        center + Vector(r * cos_30, 0, -r * sin_30),
-        center + Vector(r * sin_30, 0, -r * cos_30),
-        center + Vector(-r * cos_30, 0, r * sin_30),
-        center + Vector(-r * sin_30, 0, r * cos_30),
-        center + Vector(-r * cos_30, 0, -r * sin_30),
-        center + Vector(-r * sin_30, 0, -r * cos_30),
-        center + Vector(0, r * cos_30, r * sin_30),
-        center + Vector(0, r * sin_30, r * cos_30),
-        center + Vector(0, r * cos_30, -r * sin_30),
-        center + Vector(0, r * sin_30, -r * cos_30),
-        center + Vector(0, -r * cos_30, r * sin_30),
-        center + Vector(0, -r * sin_30, r * cos_30),
-        center + Vector(0, -r * cos_30, -r * sin_30),
-        center + Vector(0, -r * sin_30, -r * cos_30)};
+    std::array<Point, 30> const incl_area_points{center + CVector(r, 0, 0),
+        center + CVector(0, r, 0), center + CVector(0, 0, r),
+        center + CVector(-r, 0, 0), center + CVector(0, -r, 0),
+        center + CVector(0, 0, -r), center + CVector(r * cos_30, r * sin_30, 0),
+        center + CVector(r * sin_30, r * cos_30, 0),
+        center + CVector(r * cos_30, -r * sin_30, 0),
+        center + CVector(r * sin_30, -r * cos_30, 0),
+        center + CVector(-r * cos_30, r * sin_30, 0),
+        center + CVector(-r * sin_30, r * cos_30, 0),
+        center + CVector(-r * cos_30, -r * sin_30, 0),
+        center + CVector(-r * sin_30, -r * cos_30, 0),
+        center + CVector(r * cos_30, 0, r * sin_30),
+        center + CVector(r * sin_30, 0, r * cos_30),
+        center + CVector(r * cos_30, 0, -r * sin_30),
+        center + CVector(r * sin_30, 0, -r * cos_30),
+        center + CVector(-r * cos_30, 0, r * sin_30),
+        center + CVector(-r * sin_30, 0, r * cos_30),
+        center + CVector(-r * cos_30, 0, -r * sin_30),
+        center + CVector(-r * sin_30, 0, -r * cos_30),
+        center + CVector(0, r * cos_30, r * sin_30),
+        center + CVector(0, r * sin_30, r * cos_30),
+        center + CVector(0, r * cos_30, -r * sin_30),
+        center + CVector(0, r * sin_30, -r * cos_30),
+        center + CVector(0, -r * cos_30, r * sin_30),
+        center + CVector(0, -r * sin_30, r * cos_30),
+        center + CVector(0, -r * cos_30, -r * sin_30),
+        center + CVector(0, -r * sin_30, -r * cos_30)};
 
     try {
         run_convex_hull(incl_area_points);
@@ -174,9 +174,9 @@ ConvexHull::ConvexHull(std::string const &cylinder_proto, CylinderTag) {
 
     Point const center_1(x1, y1, z1), center_2(x2, y2, z2);
 
-    Vector const vdiff(center_2 - center_1);
-    Vector n1(-vdiff.y(), vdiff.x(), 0);
-    Vector n2 = CGAL::cross_product(vdiff, n1);
+    CVector const vdiff(center_2 - center_1);
+    CVector n1(-vdiff.y(), vdiff.x(), 0);
+    CVector n2 = CGAL::cross_product(vdiff, n1);
     n1 = n1 / std::sqrt(CGAL::to_double(n1.squared_length()));
     n2 = n2 / std::sqrt(CGAL::to_double(n2.squared_length()));
 
@@ -224,9 +224,9 @@ ConvexHull::ConvexHull(std::string const &prism_proto, PrismTag) {
     double const height = parse_double(stream_prism) / 2;
 
     Point const center_1(x1, y1, z1), center_2(x2, y2, z2);
-    Vector const vdiff(center_2 - center_1);
-    Vector n1(-vdiff.y(), vdiff.x(), 0);
-    Vector n2 = CGAL::cross_product(vdiff, n1);
+    CVector const vdiff(center_2 - center_1);
+    CVector n1(-vdiff.y(), vdiff.x(), 0);
+    CVector n2 = CGAL::cross_product(vdiff, n1);
     n1 = n1 / std::sqrt(CGAL::to_double(n1.squared_length()));
     n2 = n2 / std::sqrt(CGAL::to_double(n2.squared_length()));
 

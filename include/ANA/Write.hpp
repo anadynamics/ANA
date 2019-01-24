@@ -1,7 +1,8 @@
 #ifndef ANA_WRITE_H
 #define ANA_WRITE_H
-
+#include <ANA/Cavity.hpp>
 #include <ANA/Includes.hpp>
+#include <ANA/Molecule.hpp>
 #include <ANA/Primitives.hpp>
 #include <ANA/Utils.hpp>
 

@@ -1,7 +1,8 @@
 #ifndef ANA_CONVEX_HULL_H
 #define ANA_CONVEX_HULL_H
-
+#include <ANA/Cavity.hpp>
 #include <ANA/Includes.hpp>
+#include <ANA/Molecule.hpp>
 #include <ANA/Options.hpp>
 #include <ANA/Primitives.hpp>
 
@@ -61,9 +62,9 @@ public:
             auto const p1 = he_ite->vertex()->point();
             he_ite++;
             auto const p2 = he_ite->vertex()->point();
-            Vector const v1 = p1 - p0;
-            Vector const v2 = p2 - p1;
-            Vector normal = CGAL::cross_product(v2, v1);
+            CVector const v1 = p1 - p0;
+            CVector const v2 = p2 - p1;
+            CVector normal = CGAL::cross_product(v2, v1);
             normal =
                 normal / std::sqrt(CGAL::to_double(normal.squared_length()));
             _normals.push_back(normal);
@@ -75,7 +76,7 @@ public:
     }
 
     std::vector<Triangle> _triangles;
-    std::vector<Vector> _normals;
+    std::vector<CVector> _normals;
 };
 
 ConvexHull create_convex_hull(

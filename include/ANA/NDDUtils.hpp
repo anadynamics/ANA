@@ -1,19 +1,14 @@
 #ifndef ANA_NDD_UTILS_H
 #define ANA_NDD_UTILS_H
-
+#include <ANA/Cavity.hpp>
+#include <ANA/ConvexHull.hpp>
 #include <ANA/Includes.hpp>
 #include <ANA/Modes.hpp>
+#include <ANA/Molecule.hpp>
 #include <ANA/Options.hpp>
 #include <ANA/Primitives.hpp>
 #include <ANA/Read.hpp>
 #include <ANA/Utils.hpp>
-#include <chemfiles.hpp>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <utility>
-#include <vector>
 
 using std::size_t;
 
@@ -30,7 +25,7 @@ void ndd_read_PDB_get_cells(std::string const &filename,
     Triang_Vector &CH_triangs);
 
 // Analytical NDD
-void ndd(NA_Vector const &cavity_void_cells, NDDOptions const &NDD_opts);
+void ndd(Cavity &cavity_void_cells, ConvexHull &CH, NDDOptions const &NDD_opts);
 
 // Perform Non Delaunay Dynamics.
 void ndd_nondelaunay_dynamics_old(NA_Vector const &cavity_void_cells,
