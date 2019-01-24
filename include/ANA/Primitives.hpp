@@ -71,7 +71,7 @@ public:
         Point const &ip3, Point const &ip4, Point const &ip5, double const vdw0,
         double const vdw1, double const vdw2);
 
-    friend void draw(Cavity const &hueco, std::string const &filename);
+    friend void draw_lines(Cavity const &hueco, std::string const &filename);
 
     Delaunay _triangulation;
     std::vector<Finite_cells_iterator> _all_cells, _included_cells;

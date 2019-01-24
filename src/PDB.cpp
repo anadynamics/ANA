@@ -2,8 +2,8 @@
 
 namespace ANA {
 
-void draw(Point const &punto, FILE *out_file, int const idx, int const resid,
-    std::string const &name) {
+void draw_lines(Point const &punto, FILE *out_file, int const idx,
+    int const resid, std::string const &name) {
     fmt::print(out_file,
         "{: <6}{: >5} {: <4s} {:3} {:1}{: >4}    "
         "{:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}          {: >2s}\n",
@@ -12,37 +12,37 @@ void draw(Point const &punto, FILE *out_file, int const idx, int const resid,
     return;
 }
 
-void draw(Triangle const &t, FILE *out_file, int &idx, int &resid) {
+void draw_lines(Triangle const &t, FILE *out_file, int &idx, int &resid) {
 
     auto const i = idx++;
     auto const j = idx++;
     auto const k = idx++;
 
-    draw(t.vertex(0), out_file, i, resid, " IA");
-    draw(t.vertex(1), out_file, j, resid, " IA");
-    draw(t.vertex(2), out_file, k, resid, " IA");
+    draw_lines(t.vertex(0), out_file, i, resid, " IA");
+    draw_lines(t.vertex(1), out_file, j, resid, " IA");
+    draw_lines(t.vertex(2), out_file, k, resid, " IA");
     ++resid;
     return;
 }
 
-void draw(
+void draw_lines(
     Finite_cells_iterator const cell, FILE *out_file, int &idx, int &resid) {
 
-    draw(cell->vertex(0)->point(), out_file, idx++, resid, "CEL");
-    draw(cell->vertex(1)->point(), out_file, idx++, resid, "CEL");
-    draw(cell->vertex(2)->point(), out_file, idx++, resid, "CEL");
-    draw(cell->vertex(3)->point(), out_file, idx++, resid, "CEL");
+    draw_lines(cell->vertex(0)->point(), out_file, idx++, resid, "CEL");
+    draw_lines(cell->vertex(1)->point(), out_file, idx++, resid, "CEL");
+    draw_lines(cell->vertex(2)->point(), out_file, idx++, resid, "CEL");
+    draw_lines(cell->vertex(3)->point(), out_file, idx++, resid, "CEL");
     ++resid;
     return;
 }
 
-void draw(ConvexHull const &CH, std::string const &filename) {
+void draw_lines(ConvexHull const &CH, std::string const &filename) {
 
     FILE *out_file = std::fopen(filename.c_str(), "w");
     if (out_file) {
         int idx = 1, resid = 1;
         for (auto const &triangle : CH._triangles) {
-            draw(triangle, out_file, idx, resid);
+            draw_lines(triangle, out_file, idx, resid);
         }
         connect_triangle(out_file, 1, resid);
     } else {
@@ -53,21 +53,21 @@ void draw(ConvexHull const &CH, std::string const &filename) {
     return;
 }
 
-void draw(Cavity const &hueco, std::string const &filename) {
+void draw_lines(Cavity const &hueco, std::string const &filename) {
     FILE *out_file = std::fopen(filename.c_str(), "w");
     if (out_file) {
         int idx = 1, resid = 1;
         for (auto const &cell : hueco._included_cells) {
-            draw(cell, out_file, idx, resid);
+            draw_lines(cell, out_file, idx, resid);
         }
 
         for (auto const &tetra : hueco._tetra_border) {
-            draw_polyhedron(tetra, out_file, idx, resid);
+            draw_polyhedron_lines(tetra, out_file, idx, resid);
         }
 
         int const pre_penta = resid + 1;
         for (auto const &penta : hueco._penta_border) {
-            draw_polyhedron(penta, out_file, idx, resid);
+            draw_polyhedron_lines(penta, out_file, idx, resid);
         }
 
         connect_tetrahedra(out_file, 1, pre_penta);

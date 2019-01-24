@@ -17,12 +17,12 @@ int NDD_ANA(std::string const &in_filename, IncludedAreaOptions &IA_opts,
 
     ANA::carve_CH_into_cavity(hueco, CH);
 
-    // ANA::NDD::ndd(cavity_joint_cells, NDD_opts);
+    ANA::NDD::ndd(cavity_joint_cells, NDD_opts);
 
     // ANA::write_output_volume(cavity_void_cells, poly_vol);
 
-    ANA::draw(hueco, "sal.pdb");
-    ANA::draw(CH, "hull.pdb");
+    // ANA::draw(hueco, "sal.pdb");
+    // ANA::draw(CH, "hull.pdb");
     printf("Volumen:  %f\n", hueco._volume + hueco._outer_volume);
 
     return 0;

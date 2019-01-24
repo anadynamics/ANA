@@ -6,27 +6,28 @@
 
 namespace ANA {
 
-void draw(Point const &punto, FILE *out_file, int constidx, int const resid,
-    std::string const &name);
+void draw_lines(Point const &punto, FILE *out_file, int constidx,
+    int const resid, std::string const &name);
 
-void draw(Triangle const &t, FILE *out_file, int &idx, int &resid);
+void draw_lines(Triangle const &t, FILE *out_file, int &idx, int &resid);
 
-void draw(
+void draw_lines(
     Finite_cells_iterator const cell, FILE *out_file, int &idx, int &resid);
 
 template <class T>
-void draw_polyhedron(T const &poly, FILE *out_file, int &idx, int &resid) {
+void draw_polyhedron_lines(
+    T const &poly, FILE *out_file, int &idx, int &resid) {
 
     for (auto const &each : poly._data) {
-        draw(each, out_file, idx++, resid, "POL");
+        draw_lines(each, out_file, idx++, resid, "POL");
     }
     ++resid;
     return;
 }
 
-void draw(ConvexHull const &CH, std::string const &filename);
+void draw_lines(ConvexHull const &CH, std::string const &filename);
 
-void draw(Cavity const &hueco, std::string const &filename);
+void draw_lines(Cavity const &hueco, std::string const &filename);
 
 void connect_triangle(FILE *out_file, int const first_t, int const last_t);
 
