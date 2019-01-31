@@ -1,10 +1,9 @@
 #ifndef ANA_READ_H
 #define ANA_READ_H
-#include <ANA/Molecule.hpp>
-#include <ANA/Includes.hpp>
-#include <ANA/Primitives.hpp>
 #include <ANA/Cavity.hpp>
+#include <ANA/Includes.hpp>
 #include <ANA/Molecule.hpp>
+#include <ANA/Primitives.hpp>
 
 namespace ANA {
 // Refine the provided list of amino acids. If its not present, then return an
@@ -33,7 +32,7 @@ bool adapt_AA_list(
                 // some character present. Doesn't matter, skip it and keep
                 // reading.
                 continue;
-            } catch (std::out_of_range const oor) {
+            } catch (std::out_of_range const &oor) {
                 // int is too large to be represented by int
                 std::cerr << "Invalid residue number: " << temp_aa << '\n';
                 std::exit(1);
@@ -91,6 +90,5 @@ Point getCM(
 // Read PDB to draw included area for MD
 void read_included_area(
     std::string const &filename, std::vector<Point> &area_points);
-
 }
 #endif // _H

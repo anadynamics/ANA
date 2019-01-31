@@ -14,7 +14,7 @@ std::vector<int> string_to_list(std::string const &list_proto, int const top) {
         stream_aa >> temp_aa;
         try {
             aa = std::stoi(temp_aa);
-        } catch (std::out_of_range const oor) {
+        } catch (std::out_of_range const &oor) {
             // int is too large to be represented by int
             throw std::out_of_range(
                 "Invalid atom / residue number in config file. Aborting.");

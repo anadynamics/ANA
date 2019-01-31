@@ -76,7 +76,6 @@ include_directories(build/chemfiles/external/fmt)
 
 target_include_directories(ANA
     PRIVATE
-        $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
