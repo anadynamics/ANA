@@ -6,6 +6,32 @@
 
 namespace ANA {
 
+struct Points {
+public:
+    Points() = default;
+
+    Points(int const i) : i(_cnt) {
+        _x.reserve(_cnt);
+        _y.reserve(_cnt);
+        _z.reserve(_cnt);
+
+        _index.reserve(_cnt);
+        _radius.reserve(_cnt);
+        _resn.reserve(_cnt);
+        _resi.reserve(_cnt);
+    }
+
+    int const _cnt;
+    std::vector<double> _x, _y, _z;
+
+    std::vector<int> _index;
+    std::vector<double> _radius;
+    // atom's residue number
+    std::vector<int> _resn;
+    // atom's residue name in 3 letter format
+    std::vector<std::string> _resi;
+};
+
 struct Tetrahedron {
 public:
     Tetrahedron() noexcept = default;
@@ -34,7 +60,6 @@ public:
 
     std::array<Point, 6> _data;
 };
-
 }
 
 #endif // _H

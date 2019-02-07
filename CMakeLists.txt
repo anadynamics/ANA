@@ -23,6 +23,7 @@ target_sources(ANA
         src/CGALUtils.cpp
         src/ConvexHull.cpp
         src/ConvexHullFunctions.cpp
+        src/IncludedArea.cpp
         src/main.cpp
         src/MD.cpp
         src/Modes.cpp
@@ -39,8 +40,9 @@ target_sources(ANA
 
         include/ANA/Cavity.hpp
         include/ANA/CGALUtils.hpp
-        include/ANA/ConvexHullFunctions.hpp
         include/ANA/ConvexHull.hpp
+        include/ANA/ConvexHullFunctions.hpp
+        include/ANA/IncludedArea.hpp
         include/ANA/Includes.hpp
         include/ANA/MD.hpp
         include/ANA/Modes.hpp

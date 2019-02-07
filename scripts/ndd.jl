@@ -1,4 +1,4 @@
-#! /usr/local/env julia
+#! /usr/local/julia-1.1.0/bin/julia
 ###############################################################################
 # Utility to displace a PDB along many vectors, generating 1 PDB for each
 # vector, useful for NDD analysis.
@@ -6,7 +6,6 @@
 # by https://github.com/pgbarletta
 ###############################################################################
 using Chemfiles, JUMD
-using StaticArrays
 using ArgParse
 using DelimitedFiles, LinearAlgebra, FileIO
 
@@ -45,7 +44,7 @@ function displaceAA(in_frm, aa, aa_3, in_vec)
     out_frm = deepcopy(in_frm)
     out_xyz = positions(out_frm)
 
-    # Tengo q hacer esto por ahora. Hasta q arreglemos Chemfiles.
+    # Tengo q hacer esto por ahora, hasta q arreglemos Chemfiles.
     for i = 1:size(in_xyz)[1]
         for j = 1:size(in_xyz)[2]
             out_xyz[i, j]  = round(in_xyz[i, j] + sum_mat[i, j], digits = 3)
@@ -73,6 +72,10 @@ s = ArgParseSettings()
         help = "Output PDBs suffix"
         arg_type = String
         required = true
+    "--out_dir", "-d"
+        help = "Output PDBs directory"
+        arg_type = String
+        required = true
     "--amber_modes", "-a"
         help = "Mark true when reading Amber(format) modes. Default: false."
         arg_type = Bool
@@ -92,6 +95,7 @@ for (arg, val) in parsed_args
     arg = Symbol(arg)
     @eval (($arg) = ($val))
 end
+
 println("Input parameters:")
 println("INPDB          ", in_pdb_filename)
 println("MODES          ", modes_filename)
@@ -109,46 +113,45 @@ const aa_3 = aa * 3
 nmodes = aa_3 - 6
 
 # Read input vectors and weights
-in_modes = MMatrix{aa_3, nmodes, Float64}(undef)
-weights = MVector{nmodes, Float64}(undef)
+in_modes = Array{Float64}(undef, aa_3, nmodes)
+weights = Array{Float64}(undef, nmodes)
+
 if (amber_modes)
     try
-        tmp_modes, tmp_weights = JUMD.readPtrajModes(modes_filename)
-        in_modes = convert(MMatrix{aa_3, nmodes, Float64}, tmp_modes)
-        weights = convert(MVector{nmodes, Float64}, tmp_weights)
+        global in_modes, weights = JUMD.readPtrajModes(modes_filename)
     catch e
         println("Error when reading Amber modes: ", modes_filename)
         error(e)
     end
 else
     try
-        in_modes = convert(MMatrix{aa_3, nmodes, Float64}, readdlm(modes_filename))
+        global in_modes = convert(Array{Float64}(aa_3, nmodes), readdlm(modes_filename))
     catch e
         println("Error when reading modes: ", modes_filename)
         error(e)
     end
     if weights_filename != "none"
         try
-            weights = convert(MVector{nmodes, Float64}, readdlm(weights_filename))
+            global weights = convert(Array{Float64}(nmodes), readdlm(weights_filename))
         catch e
             println("Error when reading weights: ", weights_filename)
             error(e)
         end
     else
-        weights = convert(MVector{nmodes, Float64}, fill(1., nmodes))
+        global weights = convert(Array{Float64}(nmodes), fill(1., nmodes))
     end
 end
 
 
 # Ahora desplazo
-pdb_names = Array{String}(undef, n_modes)
-for i = 1:n_modes
+pdb_names = Array{String}(undef, nmodes)
+for i = 1:nmodes
     # Escalo vector
-    const modo = in_modes[:, i] .* mul ./ weights[i]
+    modo = in_modes[:, i] .* mul ./ weights[i]
     # Desplazo
-    const out_frm = displaceAA(in_frm, aa, aa_3, modo);
+    out_frm = displaceAA(in_frm, aa, aa_3, modo);
     # Y guardo
-    pdb_names[i] = joinpath(pwd(), string(i, "_", suffix, ".pdb"))
+    pdb_names[i] = joinpath(out_dir, string(i, "_", suffix, ".pdb"))
     out_trj = Trajectory(pdb_names[i], 'w')
     write(out_trj, out_frm)
     close(out_trj)
@@ -157,5 +160,4 @@ end
 # Write in_ndd file
 const in_ndd_filename = string("in_ndd_",
     splitext(basename(in_pdb_filename))[1])
-const in_ndd_location = dirname(in_pdb_filename)
-writedlm(joinpath(in_ndd_location, in_ndd_filename), pdb_names)
+writedlm(joinpath(out_dir, in_ndd_filename), pdb_names)
