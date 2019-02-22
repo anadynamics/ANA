@@ -101,6 +101,7 @@ println("INPDB          ", in_pdb_filename)
 println("MODES          ", modes_filename)
 println("MUL            ", mul)
 println("SUFFIX         ", suffix)
+println("OUT_DIR        ", out_dir)
 println("AMBER_MODES    ", amber_modes)
 println("WEIGHTS        ", weights_filename)
 
